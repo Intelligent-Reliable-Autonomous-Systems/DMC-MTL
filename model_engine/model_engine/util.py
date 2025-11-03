@@ -156,7 +156,6 @@ def per_task_param_loader(config: dict, params: list, cultivar: str = None) -> t
             raise Exception(
                 f"Incorrectly specified parameter file {fname}. Ensure that `{model_name}` contains parameter set `{model_num}`"
             )
-
         task_params = []
         for c in params:
             if c in cv.keys():

@@ -478,7 +478,14 @@ def plot_output_wofost(
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
             ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
-            ax[0].plot(val_data[k][inds[k]], label=f"True {target}", color=colors[1])
+            ax[0].scatter(
+                np.where(inds[k]),
+                val_data[k][inds[k]],
+                label=f"True {target}",
+                s=10,
+                marker="x",
+                color=colors[1],
+            )
             ax[0].legend()
             ax[0].set_title(f"{target} (Predicted)")
             ax[0].set_xticks([], [])
@@ -500,8 +507,6 @@ def plot_output_wofost(
                 bbox_inches="tight",
             )
             plt.close()
-            if params is not None:
-                plot_params_error(fpath, config, pk, i[k], name=name)
 
     return inds
 

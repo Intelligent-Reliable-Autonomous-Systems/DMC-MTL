@@ -10,7 +10,6 @@ from omegaconf import DictConfig
 from train_algs.base.util import set_embedding_op
 
 
-
 class BaseModule(nn.Module):
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
@@ -54,13 +53,15 @@ class FCGRU(BaseModule):
         if model.cultivars is None:
             self.param_heads = nn.ModuleList([nn.Linear(self.dim2, self.output_dim) for _ in range(1)])
         else:
-            self.param_heads = nn.ModuleList([nn.Linear(self.dim2, self.output_dim) for _ in range(model.num_cultivars)])
+            self.param_heads = nn.ModuleList(
+                [nn.Linear(self.dim2, self.output_dim) for _ in range(model.num_cultivars)]
+            )
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
         self.init_state = self.h0
 
     def forward(
-        self, input: torch.Tensor = None, hn: torch.Tensor = None, cultivars:torch.Tensor=None, **kwargs
+        self, input: torch.Tensor = None, hn: torch.Tensor = None, cultivars: torch.Tensor = None, **kwargs
     ) -> tuple[torch.Tensor, torch.Tensor]:
         x = self.fc1(input)
         x = self.fc2(x)
@@ -205,9 +206,9 @@ class GHCNDeepEmbeddingGRU(BaseModule):
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
-        self.hidden_to_output_1 = nn.Linear(self.dim2, int(self.output_dim/3))
-        self.hidden_to_output_2 = nn.Linear(self.dim2, int(self.output_dim/3))
-        self.hidden_to_output_3 = nn.Linear(self.dim2, int(self.output_dim/3))
+        self.hidden_to_output_1 = nn.Linear(self.dim2, int(self.output_dim / 3))
+        self.hidden_to_output_2 = nn.Linear(self.dim2, int(self.output_dim / 3))
+        self.hidden_to_output_3 = nn.Linear(self.dim2, int(self.output_dim / 3))
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
 
@@ -233,6 +234,7 @@ class FFTempResponse(BaseModule):
     """
     Hybrid model for replacing the temperature response function
     """
+
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
 
         super(FFTempResponse, self).__init__(c, model)

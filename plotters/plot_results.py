@@ -14,9 +14,7 @@ import argparse
 
 import utils
 
-from plotters.plot_utils import (
-    gen_all_data_and_plot
-)
+from plotters.plot_utils import gen_all_data_and_plot
 from plotters.plotting_functions import plot_loss, plot_stats
 
 

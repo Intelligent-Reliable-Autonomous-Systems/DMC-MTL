@@ -182,7 +182,7 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     # Pad each array to the maximum length
     dates = [np.pad(arr, (0, max_len - len(arr)), mode="maximum") for arr in dates]
     model.max_dlen = max_len
-    
+
     # Shuffle to get train and test splits for data
     if len(model.config.withold_cultivars) == 0:
         n = len(data)

@@ -105,9 +105,7 @@ def gen_batch_data(
     Generates model output from a single batch
     """
     with torch.no_grad():
-        (output, params, _) = calibrator.forward(
-            input_data, dates, cultivars=cultivars, val_data=val_data
-        )
+        (output, params, _) = calibrator.forward(input_data, dates, cultivars=cultivars, val_data=val_data)
 
     true_data = val_data.cpu().squeeze().numpy()
     if output.size(-1) == len(PHENOLOGY_INT):
@@ -118,6 +116,7 @@ def gen_batch_data(
     params = params.cpu().numpy().squeeze() if params is not None else None
 
     return true_data, output_data, params
+
 
 def gen_all_data_and_plot(
     config: DictConfig,
@@ -216,4 +215,3 @@ def gen_all_data_and_plot(
 
         if args.break_early:
             break
-

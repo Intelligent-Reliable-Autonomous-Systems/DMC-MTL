@@ -1,0 +1,33 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: Grape_Phenology_TensorBatch
+    model_parameters: grape_phenology:1 
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
+    output_vars: [PHENOLOGY]
+# Log configuration
+log_path: /_runs/PaperExperiments/Phenology/STL/
+run_name: stl
+check_freq: 1
+seed: 0
+# Data use
+cultivar: Chardonnay
+withold_cultivars: {}
+data_fpath: _data/processed_data/
+# Parameters 
+params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
+params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]
+DConfig: 
+    type: Param
+    arch: FCGRU
+    embed_op: concat
+    shared_params: True
+    hidden_dim: 1024
+    loss_func: MSELoss
+    learning_rate: .0005
+    lr_factor: 0.9
+    batch_size: 4
+    epochs: 200

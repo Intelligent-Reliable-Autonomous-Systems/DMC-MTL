@@ -22,7 +22,7 @@ from train_algs.base.DMC_Base import (
     DeepEmbeddingGRU,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
-    FFTempResponse
+    FFTempResponse,
 )
 from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader
@@ -114,10 +114,8 @@ class BaseRNN(BaseModel):
                     cultivars_shuffled[i : i + self.batch_size] if cultivars_shuffled is not None else None
                 )
                 target = val_shuffled[i : i + self.batch_size]
-                output, _, model_output = self.forward(
-                    batch_data, batch_dates, cultivars=batch_cultivars
-                )
-                
+                output, _, model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
+
                 # Compute PINN Loss
                 if self.config.DConfig.type == "PINN":
                     if "CrossEntropyLoss" in self.config.DConfig.loss_func:
@@ -173,9 +171,7 @@ class BaseRNN(BaseModel):
                         self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                     )
                     eval_target = self.val[test_name][j : j + self.batch_size]
-                    eval_output, _, eval_model_output = self.forward(
-                        batch_data, batch_dates, cultivars=batch_cultivars
-                    )
+                    eval_output, _, eval_model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
 
                     # Compute PINN Loss
                     if self.config.DConfig.type == "PINN":
@@ -271,9 +267,7 @@ class ParamRNN(BaseRNN):
         # Run through entirety of time series predicting params
         for i in range(dlen):
             params_predict, hn_cn = self.nn(
-                torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
-                hn_cn,
-                cultivars=cultivars
+                torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1), hn_cn, cultivars=cultivars
             )
 
             params_predict = self.param_cast(params_predict)
@@ -351,7 +345,7 @@ class NoObsParamRNN(BaseRNN):
         output_tens, param_tens, _ = self.setup_storage(b_size, dlen)
 
         self.nn.zero_grad()
-        hn_cn = self.nn.get_init_state(batch_size=data.shape[0])
+        hn_cn = self.nn.get_init_state(batch_size=b_size)
         output = self.model.reset(b_size)
         # Run through entirety of time series predicting parameters for physical model at each step
         for i in range(dlen):
@@ -390,7 +384,7 @@ class DeepRNN(BaseRNN):
             output_tens[:, i] = output_predict
 
         return output_tens, None, None
-    
+
 
 class PINNRNN(BaseRNN):
 
@@ -427,15 +421,52 @@ class PINNRNN(BaseRNN):
             output_predict, hn_cn = self.nn(
                 torch.cat((model_output.view(model_output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn_cn,
-                cultivars=cultivars
+                cultivars=cultivars,
             )
             model_output = self.model.run(dates=dates[:, i], cultivars=cultivars)
 
             output_tens[:, i] = output_predict
-            model_output_tens[:,i] = model_output.detach()
+            model_output_tens[:, i] = model_output.detach()
 
         return output_tens, None, model_output_tens
-    
+
+
+class ResidualRNN(BaseRNN):
+
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+        super(ResidualRNN, self).__init__(config, data)
+        self.model = get_engine(self.config)(
+            num_models=self.batch_size,
+            config=config.PConfig,
+            inputprovider=self.input_data,
+            device=self.device,
+        )
+        self.task_params = per_task_param_loader(config.PConfig, self.params, cultivar=config.cultivar).to(self.device)
+
+    def forward(
+        self, data: torch.Tensor, dates: np.ndarray, cultivars: torch.Tensor = None, **kwargs
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        hn_cn = self.nn.get_init_state(batch_size=b_size)
+        model_output = self.model.reset(b_size)
+
+        # Set parameters for model given the batch
+        batch_params = self.task_params[cultivars.to(torch.long).squeeze()]
+        self.model.set_model_params(batch_params, self.params)
+
+        # Run through entirety of time series predicting residual
+        for i in range(dlen):
+            residual_predict, hn_cn = self.nn(data[:, i], hn_cn, cultivars)
+            model_output = self.model.run(dates=dates[:, i], cultivars=cultivars)
+            output_tens[:, i] = model_output + residual_predict
+
+        return output_tens, None, None
+
 
 class StationaryModel(BaseRNN):
 

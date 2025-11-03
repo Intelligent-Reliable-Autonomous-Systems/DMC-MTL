@@ -1,0 +1,33 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: WOFOST_TensorBatch
+    model_parameters: wofost:Winter_Wheat_101
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, LAT, LON, ET0, E0, ES0]
+    output_vars: [WSO]
+# Log configuration
+log_path: /_runs/PaperExperiments/wofost/STL/
+run_name: agg_param
+check_freq: 1
+seed: 0
+# Data use
+cultivar: Multi
+withold_cultivars: {"Winter_Wheat_101":2,"Winter_Wheat_102":2,"Winter_Wheat_103":2,"Winter_Wheat_104":2,"Winter_Wheat_105":2,"Winter_Wheat_106":2,"Winter_Wheat_107":2,"Bermude":2,"Apache":2}
+data_fpath: _data/processed_data/
+# Parameters 
+params: ["DLO", "TSUM1", "TSUM2", "VERNBASE", "VERNSAT", "CVO", "RMO"]
+params_range: [[12,18], [500, 1500], [500, 1500], [0,25], [0,100], [.5, .8], [0.05, 0.2]]
+DConfig: 
+    type: WOFOSTParam
+    arch: WOFOSTAggFCGRU
+    hidden_dim: 1024
+    shared_params: True
+    embed_op: concat
+    loss_func: MSELoss
+    learning_rate: .0002
+    lr_factor: 0.95
+    batch_size: 12
+    epochs: 400

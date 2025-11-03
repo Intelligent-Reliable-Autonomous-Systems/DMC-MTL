@@ -1,0 +1,33 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: Grape_Phenology_TensorBatch
+    model_parameters: grape_phenology:1
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, TEMP, TMIN, TMAX]
+    output_vars: [PHENOLOGY]
+# Log configuration
+log_path: /_runs/PaperExperiments/Phenology_Ablation/Phenology_Ablation_Class/ClassMTL4/
+run_name: class_mtl
+check_freq: 1
+seed: 0
+# Data use
+cultivar: Multi
+withold_cultivars: {"Aligote":2,"Alvarinho":2,"Auxerrois":2,"Barbera":2,"Cabernet_Franc":2,"Cabernet_Sauvignon":2,"Chardonnay":2,"Chenin_Blanc":2,"Concord":2,"Durif":2,"Gewurztraminer":2,"Green_Veltliner":2,"Grenache":2,"Lemberger":2,"Malbec":2,"Melon":2,"Merlot":2,"Mourvedre":2, "Muscat_Blanc":2,"Nebbiolo":2,"Petit_Verdot":2,"Pinot_Blanc":2,"Pinot_Gris":2,"Pinot_Noir":2,"Riesling":2,"Sangiovese":2,"Sauvignon_Blanc":2,"Semillon":2,"Tempranillo":2,"Viognier":2,"Zinfandel":2}
+data_fpath: _data/processed_data/
+# Parameters 
+params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
+params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]
+DConfig: 
+    type: Deep
+    arch: DeepEmbedGRU 
+    hidden_dim: 2048
+    shared_params: True
+    embed_op: concat
+    loss_func: CrossEntropyLoss
+    learning_rate: .0002
+    lr_factor: 0.95
+    batch_size: 12
+    epochs: 400

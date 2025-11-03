@@ -68,7 +68,6 @@ class DConfig:
     embed_op: Optional[str] = None
 
 
-
 @dataclass
 class Args:
     """Model configuration"""
@@ -189,10 +188,13 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC.StationaryModel(config, data)
     elif config.DConfig.type == "Hybrid":
         calibrator = DMC.HybridModel(config, data)
+    elif config.DConfig.type == "Residual":
+        calibrator = DMC.ResidualRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 
     return calibrator
+
 
 def load_dfs(path: str) -> list[pd.DataFrame]:
     """

@@ -83,7 +83,7 @@ class BaseModel(nn.Module):
         Set up storage for forward pass
         """
         if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-            output_dim = len(PHENOLOGY_INT)  
+            output_dim = len(PHENOLOGY_INT)
         else:
             output_dim = len(self.output_vars)
 
@@ -132,8 +132,12 @@ class BaseModel(nn.Module):
         """
         Load Model
         """
+        self.nn.load_state_dict(torch.load(f"{path}/{name}", weights_only=True, map_location=self.device), strict=False)
+
         try:
-            self.nn.load_state_dict(torch.load(f"{path}/{name}", weights_only=True, map_location=self.device), strict=False)
+            self.nn.load_state_dict(
+                torch.load(f"{path}/{name}", weights_only=True, map_location=self.device), strict=False
+            )
         except:
             print("Unable to load NN model..")
 
@@ -154,7 +158,9 @@ class BaseModel(nn.Module):
         Get the input dimension of the model
         """
         extra_feat = (
-            0 if config.DConfig.type == "Deep" or config.DConfig.type == "Hybrid" else len(config.PConfig.output_vars)
+            0
+            if config.DConfig.type in ["Deep", "Hybrid", "NoObsParam", "Residual"]
+            else len(config.PConfig.output_vars)
         )
         extra_feat = (
             extra_feat + 1 if "DAY" in config.PConfig.input_vars else extra_feat
@@ -166,7 +172,7 @@ class BaseModel(nn.Module):
         """
         Get the output dimension of the model
         """
-        if config.DConfig.type == "Param":
+        if config.DConfig.type in ["Param", "NoObsParam"]:
             return len(config.params)
         else:
             if "CrossEntropyLoss" in config.DConfig.loss_func:
@@ -217,4 +223,3 @@ class BaseModel(nn.Module):
         self.model.set_state(curr_model_state)
 
         return errors
-

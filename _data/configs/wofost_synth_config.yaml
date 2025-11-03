@@ -1,0 +1,31 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: WOFOST_TensorBatch #Suffixes: Batch, BatchFast
+    model_parameters: wofost_pheno:1
+    latitude: 46
+    longitude: -120
+    start_date: 1990-01-01
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, LAT, LON, ET0, E0, ES0]
+    output_vars: [DVS, WSO]
+log_path: /_data/
+run_name: synth_data
+check_freq: 1
+seed: 0
+cultivar: Winter_Wheat_101
+withold_cultivars: {}
+data_fpath: _data/processed_data/
+val_set: True
+params: ["TBASEM"]
+params_range: [[0,15]]
+# DConfig Parameters
+DConfig: 
+    arch: FCGRU
+    
+    
+    hidden_dim: 128
+    loss_func: MSELoss
+    learning_rate: .001
+    lr_factor: 0.9
+    batch_size: 1
+    epochs: 600

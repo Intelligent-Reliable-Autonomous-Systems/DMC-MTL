@@ -19,7 +19,7 @@ from plotters.plotting_functions import (
     plot_output_phenology,
     plot_output_coldhardiness,
     plot_output_wofost,
-    plot_output_phenology_progress,
+    plot_output_phenology_2
 )
 from train_algs.base.process_data import unnormalize
 
@@ -164,6 +164,16 @@ def gen_all_data_and_plot(
 
         if model_name == "grape_phenology":
             inds = plot_output_phenology(
+                config,
+                fpath,
+                np.arange(start=i, stop=i + calibrator.batch_size),
+                output,
+                params,
+                calibrator.val[name][i : i + calibrator.batch_size],
+                name=name,
+                save=args.save,
+            )
+            plot_output_phenology_2(
                 config,
                 fpath,
                 np.arange(start=i, stop=i + calibrator.batch_size),

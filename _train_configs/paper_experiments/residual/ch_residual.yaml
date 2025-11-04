@@ -10,7 +10,7 @@ PConfig:
     output_vars: [LTE50]
 # Log configuration
 log_path: /_runs/PaperExperiments/ColdHardiness/ResidualMTL/
-run_name: res+mtl
+run_name: res_mtl
 check_freq: 1
 seed: 0
 # Data use

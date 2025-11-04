@@ -658,6 +658,8 @@ ModelParameters:
         - time coefficient for K translocation to storage organs
         - ['d']
   Sets:
+    "1":
+      <<: *wheat
     "Winter_Wheat_101":
       <<: *wheat
       #

@@ -26,7 +26,7 @@ DConfig:
     type: Stationary # Deep, Param, PINN
     arch: BaseLSTM
     embed_op: concat
-    shared_params: True
+  
     hidden_dim: 512
     # Optimization parameters
     loss_func: MSELoss

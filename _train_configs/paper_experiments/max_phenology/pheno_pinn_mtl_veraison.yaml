@@ -24,7 +24,7 @@ DConfig:
     type: PINN
     arch: DeepEmbedGRU 
     hidden_dim: 1024
-    shared_params: True
+  
     embed_op: concat
     loss_func: VeraisonMSELoss
     learning_rate: .0002

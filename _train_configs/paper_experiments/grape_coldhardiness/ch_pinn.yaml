@@ -24,7 +24,7 @@ DConfig:
     type: PINN
     arch: DeepEmbedGRU 
     embed_op: concat
-    shared_params: True
+  
     hidden_dim: 2048
     loss_func: MSELoss
     learning_rate: .0002

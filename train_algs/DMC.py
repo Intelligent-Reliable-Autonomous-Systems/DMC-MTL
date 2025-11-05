@@ -23,6 +23,7 @@ from train_algs.base.DMC_Base import (
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
     FFTempResponse,
+    ParamModel,
 )
 from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader
@@ -66,6 +67,8 @@ class BaseRNN(BaseModel):
             nn = OneHotEmbeddingFCGRU(config, model)
         elif config.DConfig.arch == "FFTempResponse":
             nn = FFTempResponse(config, model)
+        elif config.DConfig.arch == "ParamModel":
+            nn = ParamModel(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 

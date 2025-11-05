@@ -19,7 +19,7 @@ from plotters.plotting_functions import (
     plot_output_phenology,
     plot_output_coldhardiness,
     plot_output_wofost,
-    plot_output_phenology_2
+    plot_output_phenology_2,
 )
 from train_algs.base.process_data import unnormalize
 

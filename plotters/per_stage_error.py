@@ -80,8 +80,6 @@ def main():
             for item in box[element]:
                 item.set_color(C_PER[i])
 
-
-
     for element in ["boxes", "whiskers", "caps", "medians"]:
         for item in box[element]:
             item.set_color(C_PER[i + 1])

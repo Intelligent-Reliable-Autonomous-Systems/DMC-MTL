@@ -413,7 +413,7 @@ def plot_output_phenology_2(
         tick_size = 12
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
-            fig, ax = plt.subplots(1)
+            fig, ax = plt.subplots(1, figsize=(6, 3))
             target = config.PConfig.output_vars
             ax.plot(output[k][inds[k]], label=f"DMC-MTL Prediction")
             ax.plot(val_data[k][inds[k]], label=f"Observed")
@@ -422,12 +422,8 @@ def plot_output_phenology_2(
             ax.set_title(f"Predicted vs Observed Phenology")
             ax.set_xlim([0, len(x)])
             ax.set_ylabel(f"{target}", fontsize=tick_size)
-            ax.set_yticks(
-                [0, 1, 2, 3, 4],
-                ["Ecodormancy", "Budbreak", "Bloom", "Veraison", "Ripe"],fontsize=tick_size
-            )
+            ax.set_yticks([0, 1, 2, 3, 4], ["Ecodormancy", "Budbreak", "Bloom", "Veraison", "Ripe"], fontsize=tick_size)
             ax.set_ylim([0, 5])
-
 
             plt.savefig(
                 f"{fpath}/Model2_{name}_{i[k]}_{config.cultivar}.png",
@@ -436,7 +432,6 @@ def plot_output_phenology_2(
             plt.close()
 
     return inds
-
 
 
 def plot_output_coldhardiness(

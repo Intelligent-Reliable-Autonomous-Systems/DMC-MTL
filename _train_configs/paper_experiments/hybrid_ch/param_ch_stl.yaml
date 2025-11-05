@@ -24,7 +24,7 @@ DConfig:
     type: Hybrid
     arch: ParamModel
     embed_op: concat
-    shared_params: True
+  
     hidden_dim: 64
     loss_func: MSELoss
     learning_rate: .02

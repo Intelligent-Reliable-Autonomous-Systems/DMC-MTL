@@ -24,7 +24,7 @@ DConfig:
     type: Param
     arch: EmbedFCGRU
     embed_op: concat
-    shared_params: True
+  
     hidden_dim: 1024
     loss_func: MSELoss
     learning_rate: .0002

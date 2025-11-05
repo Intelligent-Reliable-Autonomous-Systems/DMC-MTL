@@ -24,7 +24,7 @@ DConfig:
     type: Hybrid
     arch: FFTempResponse 
     hidden_dim: 64
-    shared_params: True
+  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .02

@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/ColdHardiness/StationaryModel/
 run_name: statmodel
-
 seed: 0
 # Data use
 cultivar: Aligote
@@ -26,7 +25,6 @@ DConfig:
     type: Stationary
     arch: EmbedLSTM
     embed_op: concat
-  
     hidden_dim: 128
     # Optimization parameters
     loss_func: MSELoss

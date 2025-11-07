@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/Phenology/PINN/
 run_name: regression_mtl
-
 seed: 0
 # Data use
 cultivar: Multi
@@ -24,7 +23,6 @@ DConfig:
     type: PINN
     arch: DeepEmbedGRU 
     hidden_dim: 2048
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002

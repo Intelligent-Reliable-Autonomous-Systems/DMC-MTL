@@ -10,10 +10,8 @@ PConfig:
     output_vars: [LTE50]
 # Log configuration
 log_path: /_runs/PaperExperiments/Weather/ColdHardiness/HybridCHFF/STL/
-
 synth_data: synth
 run_name: ch_stl
-
 seed: 0
 # Data use
 cultivar: Aligote
@@ -26,7 +24,6 @@ DConfig:
     type: Hybrid
     arch: FFTempResponse
     embed_op: concat
-  
     hidden_dim: 64
     loss_func: MSELoss
     learning_rate: .02

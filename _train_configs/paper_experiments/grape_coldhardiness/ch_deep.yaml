@@ -27,7 +27,6 @@ DConfig:
     type: Deep
     arch: DeepEmbedGRU
     hidden_dim: 2048
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0001

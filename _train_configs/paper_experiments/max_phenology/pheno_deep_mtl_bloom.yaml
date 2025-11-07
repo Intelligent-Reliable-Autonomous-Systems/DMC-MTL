@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/MaxPhenology/Bloom/DeepMTL/
 run_name: deep_mtl
-
 seed: 0
 # Data use
 cultivar: Multi
@@ -24,7 +23,6 @@ DConfig:
     type: Deep
     arch: DeepEmbedGRU 
     hidden_dim: 1024
-  
     embed_op: concat
     loss_func: BloomMSELoss
     learning_rate: .0002

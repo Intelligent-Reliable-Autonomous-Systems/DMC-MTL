@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/ColdHardiness/DeepGCHNMTL/
 run_name: gchn_zscore
-
 seed: 0
 # Data use
 cultivar: Multi
@@ -24,7 +23,6 @@ DConfig:
     type: Deep
     arch: GHCNDeepEmbedGRU
     hidden_dim: 2048
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0001

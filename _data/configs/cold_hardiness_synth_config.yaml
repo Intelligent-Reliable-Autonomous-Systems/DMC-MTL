@@ -10,7 +10,6 @@ PConfig:
     output_vars: [LTE50]
 log_path: /_data/
 run_name: synth_data
-
 seed: 0
 cultivar: Barbera
 withold_cultivars: {}
@@ -21,8 +20,6 @@ params_range: [[0,15]]
 # DConfig Parameters
 DConfig: 
     arch: FCGRU
-    
-    
     hidden_dim: 128
     loss_func: MSELoss
     learning_rate: .001

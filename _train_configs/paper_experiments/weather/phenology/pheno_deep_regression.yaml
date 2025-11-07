@@ -12,7 +12,6 @@ PConfig:
 log_path: /_runs/PaperExperiments/Weather/Phenology/DeepRegression/
 synth_data: synth
 run_name: regression_mtl
-
 seed: 0
 # Data use
 cultivar: Multi
@@ -25,7 +24,6 @@ DConfig:
     type: Deep
     arch: DeepEmbedGRU 
     hidden_dim: 2048
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002

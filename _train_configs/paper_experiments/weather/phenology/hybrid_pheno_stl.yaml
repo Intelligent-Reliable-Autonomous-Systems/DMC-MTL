@@ -12,7 +12,6 @@ PConfig:
 log_path: /_runs/PaperExperiments/Weather/Phenology/HybridPhenoFF/STL/
 synth_data: synth
 run_name: ff_stl
-
 seed: 0
 # Data use
 cultivar: Aligote
@@ -25,7 +24,6 @@ DConfig:
     type: Hybrid
     arch: FFTempResponse 
     hidden_dim: 64
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .02

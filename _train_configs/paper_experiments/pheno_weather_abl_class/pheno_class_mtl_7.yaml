@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/Phenology_Ablation/Phenology_Ablation_Class/ClassMTL7/
 run_name: class_mtl
-
 seed: 0
 # Data use
 cultivar: Multi
@@ -24,7 +23,6 @@ DConfig:
     type: Deep
     arch: DeepEmbedGRU 
     hidden_dim: 2048
-  
     embed_op: concat
     loss_func: CrossEntropyLoss
     learning_rate: .0002

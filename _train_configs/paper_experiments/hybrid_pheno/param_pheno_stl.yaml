@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/HybridPhenoModel/STL/
 run_name: model_stl
-
 seed: 0
 # Data use
 cultivar: Aligote
@@ -24,7 +23,6 @@ DConfig:
     type: Hybrid
     arch: ParamModel 
     hidden_dim: 64
-  
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .1

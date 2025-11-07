@@ -211,9 +211,15 @@ def load_data_multi(path: str, cultivars: list[str]) -> list[pd.DataFrame]:
     """
     data = []
     for i, c in enumerate(cultivars):
-
-        with open(f"{path}{c}.pkl", "rb") as f:
-            cult_data = pickle.load(f)
+        try: 
+            with open(f"{path}{c}.pkl", "rb") as f:
+                cult_data = pickle.load(f)
+            print(f'cultivar: {c}')
+        except:
+            print(f"no cultivar found: {c}")
+            continue
+        print(cult_data)
+        print(type(cult_data))
         for cult in cult_data:
             cult["CULTIVAR"] = i
             data.append(cult)

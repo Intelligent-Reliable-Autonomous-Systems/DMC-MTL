@@ -11,7 +11,6 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/Phenology/ResidualRegression/
 run_name: res_mtl
-
 seed: 0
 # Data use
 cultivar: Multi

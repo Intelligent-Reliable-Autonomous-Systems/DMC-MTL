@@ -104,13 +104,8 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
 
         for c, v in model.config.withold_cultivars.items():
-            try:
-                model_name, model_num = model.config.PConfig.model_parameters.split(":")
-            except:
-                raise Exception(
-                    f"Incorrectly specified model_parameters file `{model.config.PConfig.model_parameters}`"
-                )
-            cultivar_inds = np.argwhere(CROP_NAMES[model_name].index(c) == cultivar_data).flatten()
+
+            cultivar_inds = np.argwhere(np.where(CROP_NAMES[model.config.dtype] == c)[0][0] == cultivar_data).flatten()
             np.random.shuffle(cultivar_inds)
             test_inds = np.concatenate((test_inds, cultivar_inds[:v])).astype(np.int32)
 
@@ -238,13 +233,7 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
 
         for c, v in model.config.withold_cultivars.items():
-            try:
-                model_name, model_num = model.config.PConfig.model_parameters.split(":")
-            except:
-                raise Exception(
-                    f"Incorrectly specified model_parameters file `{model.config.PConfig.model_parameters}`"
-                )
-            cultivar_inds = np.argwhere(CROP_NAMES[model_name].index(c) == cultivar_data).flatten()
+            cultivar_inds = np.argwhere(np.where(CROP_NAMES[model.config.dtype] == c)[0][0] == cultivar_data).flatten()
             np.random.shuffle(cultivar_inds)
             test_inds = np.concatenate((test_inds, cultivar_inds[:v]))
             val_cultivar_inds = np.asarray(list(set(cultivar_inds) - set(test_inds)))

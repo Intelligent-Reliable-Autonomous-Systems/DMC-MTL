@@ -395,7 +395,6 @@ def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str
         raise Exception(f"Unexpected region `{region}`")
 
     df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{region}{site}_{cultivar}.csv")
-
     df_list = []
     stages_list = []
 
@@ -435,9 +434,11 @@ def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str
         df_list.append(year_df)
     for yr_df in df_list:
         yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY"], inplace=True)
-
+    df_array = np.empty(len(df_list), dtype=object)
     if len(df_list) != 1:
-        return np.array(df_list, dtype=object), np.array(stages_list, dtype=object)
+        for i, d in enumerate(df_list):
+            df_array[i] = d
+        return df_array, np.array(stages_list, dtype=object)
     else:
         np_arr_df = np.empty(len(df_list), dtype=object)
         np_arr_stages = np.empty(len(stages_list), dtype=object)
@@ -445,6 +446,7 @@ def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str
             np_arr_df[i] = df
         for i, s in enumerate(stages_list):
             np_arr_stages[i] = s
+
         return np_arr_df, np_arr_stages
 
 

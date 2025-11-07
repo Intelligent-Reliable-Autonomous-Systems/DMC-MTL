@@ -8,6 +8,7 @@ Written by Will Solow, 2025
 """
 
 import os
+import pickle
 from typing import Optional
 from dataclasses import dataclass
 from argparse import Namespace
@@ -48,8 +49,6 @@ class DConfig:
     """Model Type"""
 
     type: Optional[str] = None
-    """Hidden dim of Model"""
-    hidden_dim: Optional[int] = None
     """Model architecture"""
     arch: Optional[str] = None
     """Loss function"""
@@ -66,6 +65,8 @@ class DConfig:
     pinn_p: Optional[float] = 0.5
     """Embedding operation"""
     embed_op: Optional[str] = None
+    """Hidden dim of Model"""
+    hidden_dim: Optional[int] = None
 
 
 @dataclass
@@ -75,10 +76,16 @@ class Args:
     PConfig: object = PConfig
     """Deep Model Args"""
     DConfig: object = DConfig
-    """Cultivar"""
-    cultivar: Optional[str] = None
     """Cultivar(s) to withhold from training set"""
     withold_cultivars: Optional[dict] = None
+    """If using a validation set or not"""
+    val_set: Optional[bool] = None
+    """Path to save model"""
+    log_path: Optional[str] = None
+    """Run name for experiment"""
+    run_name: Optional[str] = None
+    """Seed"""
+    seed: Optional[int] = None
     """Path to real data"""
     data_fpath: Optional[str] = True
     """Data type (cold-hardiness, phenology, wheat)"""
@@ -89,22 +96,14 @@ class Args:
     station: Optional[str] = None
     """Site of data"""
     site: Optional[str] = None
+    """Cultivar"""
+    cultivar: Optional[str] = None
     """If using synthetic data"""
     synth_data: Optional[str] = None
-    """If using a validation set or not"""
-    val_set: Optional[bool] = None
     """Parameters to predict"""
     params: Optional[list] = None
     """Ranges for each parameter to predict"""
     params_range: Optional[list] = None
-    """Path to save model"""
-    log_path: Optional[str] = None
-    """Run name for experiment"""
-    run_name: Optional[str] = None
-    """Seed"""
-    seed: Optional[int] = None
-    """Model fpath"""
-    model_fpath: Optional[str] = None
 
 
 def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
@@ -149,22 +148,63 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     Loads data from a OmegaConf configuration file
     """
 
-    try:
-        model_name, _ = config.PConfig.model_parameters.split(":")
-    except:
-        raise Exception(f"Incorrectly specified model_parameters file `{config.PConfig.model_parameters}`")
+    def find_pickle_files(root_dir: str, prefix: str = "", contains: str = ""):
+        """
+        Recursively find all pickle files in root_dir and subdirectories
+        that match a given prefix and contain a specified substring.
+
+        Args:
+            root_dir (str): The directory to search in.
+            prefix (str): The filename prefix to match (default: "").
+            contains (str): A substring that must appear in the filename (default: "").
+
+        Returns:
+            List[str]: List of full paths to matching pickle files.
+        """
+        pickle_paths = []
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            for filename in filenames:
+                if filename.endswith(".pkl") and filename.startswith(prefix) and contains in filename:
+                    full_path = os.path.join(dirpath, filename)
+                    pickle_paths.append(full_path)
+        return pickle_paths
+
+    PREFIX = f"{config.data_fpath}{config.dtype}/"
     if config.synth_data is not None:
-        path = f"{config.data_fpath}{config.dtype}/synth/{config.synth_data}_{model_name}_"
+        paths = find_pickle_files(f"{PREFIX}synth/", prefix=f"{config.synth_data}_{config.dtype}_")
     else:
-        path = f"{config.data_fpath}{config.dtype}/{config.region}/{config.station}/{config.site}/{config.region}_{config.site}_{model_name}_"
-
-    if config.cultivar == "Multi":
-        data = util.load_data_multi(path, CROP_NAMES[model_name])
-    else:
-        data = util.load_data(f"{path}{config.cultivar}.pkl")
-
+        if config.region == "All":
+            paths = find_pickle_files(f"{PREFIX}", contains="" if config.cultivar == "All" else config.cultivar)
+        else:
+            if config.station == "All":
+                paths = find_pickle_files(
+                    f"{PREFIX}{config.region}/", contains="" if config.cultivar == "All" else config.cultivar
+                )
+            else:
+                if config.site == "All":
+                    paths = find_pickle_files(
+                        f"{PREFIX}{config.region}/{config.station}/",
+                        contains="" if config.cultivar == "All" else config.cultivar,
+                    )
+                else:
+                    paths = find_pickle_files(
+                        f"{PREFIX}{config.region}/{config.station}/{config.site}/",
+                        contains="" if config.cultivar == "All" else config.cultivar,
+                    )
+    data = []
+    for p in paths:
+        cultivar = p.split(f"{config.dtype}_")[-1].replace(".pkl", "")
+        if cultivar not in CROP_NAMES[config.dtype]:
+            continue
+        with open(p, "rb") as f:
+            cult_data = pickle.load(f)
+        for cult in cult_data:
+            cult["CULTIVAR"] = np.where(CROP_NAMES[config.dtype] == cultivar)[0][0]
+            data.append(cult)
     for d in data:
         d.rename(columns={"DATE": "DAY"}, inplace=True)
+
+    print(data)
     return data
 
 
@@ -173,7 +213,7 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
     Load the model to train using the configuration and pass
     it args and data
     """
-    if config.cultivar == "Multi":
+    if config.cultivar == "All":
         assert not (
             config.DConfig.arch == "FCGRU"
             or config.DConfig.arch == "BaseGRU"

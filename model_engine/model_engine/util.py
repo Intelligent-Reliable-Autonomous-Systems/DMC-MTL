@@ -8,13 +8,11 @@ Modified by Will Solow, 2024
 
 import yaml
 import os
-import pandas as pd
-import numpy as np
 import datetime
 import torch
-import pickle
 from inspect import getmembers, isclass
 import importlib.util
+import numpy as np
 
 from model_engine.models.base_model import Model
 
@@ -23,84 +21,96 @@ PHENOLOGY_INT = {"Ecodorm": 0, "Budbreak": 1, "Bloom": 2, "Veraison": 3, "Ripe":
 
 # Available cultivars for simulation
 CROP_NAMES = {
-    "grape_phenology": [
-        "Aligote",
-        "Alvarinho",
-        "Auxerrois",
-        "Barbera",
-        "Cabernet_Franc",
-        "Cabernet_Sauvignon",
-        "Chardonnay",
-        "Chenin_Blanc",
-        "Concord",
-        "Durif",
-        "Gewurztraminer",
-        "Green_Veltliner",
-        "Grenache",  # Dolcetto is also absent as no valid years
-        "Lemberger",
-        "Malbec",
-        "Melon",
-        "Merlot",
-        "Mourvedre",
-        "Muscat_Blanc",
-        "Nebbiolo",
-        "Petit_Verdot",
-        "Pinot_Blanc",
-        "Pinot_Gris",
-        "Pinot_Noir",
-        "Riesling",
-        "Sangiovese",
-        "Sauvignon_Blanc",
-        "Semillon",
-        "Tempranillo",  # NOTE: Syrah is removed currently
-        "Viognier",
-        "Zinfandel",
-    ],
-    "grape_coldhardiness": [
-        "Barbera",
-        "Cabernet_Franc",  # Removed Alvarinho, Auxerrois, Melon, Aligote,
-        "Cabernet_Sauvignon",
-        "Chardonnay",
-        "Chenin_Blanc",
-        "Concord",
-        "Gewurztraminer",
-        "Grenache",  # Green_Veltliner Dolcetto is also absent as no valid years
-        "Lemberger",
-        "Malbec",
-        "Merlot",
-        "Mourvedre",
-        "Nebbiolo",  # Muscat_Blanc
-        "Pinot_Gris",
-        "Riesling",  # Petit Verdot Pinot_Blanc Pinot_Noir
-        "Sangiovese",
-        "Sauvignon_Blanc",
-        "Semillon",
-        "Syrah",  # Tempranillo
-        "Viognier",
-        "Zinfandel",
-    ],
-    "wofost": [
-        "Winter_Wheat_101",
-        "Winter_Wheat_102",
-        "Winter_Wheat_103",
-        "Winter_Wheat_104",
-        "Winter_Wheat_105",
-        "Winter_Wheat_106",
-        "Winter_Wheat_107",
-        "Bermude",
-        "Apache",
-    ],
-    "wofost_pheno": [
-        "Winter_Wheat_101",
-        "Winter_Wheat_102",
-        "Winter_Wheat_103",
-        "Winter_Wheat_104",
-        "Winter_Wheat_105",
-        "Winter_Wheat_106",
-        "Winter_Wheat_107",
-        "Bermude",
-        "Apache",
-    ],
+    "grape_phenology": np.array(
+        [
+            "Aligote",
+            "Alvarinho",
+            "Auxerrois",
+            "Barbera",
+            "Cabernet_Franc",
+            "Cabernet_Sauvignon",
+            "Chardonnay",
+            "Chenin_Blanc",
+            "Concord",
+            "Durif",
+            "Gewurztraminer",
+            "Green_Veltliner",
+            "Grenache",
+            "Lemberger",
+            "Malbec",
+            "Melon",
+            "Merlot",
+            "Mourvedre",
+            "Muscat_Blanc",
+            "Nebbiolo",
+            "Petit_Verdot",
+            "Pinot_Blanc",
+            "Pinot_Gris",
+            "Pinot_Noir",
+            "Riesling",
+            "Sangiovese",
+            "Sauvignon_Blanc",
+            "Semillon",
+            "Tempranillo",
+            "Viognier",
+            "Zinfandel",
+        ],
+        dtype=str,
+    ),
+    "grape_coldhardiness": np.array(
+        [
+            "Barbera",
+            "Cabernet_Franc",
+            "Cabernet_Sauvignon",
+            "Chardonnay",
+            "Chenin_Blanc",
+            "Concord",
+            "Gewurztraminer",
+            "Grenache",
+            "Lemberger",
+            "Malbec",
+            "Merlot",
+            "Mourvedre",
+            "Nebbiolo",
+            "Pinot_Gris",
+            "Riesling",
+            "Sangiovese",
+            "Sauvignon_Blanc",
+            "Semillon",
+            "Syrah",
+            "Viognier",
+            "Zinfandel",
+        ],
+        dtype=str,
+    ),
+    "wofost": np.array(
+        [
+            "Winter_Wheat_101",
+            "Winter_Wheat_102",
+            "Winter_Wheat_103",
+            "Winter_Wheat_104",
+            "Winter_Wheat_105",
+            "Winter_Wheat_106",
+            "Winter_Wheat_107",
+            "Bermude",
+            "Apache",
+        ],
+        dtype=str,
+    ),
+    "wofost_pheno": np.array(
+        [
+            "Winter_Wheat_101",
+            "Winter_Wheat_102",
+            "Winter_Wheat_103",
+            "Winter_Wheat_104",
+            "Winter_Wheat_105",
+            "Winter_Wheat_106",
+            "Winter_Wheat_107",
+            "Bermude",
+            "Apache",
+        ],
+        dtype=str,
+    ),
 }
 
 
@@ -148,7 +158,7 @@ def per_task_param_loader(config: dict, params: list, cultivar: str = None) -> t
         raise Exception(f"Unable to load file: {fname}. Check that file exists")
     init_params = []
     for n in CROP_NAMES[model_name]:
-        if cultivar != "Multi" and n != cultivar:
+        if cultivar != "All" and n != cultivar:
             continue
         try:
             cv = model["ModelParameters"]["Sets"][n]
@@ -191,41 +201,6 @@ def get_models(folder_path: str) -> list[type]:
             constructors = constructors | constr
 
     return constructors
-
-
-def load_data(path: str) -> list[pd.DataFrame]:
-    """
-    Load data from a pickle file
-    """
-    with open(path, "rb") as f:
-        data = pickle.load(f)
-    for d in data:
-        d.rename(columns={"DATE": "DAY"}, inplace=True)
-    return data
-
-
-def load_data_multi(path: str, cultivars: list[str]) -> list[pd.DataFrame]:
-    """
-    Load pickle files for cultivar data
-    given the passed cultivars
-    """
-    data = []
-    for i, c in enumerate(cultivars):
-        try: 
-            with open(f"{path}{c}.pkl", "rb") as f:
-                cult_data = pickle.load(f)
-            print(f'cultivar: {c}')
-        except:
-            print(f"no cultivar found: {c}")
-            continue
-        print(cult_data)
-        print(type(cult_data))
-        for cult in cult_data:
-            cult["CULTIVAR"] = i
-            data.append(cult)
-    for d in data:
-        d.rename(columns={"DATE": "DAY"}, inplace=True)
-    return data
 
 
 def int_to_day_of_year(day_number: int) -> datetime.datetime:

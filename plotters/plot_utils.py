@@ -122,7 +122,6 @@ def gen_all_data_and_plot(
     config: DictConfig,
     fpath: str,
     args: Namespace,
-    model_name: str,
     calibrator: nn.Module,
     true_data: list[np.ndarray],
     output_data: list[np.ndarray],
@@ -162,7 +161,7 @@ def gen_all_data_and_plot(
         output_arr.append(output)
         weather = unnormalize(calibrator.data[name][i : i + calibrator.batch_size], calibrator.drange).cpu().numpy()
 
-        if model_name == "grape_phenology":
+        if config.dtype == "grape_phenology":
             inds = plot_output_phenology(
                 config,
                 fpath,
@@ -183,7 +182,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif model_name == "grape_coldhardiness":
+        elif config.dtype == "grape_coldhardiness":
             inds = plot_output_coldhardiness(
                 config,
                 fpath,
@@ -194,7 +193,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif model_name == "wofost" or model_name == "wofost_pheno":
+        elif config.dtype == "wofost" or config.dtype == "wofost_pheno":
             inds = plot_output_wofost(
                 config,
                 fpath,

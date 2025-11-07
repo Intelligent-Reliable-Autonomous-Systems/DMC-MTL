@@ -49,7 +49,6 @@ def main():
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(f"{fpath}", name=args.rnn_name)
     calibrator.eval()
-    model_name, _ = config.PConfig.model_parameters.split(":")
 
     # Setup Storage
     true_data = [[], [], []]
@@ -71,7 +70,6 @@ def main():
         config,
         fpath,
         args,
-        model_name,
         calibrator,
         true_data,
         output_data,
@@ -85,7 +83,6 @@ def main():
         config,
         fpath,
         args,
-        model_name,
         calibrator,
         true_data,
         output_data,
@@ -100,7 +97,6 @@ def main():
             config,
             fpath,
             args,
-            model_name,
             calibrator,
             true_data,
             output_data,

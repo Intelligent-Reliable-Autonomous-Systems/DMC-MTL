@@ -13,7 +13,7 @@ log_path: /_runs/PaperExperiments/wofost/ParamMTL/
 run_name: param_mtl
 seed: 0
 # Data use
-cultivar: Multi
+cultivar: All
 withold_cultivars: {"Winter_Wheat_101":2,"Winter_Wheat_102":2,"Winter_Wheat_103":2,"Winter_Wheat_104":2,"Winter_Wheat_105":2,"Winter_Wheat_106":2,"Winter_Wheat_107":2,"Bermude":2,"Apache":2}
 data_fpath: _data/processed_data/
 # Parameters 

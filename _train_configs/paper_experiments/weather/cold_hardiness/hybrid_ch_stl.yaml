@@ -13,7 +13,7 @@ log_path: /_runs/PaperExperiments/Weather/ColdHardiness/HybridCHFF/STL/
 
 synth_data: synth
 run_name: ch_stl
-check_freq: 1
+
 seed: 0
 # Data use
 cultivar: Aligote

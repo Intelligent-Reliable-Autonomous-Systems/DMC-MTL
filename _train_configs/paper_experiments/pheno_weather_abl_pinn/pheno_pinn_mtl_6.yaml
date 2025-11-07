@@ -11,7 +11,7 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/Phenology_Ablation/Phenology_Ablation_PINN/PINNMTL6/
 run_name: pinn_mtl
-check_freq: 1
+
 seed: 0
 # Data use
 cultivar: Multi

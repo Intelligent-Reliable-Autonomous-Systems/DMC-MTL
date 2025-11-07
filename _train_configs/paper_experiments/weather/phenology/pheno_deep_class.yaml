@@ -12,7 +12,7 @@ PConfig:
 log_path: /_runs/PaperExperiments/Weather/Phenology/DeepClass/
 synth_data: synth
 run_name: class_mtl
-check_freq: 1
+
 seed: 0
 # Data use
 cultivar: Multi

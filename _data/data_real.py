@@ -16,18 +16,33 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cultivar", default="Aligote", type=str, help="Path to Config")
     parser.add_argument("--name", default="grape_phenology", type=str)
+    parser.add_argument("--region", default="WA", type=str)
+    parser.add_argument("--site", default="Prosser", type=str)
+    parser.add_argument("--station", default="Roza2", type=str)
+    parser.add_argument("--path", type=str)
     args = parser.parse_args()
 
     if args.name == "grape_phenology":
 
-        data, _ = ld.load_and_process_data_phenology(args.cultivar)
-        with open(f"_data/processed_data/{args.name}_{args.cultivar}.pkl", "wb") as f:
+        data, _ = ld.load_and_process_data_phenology(args.cultivar, args.site)
+
+        with open(
+            f"_data/processed_data/{args.name}/{args.region}/{args.station}/{args.site}/{args.region}_{args.site}_{args.name}_{args.cultivar.replace(' ', '_')}.pkl",
+            "wb",
+        ) as f:
             pickle.dump(data, f)
+
         p_str = f"{args.cultivar}, {len(data)}"
 
     elif args.name == "grape_coldhardiness":
-        data, _ = ld.load_and_process_data_coldhardiness(args.cultivar)
-        with open(f"_data/processed_data/{args.name}_{args.cultivar}.pkl", "wb") as f:
+        if args.region in ["WA"]:
+            data, _ = ld.load_and_process_data_coldhardiness(args.cultivar, args.site)
+        else:
+            data, _ = ld.load_and_process_ca_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
+        with open(
+            f"_data/processed_data/{args.name}/{args.region}/{args.station}/{args.site}/{args.region}_{args.site}_{args.name}_{args.cultivar.replace(' ', '_')}.pkl",
+            "wb",
+        ) as f:
             pickle.dump(data, f)
         ch = 0
         for d in data:

@@ -11,7 +11,7 @@ PConfig:
 # Log configuration
 log_path: /_runs/PaperExperiments/ColdHardiness/ParamMTLAdd/
 run_name: paramMTL
-check_freq: 1
+
 seed: 0
 # Data use
 cultivar: Multi

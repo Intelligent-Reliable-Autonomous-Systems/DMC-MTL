@@ -10,7 +10,7 @@ PConfig:
     output_vars: [LTE50]
 log_path: /_data/
 run_name: synth_data
-check_freq: 1
+
 seed: 0
 cultivar: Barbera
 withold_cultivars: {}

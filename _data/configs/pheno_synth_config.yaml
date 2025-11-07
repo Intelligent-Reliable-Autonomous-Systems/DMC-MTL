@@ -10,7 +10,7 @@ PConfig:
     output_vars: [PHENOLOGY]
 log_path: /_data/
 run_name: synth_data
-check_freq: 1
+
 seed: 0
 cultivar: Aligote
 withold_cultivars: {}

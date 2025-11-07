@@ -162,70 +162,69 @@ class BaseRNN(BaseModel):
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
 
             # Evaluation
-            if epoch % self.config.check_freq == 0:
-                eval_loss = 0
-                eval_avg = torch.zeros(size=(4,)).to(self.device)
+            eval_loss = 0
+            eval_avg = torch.zeros(size=(4,)).to(self.device)
 
-                for j in range(0, len(self.data[test_name]), self.batch_size):
-                    self.optimizer.zero_grad()
-                    batch_data = self.data[test_name][j : j + self.batch_size]
-                    batch_dates = self.dates[test_name][j : j + self.batch_size]
-                    batch_cultivars = (
-                        self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
-                    )
-                    eval_target = self.val[test_name][j : j + self.batch_size]
-                    eval_output, _, eval_model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
-
-                    # Compute PINN Loss
-                    if self.config.DConfig.type == "PINN":
-                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                            eval_output_loss = self.loss_func(
-                                eval_output.view(-1, output.size(-1)),
-                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                            )
-                            eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
-
-                            eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
-                        else:
-                            eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                            eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
-
-                        eval_mask = ~torch.isnan(eval_target)
-                        eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
-                        eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
-
-                        eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
-                    else:
-                        # Handle Cross Entropy Loss by flattening series
-                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                            eval_loss = self.loss_func(
-                                eval_output.view(-1, eval_output.size(-1)),
-                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                            )
-                            eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
-                        else:
-                            eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                        eval_mask = ~torch.isnan(eval_target)
-                        eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
-                        eval_loss += eval_loss.item()
-
-                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
-                    eval_avg[:3] += avg_[1:-1]
-                    eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-
-                log_training(
-                    self,
-                    writer,
-                    fpath,
-                    epoch,
-                    train_loss,
-                    eval_loss,
-                    train_avg,
-                    eval_avg,
-                    grad,
+            for j in range(0, len(self.data[test_name]), self.batch_size):
+                self.optimizer.zero_grad()
+                batch_data = self.data[test_name][j : j + self.batch_size]
+                batch_dates = self.dates[test_name][j : j + self.batch_size]
+                batch_cultivars = (
+                    self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                 )
+                eval_target = self.val[test_name][j : j + self.batch_size]
+                eval_output, _, eval_model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
 
-            self.scheduler.step(float(eval_loss if self.config.val_set else train_loss))
+                # Compute PINN Loss
+                if self.config.DConfig.type == "PINN":
+                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                        eval_output_loss = self.loss_func(
+                            eval_output.view(-1, output.size(-1)),
+                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                        )
+                        eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
+
+                        eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                    else:
+                        eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                        eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
+
+                    eval_mask = ~torch.isnan(eval_target)
+                    eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
+                    eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
+
+                    eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
+                else:
+                    # Handle Cross Entropy Loss by flattening series
+                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                        eval_loss = self.loss_func(
+                            eval_output.view(-1, eval_output.size(-1)),
+                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                        )
+                        eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
+                    else:
+                        eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                    eval_mask = ~torch.isnan(eval_target)
+                    eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
+                    eval_loss += eval_loss.item()
+
+                avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
+                eval_avg[:3] += avg_[1:-1]
+                eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
+
+            log_training(
+                self,
+                writer,
+                fpath,
+                epoch,
+                train_loss,
+                eval_loss,
+                train_avg,
+                eval_avg,
+                grad,
+            )
+
+        self.scheduler.step(float(eval_loss if self.config.val_set else train_loss))
 
 
 class ParamRNN(BaseRNN):

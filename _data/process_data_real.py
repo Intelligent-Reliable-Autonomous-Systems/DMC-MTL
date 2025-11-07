@@ -14,10 +14,10 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from model_engine.inputs.weather_util import daylength
+import argparse
 
 # Absolute path of .csv files relative to this directory
-DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/"
-DATASET_NO_LINEAR_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/2024_no_linear/"
+DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/Frost_Mitigation_Datasets/ColdHardiness/Grapes/Processed/WashingtonState/Prosser/Python/New/"
 
 # Specific Names
 PHENO_STAGES = [
@@ -64,14 +64,14 @@ LAT = 46
 LON = -120
 
 
-def load_and_process_data_phenology(cultivar: str) -> np.ndarray:
+def load_and_process_data_phenology(cultivar: str, location: str) -> np.ndarray:
     """
     Load and process AgAid GitHub repository data
     Do not assume dormancy data is available
     Include reduced years by not ommitting certain weather variables
     """
 
-    df = pd.read_csv(f"{DATASET_NO_LINEAR_DIRECTORY}" + f"ColdHardiness_Grape_{cultivar}.csv")
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{location}_{cultivar}.csv")
     # Remove all grape stages we are not interested in predicting
     df.loc[~df["PHENOLOGY"].isin(PHENO_STAGES), "PHENOLOGY"] = np.nan
 
@@ -265,14 +265,14 @@ def load_and_process_data_phenology(cultivar: str) -> np.ndarray:
         return np_arr_df, np_arr_stages
 
 
-def load_and_process_data_coldhardiness(cultivar: str) -> np.ndarray:
+def load_and_process_data_coldhardiness(cultivar: str, location) -> np.ndarray:
     """
     Load and process AgAid GitHub repository data for cold hardiness
     Do not assume dormancy data is available
     Includes relevant feature variables
     """
 
-    df = pd.read_csv(f"{DATASET_NO_LINEAR_DIRECTORY}" + f"ColdHardiness_Grape_{cultivar}.csv")
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{location}_{cultivar}.csv")
 
     # Drop all columns we don't care about
     df.drop(
@@ -385,6 +385,69 @@ def load_and_process_data_coldhardiness(cultivar: str) -> np.ndarray:
         return np_arr_df, np_arr_stages
 
 
+def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str, station: str) -> None:
+    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ca_ch_weather_data/"
+    if region == "BCOV":
+        LTE_VALS = ["LTE50"]
+    elif region == "ONNP":
+        LTE_VALS = ["LTE50", "LTE10", "LTE90"]
+    else:
+        raise Exception(f"Unexpected region `{region}`")
+
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{region}{site}_{cultivar}.csv")
+
+    df_list = []
+    stages_list = []
+
+    ys = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == 1).flatten()
+    ye = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == -1).flatten()
+
+    for i in range(len(ys)):
+        # Get the slices of each individual year
+        if i >= len(ye):
+            year_df = df[ys[i] :].copy().reset_index(drop=True)
+        else:
+            year_df = df[ys[i] : ye[i]].copy().reset_index(drop=True)
+
+        # Interpolate passed variables
+        year_df, percent_missing = interpolate_data(
+            year_df,
+            df,
+            cols=[
+                "TEMP",
+                "TMAX",
+                "TMIN",
+                "RAIN",
+            ],
+            max_days=float("inf"),
+        )
+
+        # If too much missing weather data, continue
+        if percent_missing >= 0.1:
+            continue
+
+        # If there are any nan values in the weather throw out the entire year
+        if year_df.drop(columns=LTE_VALS, inplace=False).isnull().any().any():
+            continue
+        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            continue
+        # Otherwise append
+        df_list.append(year_df)
+    for yr_df in df_list:
+        yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY"], inplace=True)
+
+    if len(df_list) != 1:
+        return np.array(df_list, dtype=object), np.array(stages_list, dtype=object)
+    else:
+        np_arr_df = np.empty(len(df_list), dtype=object)
+        np_arr_stages = np.empty(len(stages_list), dtype=object)
+        for i, df in enumerate(df_list):
+            np_arr_df[i] = df
+        for i, s in enumerate(stages_list):
+            np_arr_stages[i] = s
+        return np_arr_df, np_arr_stages
+
+
 def chunk_consecutive(arr: np.ndarray) -> list[list[int]]:
     """
     Chunks data into consecutive missing value arrays
@@ -413,7 +476,8 @@ def interpolate(df: pd.DataFrame, full_df: pd.DataFrame, col: str, inds: np.ndar
     # At beginning of array, can't interpolate data
     if start_inds[0] == 0:
         return
-
+    if start_inds[-1] + 1 == len(full_df):
+        return
     # Get the starting and ending values
     start = full_df.loc[start_inds[0] - 1, col]
     end = full_df.loc[start_inds[-1] + 1, col]

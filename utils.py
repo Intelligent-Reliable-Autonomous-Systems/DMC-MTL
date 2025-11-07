@@ -81,6 +81,14 @@ class Args:
     withold_cultivars: Optional[dict] = None
     """Path to real data"""
     data_fpath: Optional[str] = True
+    """Data type (cold-hardiness, phenology, wheat)"""
+    dtype: Optional[str] = None
+    """Region of data"""
+    region: Optional[str] = None
+    """Weather station for data"""
+    station: Optional[str] = None
+    """Site of data"""
+    site: Optional[str] = None
     """If using synthetic data"""
     synth_data: Optional[str] = None
     """If using a validation set or not"""
@@ -93,8 +101,6 @@ class Args:
     log_path: Optional[str] = None
     """Run name for experiment"""
     run_name: Optional[str] = None
-    """Checkpoint freqency"""
-    check_freq: Optional[int] = None
     """Seed"""
     seed: Optional[int] = None
     """Model fpath"""
@@ -148,9 +154,9 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     except:
         raise Exception(f"Incorrectly specified model_parameters file `{config.PConfig.model_parameters}`")
     if config.synth_data is not None:
-        path = f"{config.data_fpath}{config.synth_data}_{model_name}_"
+        path = f"{config.data_fpath}{config.dtype}/synth/{config.synth_data}_{model_name}_"
     else:
-        path = f"{config.data_fpath}{model_name}_"
+        path = f"{config.data_fpath}{config.dtype}/{config.region}/{config.station}/{config.site}/{config.region}_{config.site}_{model_name}_"
 
     if config.cultivar == "Multi":
         data = util.load_data_multi(path, CROP_NAMES[model_name])

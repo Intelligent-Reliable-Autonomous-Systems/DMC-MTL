@@ -20,6 +20,10 @@ class BaseModule(nn.Module):
         self.output_dim = model.get_output_dim(c)
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
 
+        orig = torch.unique(torch.concatenate(list(model.cultivars.values()),axis=0)).to(torch.int)
+        self.mapping = torch.zeros((int(orig.max()) + 1,)).to(torch.int).to(model.device)
+        self.mapping[orig] = torch.arange(len(orig)).to(torch.int).to(model.device)
+
     def get_init_state(self, batch_size: int = 1) -> torch.Tensor:
 
         return self.h0.repeat(1, batch_size, 1)
@@ -35,7 +39,6 @@ class BaseModule(nn.Module):
             nn.init.ones_(m.weight)
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
-
 
 class FCGRU(BaseModule):
     """
@@ -75,7 +78,7 @@ class FCGRU(BaseModule):
                 params[i] = self.param_heads[0](gru_out[i])
         else:
             for i in range(input.size(0)):
-                params[i] = self.param_heads[int(cultivars[i][0])](gru_out[i])
+                params[i] = self.param_heads[self.mapping[cultivars[i][0].to(torch.int)]](gru_out[i])
 
         return params, hn
 
@@ -105,8 +108,7 @@ class EmbeddingFCGRU(BaseModule):
         cultivars: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        embed = self.embedding_layer(cultivars.flatten().to(torch.long))
+        embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
         gru_input = self.embed_op(embed, input)
         x = self.fc1(gru_input)
         x = self.fc2(x)

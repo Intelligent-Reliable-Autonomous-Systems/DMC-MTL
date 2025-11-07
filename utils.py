@@ -204,7 +204,6 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     for d in data:
         d.rename(columns={"DATE": "DAY"}, inplace=True)
 
-    print(data)
     return data
 
 

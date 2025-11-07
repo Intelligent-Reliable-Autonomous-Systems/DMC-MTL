@@ -141,7 +141,7 @@ def setup_logging(args: Namespace) -> tuple[SummaryWriter, str]:
         "|param|value|\n|-|-|\n%s"
         % ("\n".join([f"|{key}|{value}|" for key, value in OmegaConf.to_container(args).items()])),
     )
-    return writer, run_name
+    return writer, run_name, log_path
 
 
 def log_training(

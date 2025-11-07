@@ -76,12 +76,10 @@ class BaseRNN(BaseModel):
 
     def optimize(self) -> None:
 
-        writer, run_name = setup_logging(self.config)
+        writer, run_name, log_path = setup_logging(self.config)
+        os.makedirs(log_path, exist_ok=True)
 
-        fpath = f"{os.getcwd()}{self.config.log_path}/{self.config.cultivar}/{run_name}"
-        os.makedirs(fpath, exist_ok=True)
-
-        with open(f"{fpath}/config.yaml", "w", encoding="utf-8") as fp:
+        with open(f"{log_path}/config.yaml", "w", encoding="utf-8") as fp:
             OmegaConf.save(config=self.config, f=fp.name)
         fp.close()
 

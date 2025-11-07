@@ -102,9 +102,8 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         train_inds = np.empty(shape=(0,))
         test_inds = np.empty(shape=(0,))
         cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
-
+        
         for c, v in model.config.withold_cultivars.items():
-
             cultivar_inds = np.argwhere(np.where(CROP_NAMES[model.config.dtype] == c)[0][0] == cultivar_data).flatten()
             np.random.shuffle(cultivar_inds)
             test_inds = np.concatenate((test_inds, cultivar_inds[:v])).astype(np.int32)

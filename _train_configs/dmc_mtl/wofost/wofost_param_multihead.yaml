@@ -24,7 +24,7 @@ params_range: [[12,18], [500, 1500], [500, 1500], [0,25], [0,100], [.5, .8], [0.
 DConfig: 
     type: WOFOSTParam
     arch: WOFOSTMultiHeadFCGRU
-    hidden_dim: 1024
+    hidden_dim: 64
     embed_op: mult
     loss_func: MSELoss
     learning_rate: .0002

@@ -27,7 +27,7 @@ DConfig:
     type: Param
     arch: EmbedFCGRU
     embed_op: add
-    hidden_dim: 1024
+    hidden_dim: 64
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95

@@ -86,6 +86,10 @@ class Args:
     run_name: Optional[str] = None
     """Seed"""
     seed: Optional[int] = None
+    """Amount of years to cap train set per cultivar"""
+    data_cap: Optional[int] = None
+    """How many cultivars of 'most data' to use"""
+    prim_cultivars: Optional[int] = None
     """Path to real data"""
     data_fpath: Optional[str] = True
     """Data type (cold-hardiness, phenology, wheat)"""
@@ -104,7 +108,8 @@ class Args:
     params: Optional[list] = None
     """Ranges for each parameter to predict"""
     params_range: Optional[list] = None
-
+    """Parameters smoothing coefficient"""
+    param_scale: Optional[float] = None
 
 def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
     """

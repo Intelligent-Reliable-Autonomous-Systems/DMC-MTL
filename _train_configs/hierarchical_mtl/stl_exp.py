@@ -50,6 +50,8 @@ def main():
     cultivars = np.append(cultivars, ["All"], axis=0)
     for seed in range(5):
         for cult in cultivars:
+            if cult in ["Cabernet_Sauvignon", "Cabernet_Franc"]:
+                continue
             for region in ["BCOV", "ONNP", "WA"]:
                 stations = get_subfolders(f"{args.dpath}/{region}/")
                 for station in stations:

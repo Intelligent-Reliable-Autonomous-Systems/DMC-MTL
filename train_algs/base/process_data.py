@@ -69,6 +69,12 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     test_inds = np.empty(shape=(0,))
     cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
 
+    c_counts = []
+    for c in range(len(CROP_NAMES[model.config.dtype])):
+        c_counts.append(len(np.argwhere(c == cultivar_data).flatten()))
+    
+    c_inds = np.argsort(c_counts)[::-1][:model.config.prim_cultivars:] if model.config.prim_cultivars else np.array([])
+
     for c in range(len(CROP_NAMES[model.config.dtype])):
         cultivar_inds = np.argwhere(c == cultivar_data).flatten()
         if len(cultivar_inds) < 3:
@@ -77,8 +83,15 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
 
         np.random.shuffle(cultivar_inds)
         test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
+        
+        if model.config.data_cap is None or c in c_inds:
+            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+        elif len(cultivar_inds[x:]) <= model.config.data_cap:
+            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+        else:
+            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:model.config.data_cap])).astype(np.int32)
 
-    train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
+    #train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
     np.random.shuffle(train_inds)
     np.random.shuffle(test_inds)
     model.data = {
@@ -112,6 +125,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     if len(model.data["test"]) < 1:
         raise Exception("Insuffient per-cultivar data to build test set")
 
+    print(len(model.data["train"]), len(model.data["test"]))
 
 def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""

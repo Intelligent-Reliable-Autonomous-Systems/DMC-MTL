@@ -1,0 +1,23 @@
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.2 --seed 0
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.2 --seed 1
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.2 --seed 2
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.2 --seed 3
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.2 --seed 4
+
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.1 --seed 0
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.1 --seed 1
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.1 --seed 2
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.1 --seed 3
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.1 --seed 4
+
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 0
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 1
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 2
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 3
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 4
+
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.001 --seed 0
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.001 --seed 1
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.001 --seed 2
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.001 --seed 3
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.001 --seed 4

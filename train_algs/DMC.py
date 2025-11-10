@@ -273,7 +273,8 @@ class ParamRNN(BaseRNN):
                 torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1), hn=hn_cn, cultivars=cultivars
             )
 
-            params_predict = self.param_cast(params_predict)
+            params_predict = self.param_cast(params_predict, prev_params=batch_params)
+            batch_params = params_predict.detach()
             self.model.set_model_params(params_predict, self.params)
             output = self.model.run(dates=dates[:, i], cultivars=cultivars)
 

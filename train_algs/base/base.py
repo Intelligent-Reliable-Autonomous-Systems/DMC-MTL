@@ -159,7 +159,7 @@ class BaseModel(nn.Module):
         """
         extra_feat = (
             0
-            if config.DConfig.type in ["Deep", "Hybrid", "NoObsParam", "Residual"]
+            if config.DConfig.type in ["Deep", "Hybrid", "NoObsParam", "Residual", "WindowParam"]
             else len(config.PConfig.output_vars)
         )
         extra_feat = (

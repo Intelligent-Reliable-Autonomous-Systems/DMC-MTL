@@ -68,9 +68,11 @@ class FCGRU(BaseModule):
     def forward(
         self, input: torch.Tensor = None, hn: torch.Tensor = None, cultivars: torch.Tensor = None, **kwargs
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
         x = self.fc1(input)
         x = self.fc2(x)
-        _, hn = self.rnn(x.unsqueeze(1), hn)
+        _, hn = self.rnn(x, hn)
         out = F.relu(hn)
         out = F.relu(self.fc3(out)).squeeze(0)
 
@@ -111,14 +113,19 @@ class EmbeddingFCGRU(BaseModule):
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
+        
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        embed = embed.unsqueeze(1).expand_as(input)
         gru_input = self.embed_op(embed, input)
         x = self.fc1(gru_input)
         x = self.fc2(x)
-        _, hn = self.rnn(x.unsqueeze(1), hn)
+        _, hn = self.rnn(x, hn)
         out = F.relu(hn)
         out = F.relu(self.fc3(out))
         params = self.hidden_to_params(out).squeeze(0)
-        
+
         return params, hn
 
 
@@ -156,10 +163,10 @@ class EmbeddingFCFF(BaseModule):
         gru_input = self.embed_op(embed, input)
         x = self.fc1(gru_input)
         x = self.fc2(x)
-        ff_out = self.rnn(x.unsqueeze(1))
+        ff_out = self.rnn(x)
         ff_out = F.relu(ff_out)
         ff_out = F.relu(self.fc3(ff_out))
-        params = self.hidden_to_params(ff_out).squeeze(1)
+        params = self.hidden_to_params(ff_out)
 
         return params, None
 
@@ -189,10 +196,12 @@ class OneHotEmbeddingFCGRU(BaseModule):
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
 
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
         gru_input = torch.concatenate((cultivars, input), dim=-1)
         x = self.fc1(gru_input)
         x = self.fc2(x)
-        _, hn = self.rnn(x.unsqueeze(1), hn)
+        _, hn = self.rnn(x, hn)
         out = F.relu(hn)
         out = F.relu(self.fc3(out))
         params = self.hidden_to_params(out).squeeze(0)
@@ -225,10 +234,14 @@ class DeepEmbeddingGRU(BaseModule):
     ) -> tuple[torch.Tensor, torch.Tensor]:
 
         embed = self.embedding_layer(cultivars.flatten().to(torch.long))
-        gru_input = gru_input = self.embed_op(embed, input)
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+        embed = embed.unsqueeze(1).expand_as(input)
+        
+        gru_input = self.embed_op(embed, input)
         x = F.relu(self.fc1(gru_input))
         x = F.relu(self.fc2(x))
-        _, hn = self.rnn(x.unsqueeze(1), hn)
+        _, hn = self.rnn(x, hn)
         out = F.relu(self.fc3(hn))
         output = self.hidden_to_output(out).squeeze(0)
 
@@ -263,11 +276,14 @@ class GHCNDeepEmbeddingGRU(BaseModule):
     ) -> tuple[torch.Tensor, torch.Tensor]:
 
         embed = self.embedding_layer(cultivars.flatten().to(torch.long))
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+        embed = embed.unsqueeze(1).expand_as(input)
         gru_input = self.embed_op(embed, input)
 
         x = F.relu(self.fc1(gru_input))
         x = F.relu(self.fc2(x))
-        _, hn = self.rnn(x.unsqueeze(1), hn)
+        _, hn = self.rnn(x, hn)
         out = F.relu(self.fc3(hn))
         output1 = self.hidden_to_output_1(out).squeeze(1)
         output2 = self.hidden_to_output_2(out).squeeze(1)

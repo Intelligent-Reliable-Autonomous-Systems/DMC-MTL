@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
     output_vars: [PHENOLOGY]
 # Log configuration
-log_path: /_runs/PaperExperiments/Phenology/ParamWindowMTL/
+log_path: /_runs/PaperExperiments/PhenologyWindow/ParamWindowMTL10/
 run_name: window_mtl
 seed: 0
 # Data use
@@ -33,4 +33,4 @@ DConfig:
     lr_factor: 0.95
     batch_size: 12
     epochs: 400
-    window_size: 15
+    window_size: 10

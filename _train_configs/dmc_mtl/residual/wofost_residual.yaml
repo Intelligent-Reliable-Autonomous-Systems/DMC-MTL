@@ -17,7 +17,7 @@ cultivar: All
 
 data_fpath: _data/processed_data/
 synth_data: synth
-dtype: wofost
+dtype: wofost_
 # Parameters
 params: ["DLO", "TSUM1", "TSUM2", "VERNBASE", "VERNSAT", "CVO", "RMO"]
 params_range: [[12,18], [500, 1500], [500, 1500], [0,25], [0,100], [.5, .8], [0.05, 0.2]]

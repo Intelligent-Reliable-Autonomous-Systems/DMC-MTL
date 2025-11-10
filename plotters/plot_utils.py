@@ -161,7 +161,7 @@ def gen_all_data_and_plot(
         output_arr.append(output)
         weather = unnormalize(calibrator.data[name][i : i + calibrator.batch_size], calibrator.drange).cpu().numpy()
 
-        if config.dtype == "grape_phenology":
+        if "grape_phenology" in config.dtype:
             inds = plot_output_phenology(
                 config,
                 fpath,

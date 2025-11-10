@@ -72,9 +72,9 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     for c in range(len(CROP_NAMES[model.config.dtype])):
         cultivar_inds = np.argwhere(c == cultivar_data).flatten()
         if len(cultivar_inds) < 3:
-            continue
-        else:
             print(f"Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}")
+            continue
+
         np.random.shuffle(cultivar_inds)
         test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 

@@ -49,7 +49,7 @@ def main():
     )
     args = parser.parse_args()
 
-    num_cultivars = len(CROP_NAMES["grape_phenology"])
+    num_cultivars = len(CROP_NAMES["grape_phenology_"])
 
     # Load Models
     agg_cultivar_models = ["ParamMTL"]

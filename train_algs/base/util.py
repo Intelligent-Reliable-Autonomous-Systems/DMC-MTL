@@ -182,7 +182,7 @@ def log_training(
     writer.add_scalar("learning_rate", calibrator.optimizer.param_groups[0]["lr"], epoch)
     writer.add_scalar("weight_norm", weight_norm, epoch)
 
-    if calibrator.config.dtype == "grape_phenology":
+    if "grape_phenology" in calibrator.config.dtype:
         if calibrator.config.DConfig.loss_func == "BudbreakMSELoss":
             best_avg = eval_avg[0]
         elif calibrator.config.DConfig.loss_func == "BloomMSELoss":
@@ -211,7 +211,7 @@ def log_training(
     p_str += f"Train loss: {train_loss}\n"
     p_str += f"Val loss: {eval_loss}\n"
     p_str += f"Model Grad Norm: {grad/len(calibrator.data['train'])}\n"
-    if calibrator.config.dtype == "grape_phenology":
+    if "grape_phenology" in calibrator.config.dtype:
         p_str += f"Train RMSE: {np.round(train_avg.cpu().numpy(),decimals=2)}\n"
         p_str += f"Val RMSE: {np.round(eval_avg.cpu().numpy(),decimals=2)}\n"
         p_str += f"Best Val RMSE: {np.round(calibrator.best_rmse.cpu().numpy(),decimals=2)}\n"

@@ -135,13 +135,11 @@ class EmbeddingFCFF(BaseModule):
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.Sequential(
-            nn.Linear(in_features=self.input_dim, out_features=self.hidden_dim),
-            nn.ReLU(),
             nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim),
             nn.ReLU(),
             nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim),
             nn.ReLU(),
-            nn.Linear(in_features=self.hidden_dim, out_features=self.output_dim),
+            nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim),
         )
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
@@ -151,7 +149,6 @@ class EmbeddingFCFF(BaseModule):
     def forward(
         self,
         input: torch.Tensor = None,
-        hn: torch.Tensor = None,
         cultivars: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
@@ -159,12 +156,12 @@ class EmbeddingFCFF(BaseModule):
         gru_input = self.embed_op(embed, input)
         x = self.fc1(gru_input)
         x = self.fc2(x)
-        gru_out, hn = self.rnn(x.unsqueeze(1), hn)
-        gru_out = F.relu(gru_out)
-        gru_out = F.relu(self.fc3(gru_out))
-        params = self.hidden_to_params(gru_out).squeeze(1)
+        ff_out = self.rnn(x.unsqueeze(1))
+        ff_out = F.relu(ff_out)
+        ff_out = F.relu(self.fc3(ff_out))
+        params = self.hidden_to_params(ff_out).squeeze(1)
 
-        return params, hn
+        return params, None
 
 
 class OneHotEmbeddingFCGRU(BaseModule):

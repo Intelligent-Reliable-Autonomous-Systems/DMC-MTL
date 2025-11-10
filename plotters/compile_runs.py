@@ -45,17 +45,20 @@ def main():
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
+    config_dirs = find_config_yaml_dirs(args.start_dir)
+    dtype = config_dirs[0].dtype
+
     # Setup total storage
     all_avg_pheno = np.zeros((12, args.num_runs))
     all_avg_ch = np.zeros((3, args.num_runs))
     obs_avg_ch = np.zeros((3, args.num_runs, 250)) - 1
     all_avg_wf = np.zeros((3, args.num_runs))
-    all_cultivar_avg_pheno = np.zeros((len(CROP_NAMES["grape_phenology"]), 12, args.num_runs))
-    all_cultivar_avg_ch = np.zeros((len(CROP_NAMES["grape_coldhardiness"]), 3, args.num_runs))
-    obs_cultivar_avg_ch = np.zeros((len(CROP_NAMES["grape_coldhardiness"]), 3, args.num_runs, 250)) - 1
-    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost"]), 3, args.num_runs))
+    all_cultivar_avg_pheno = np.zeros((len(CROP_NAMES[dtype]), 12, args.num_runs))
+    all_cultivar_avg_ch = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs))
+    obs_cultivar_avg_ch = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs, 250)) - 1
+    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs))
 
-    config_dirs = find_config_yaml_dirs(args.start_dir)
+    
 
     for i, config in enumerate(config_dirs):
         print(config)
@@ -125,7 +128,7 @@ def main():
             )
 
         # Store data for averaging
-        if config.dtype == "grape_phenology":
+        if "grape_phenology" in config.dtype:
             train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
             test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
             val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -166,7 +169,7 @@ def main():
                 continue
             if len(true_cultivar_data[k][2]) == 0:
                 continue
-            if config.dtype == "grape_phenology":
+            if "grape_phenology" in config.dtype:
                 cultivar_train_avg_pheno, _ = compute_rmse_plot(
                     config,
                     true_cultivar_data[k][0],
@@ -218,7 +221,7 @@ def main():
                 all_cultivar_avg_wf[k, :, i] = np.array([cultivar_train_rmse, cultivar_val_rmse, cultivar_test_rmse])
     # Save Data
     prefix = args.synth_test + "_" if args.synth_test is not None else ""
-    if config.dtype == "grape_phenology":
+    if "grape_phenology" in config.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_pheno, f)
         f.close()

@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--station", default="Roza2", type=str)
     args = parser.parse_args()
 
-    if args.name == "grape_phenology":
+    if "grape_phenology" in args.name:
 
         data, _ = ld.load_and_process_data_phenology(args.cultivar, args.site)
 
@@ -33,7 +33,7 @@ def main():
 
         p_str = f"{args.cultivar}, {len(data)}"
 
-    elif args.name == "grape_coldhardiness":
+    elif "grape_coldhardiness" in args.name:
         if args.region in ["WA"]:
             data, _ = ld.load_and_process_data_coldhardiness(args.cultivar, args.site)
         else:

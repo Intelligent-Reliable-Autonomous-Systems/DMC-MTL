@@ -21,7 +21,7 @@ PHENOLOGY_INT = {"Ecodorm": 0, "Budbreak": 1, "Bloom": 2, "Veraison": 3, "Ripe":
 
 # Available cultivars for simulation
 CROP_NAMES = {
-    "grape_phenology": np.array(
+    "grape_phenology_": np.array(
         [
             "Aligote",
             "Alvarinho",

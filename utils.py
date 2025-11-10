@@ -67,6 +67,8 @@ class DConfig:
     embed_op: Optional[str] = None
     """Hidden dim of Model"""
     hidden_dim: Optional[int] = None
+    """Window size for RNN"""
+    window_size: Optional[int] = None
 
 
 @dataclass
@@ -228,6 +230,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC.ParamRNN(config, data)
     elif config.DConfig.type == "NoObsParam":
         calibrator = DMC.NoObsParamRNN(config, data)
+    elif config.DConfig.type == "WindowParam":
+        calibrator = DMC.WindowParamRNN(config, data)
     elif config.DConfig.type == "TransformerParam":
         calibrator = DMC.TransformerParam(config, data)
     elif config.DConfig.type == "Deep":

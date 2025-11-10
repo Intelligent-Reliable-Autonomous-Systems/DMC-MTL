@@ -365,6 +365,48 @@ class NoObsParamRNN(BaseRNN):
         return output_tens, param_tens, None
 
 
+class WindowParamRNN(BaseRNN):
+
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+
+        super(WindowParamRNN, self).__init__(config, data)
+
+        self.model = get_engine(self.config)(
+            num_models=self.batch_size,
+            config=config.PConfig,
+            inputprovider=self.input_data,
+            device=self.device,
+        )
+
+    def forward(
+        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """
+        Forward pass call for integrated gradients attribution sequence batch data
+        """
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        output_tens, param_tens, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        hn_cn = None
+        output = self.model.reset(b_size)
+        # Run through entirety of time series predicting parameters for physical model at each step
+        for i in range(dlen):
+            k = 0 if i-self.config.DConfig.window_size < 0 else i-self.config.DConfig.window_size
+
+            params_predict, _ = self.nn(data[:, k:i+1], hn_cn, cultivars)
+            params_predict = self.param_cast(params_predict)
+            self.model.set_model_params(params_predict, self.params)
+
+            output = self.model.run(dates=dates[:, i], cultivars=cultivars)
+
+            output_tens[:, i] = output
+            param_tens[:, i] = params_predict
+
+        return output_tens, param_tens, None
+
+
 class DeepRNN(BaseRNN):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:

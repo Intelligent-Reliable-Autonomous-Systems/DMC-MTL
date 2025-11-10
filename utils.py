@@ -171,7 +171,7 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
                     full_path = os.path.join(dirpath, filename)
                     pickle_paths.append(full_path)
         return pickle_paths
-    
+
     dtype = config.dtype.rsplit("_", 1)[0]
 
     PREFIX = f"{config.data_fpath}{dtype}/"

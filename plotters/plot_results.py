@@ -54,12 +54,8 @@ def main():
     true_data = [[], [], []]
     output_data = [[], [], []]
     all_inds = [[], [], []]
-    true_cultivar_data = (
-        [[[], [], []] for _ in range(calibrator.num_cultivars)] 
-    )
-    output_cultivar_data = (
-        [[[], [], []] for _ in range(calibrator.num_cultivars)] 
-    )
+    true_cultivar_data = [[[], [], []] for _ in range(calibrator.num_cultivars)]
+    output_cultivar_data = [[[], [], []] for _ in range(calibrator.num_cultivars)]
     cult_inds = [[[], [], []] for _ in range(calibrator.num_cultivars)]
 
     if args.mode == "default":

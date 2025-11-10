@@ -21,7 +21,7 @@ class BaseModule(nn.Module):
         self.output_dim = model.get_output_dim(c)
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
 
-        orig = torch.unique(torch.concatenate(list(model.cultivars.values()),axis=0)).to(torch.int)
+        orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
         self.mapping = torch.zeros((int(orig.max()) + 1,)).to(torch.int).to(model.device)
         self.mapping[orig] = torch.arange(len(orig)).to(torch.int).to(model.device)
 
@@ -40,6 +40,7 @@ class BaseModule(nn.Module):
             nn.init.ones_(m.weight)
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
+
 
 class FCGRU(BaseModule):
     """

@@ -24,7 +24,7 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     FFTempResponse,
     ParamModel,
-    EmbeddingFCFF
+    EmbeddingFCFF,
 )
 from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader
@@ -50,7 +50,7 @@ class BaseRNN(BaseModel):
             else None
         )
         self.make_optimizer(self.nn)
-        
+
     @staticmethod
     def make_rnn(model: nn.Module, config: DictConfig) -> nn.Module:
         """Make the RNN"""
@@ -538,7 +538,7 @@ class HybridModel(BaseRNN):
         output = self.model.reset(b_size)
 
         for i in range(dlen):
-            temp_response, _ = self.nn(data[:, i]) # Will return None if not using hybrid model
+            temp_response, _ = self.nn(data[:, i])  # Will return None if not using hybrid model
 
             output = self.model.run(dates=dates[:, i], cultivars=cultivars, TRESP=temp_response)
 

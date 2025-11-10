@@ -134,7 +134,9 @@ def setup_logging(config: Namespace) -> tuple[SummaryWriter, str]:
     """Setup Tensorboard Logging and W&B"""
 
     run_name = f"{config.run_name}__{int(time.time())}"
-    log_path = f"{os.getcwd()}{config.log_path}/{config.region}/{config.station}/{config.site}/{config.cultivar}/{run_name}"
+    log_path = (
+        f"{os.getcwd()}{config.log_path}/{config.region}/{config.station}/{config.site}/{config.cultivar}/{run_name}"
+    )
     writer = SummaryWriter(log_path)
     writer.add_text(
         "hyperparameters",

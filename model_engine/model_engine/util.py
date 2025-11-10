@@ -84,7 +84,7 @@ CROP_NAMES = {
         dtype=str,
     ),
     "grape_coldhardiness_reg": np.array(
-        [   
+        [
             "Cabernet_Franc",
             "Cabernet_Sauvignon",
             "Chardonnay",
@@ -100,8 +100,8 @@ CROP_NAMES = {
         ],
         dtype=str,
     ),
-        "grape_coldhardiness_all": np.array(
-        [   
+    "grape_coldhardiness_all": np.array(
+        [
             "Aligote",
             "Alvarinho",
             "Auxerrois",

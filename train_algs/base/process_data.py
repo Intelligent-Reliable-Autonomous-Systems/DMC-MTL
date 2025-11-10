@@ -30,7 +30,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
 
     if len(data) < 3:
         raise Exception(f"Data size: {len(data)}. Insufficient data for building training set.")
-    
+
     model.output_vars = model.config.PConfig.output_vars
     model.input_vars = model.config.PConfig.input_vars
 
@@ -62,19 +62,19 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     # Pad each array to the maximum length
     dates = [np.pad(arr, (0, max_len - len(arr)), mode="maximum") for arr in dates]
     model.max_dlen = max_len
-    x = 2 # Number of years for testing set
+    x = 2  # Number of years for testing set
 
     # Shuffle to get train and test splits for data
     train_inds = np.empty(shape=(0,))
     test_inds = np.empty(shape=(0,))
     cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
-    
+
     for c in range(len(CROP_NAMES[model.config.dtype])):
         cultivar_inds = np.argwhere(c == cultivar_data).flatten()
         if len(cultivar_inds) < 3:
             continue
         else:
-            print(f'Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}')
+            print(f"Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}")
         np.random.shuffle(cultivar_inds)
         test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
@@ -102,9 +102,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
     }
 
-    cultivar_data = (
-        torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-    )
+    cultivar_data = torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
     model.num_cultivars = len(torch.unique(cultivar_data))
     model.cultivars = {
         "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
@@ -113,6 +111,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
 
     if len(model.data["test"]) < 1:
         raise Exception("Insuffient per-cultivar data to build test set")
+
 
 def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
@@ -151,7 +150,6 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
 
     # Shuffle to get train and test splits for data
 
-
     train_inds = np.empty(shape=(0,), dtype=np.int32)
     test_inds = np.empty(shape=(0,), dtype=np.int32)
     val_inds = np.empty(shape=(0,), dtype=np.int32)
@@ -162,7 +160,7 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         if len(cultivar_inds) < 4:
             continue
         else:
-            print(f'Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}')
+            print(f"Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}")
         cultivar_inds = np.argwhere(c == cultivar_data).flatten()
         np.random.shuffle(cultivar_inds)
         test_inds = np.concatenate((test_inds, cultivar_inds[:x]))
@@ -191,9 +189,7 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     model.val = {
         "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
         "val": (
-            torch.stack([output_data[i] for i in val_inds]).to(torch.float32)
-            if len(val_inds) > 0
-            else torch.tensor([])
+            torch.stack([output_data[i] for i in val_inds]).to(torch.float32) if len(val_inds) > 0 else torch.tensor([])
         ),
         "test": (
             torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
@@ -207,9 +203,7 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
     }
 
-    cultivar_data = (
-        torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-    )
+    cultivar_data = torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
     model.num_cultivars = len(torch.unique(cultivar_data))
     model.cultivars = {
         "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),

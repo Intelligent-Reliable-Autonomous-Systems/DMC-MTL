@@ -1,8 +1,7 @@
-
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import subprocess
 import argparse
-import os 
+import os
 from model_engine.util import CROP_NAMES
 import numpy as np
 
@@ -32,8 +31,10 @@ def run_module(job: list[str]) -> None:
     print(f"=== Finished {mod} ===\n", flush=True)
     return mod
 
-def get_subfolders(path:str) -> list[str]:
-     return [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+
+def get_subfolders(path: str) -> list[str]:
+    return [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -54,14 +55,83 @@ def main():
                 for station in stations:
                     sites = get_subfolders(f"{args.dpath}/{region}/{station}")
                     for site in sites:
-                        jobs.append((args.file, ["--config", args.config, "--region", region, "--station", station, "--site", site, "--cultivar", cult, "--seed", str(seed)]) )
-                    jobs.append((args.file, ["--config", args.config, "--region", region, "--station", station, "--site", "All", "--cultivar", cult, "--seed", str(seed)]) )
-                jobs.append((args.file, ["--config", args.config, "--region", region, "--station", "All", "--site", "All", "--cultivar", cult, "--seed", str(seed)]) )
-            jobs.append((args.file, ["--config", args.config, "--region", "All", "--station", "All", "--site", "All", "--cultivar", cult, "--seed", str(seed)]) )
-                
+                        jobs.append(
+                            (
+                                args.file,
+                                [
+                                    "--config",
+                                    args.config,
+                                    "--region",
+                                    region,
+                                    "--station",
+                                    station,
+                                    "--site",
+                                    site,
+                                    "--cultivar",
+                                    cult,
+                                    "--seed",
+                                    str(seed),
+                                ],
+                            )
+                        )
+                    jobs.append(
+                        (
+                            args.file,
+                            [
+                                "--config",
+                                args.config,
+                                "--region",
+                                region,
+                                "--station",
+                                station,
+                                "--site",
+                                "All",
+                                "--cultivar",
+                                cult,
+                                "--seed",
+                                str(seed),
+                            ],
+                        )
+                    )
+                jobs.append(
+                    (
+                        args.file,
+                        [
+                            "--config",
+                            args.config,
+                            "--region",
+                            region,
+                            "--station",
+                            "All",
+                            "--site",
+                            "All",
+                            "--cultivar",
+                            cult,
+                            "--seed",
+                            str(seed),
+                        ],
+                    )
+                )
+            jobs.append(
+                (
+                    args.file,
+                    [
+                        "--config",
+                        args.config,
+                        "--region",
+                        "All",
+                        "--station",
+                        "All",
+                        "--site",
+                        "All",
+                        "--cultivar",
+                        cult,
+                        "--seed",
+                        str(seed),
+                    ],
+                )
+            )
 
-
-    
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]
         for fut in as_completed(futures):

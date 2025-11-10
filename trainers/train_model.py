@@ -14,6 +14,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=None, type=str, help="Path to Config")
     parser.add_argument("--seed", default=0, type=int, help="Seed of Experiment")
+    parser.add_argument("--region", default=None, type=str, help="Region")
+    parser.add_argument("--station", default=None, type=str, help="Station")
+    parser.add_argument("--site", default=None, type=str, help="Site")
     parser.add_argument("--cultivar", default=None, type=str, help="Cultivar Type")
     args = parser.parse_args()
 

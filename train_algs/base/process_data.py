@@ -28,6 +28,9 @@ from model_engine.inputs.input_providers import (
 def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
 
+    if len(data) < 3:
+        raise Exception(f"Data size: {len(data)}. Insufficient data for building training set.")
+    
     model.output_vars = model.config.PConfig.output_vars
     model.input_vars = model.config.PConfig.input_vars
 
@@ -59,88 +62,57 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     # Pad each array to the maximum length
     dates = [np.pad(arr, (0, max_len - len(arr)), mode="maximum") for arr in dates]
     model.max_dlen = max_len
+    x = 2 # Number of years for testing set
 
     # Shuffle to get train and test splits for data
-    if len(model.config.withold_cultivars) == 0:
-        n = len(data)
-        inds = np.arange(n)
-        np.random.shuffle(inds)
-        x = 2
-        model.data = {
-            "train": torch.stack([normalized_input_data[i] for i in inds][x:]).to(torch.float32),
-            "test": (
-                torch.stack([normalized_input_data[i] for i in inds][:x]).to(torch.float32)
-                if x > 0
-                else torch.tensor([])
-            ),
-        }
-        model.val = {
-            "train": torch.stack([output_data[i] for i in inds][x:]).to(torch.float32),
-            "test": (torch.stack([output_data[i] for i in inds][:x]).to(torch.float32) if x > 0 else torch.tensor([])),
-        }
-        model.dates = {
-            "train": np.array([dates[i] for i in inds][x:]),
-            "test": np.array([dates[i] for i in inds][:x]) if x else np.array([]),
-        }
-        # Get cultivar weather for use with embedding
-        if "CULTIVAR" in data[0].columns:
-            cultivar_data = (
-                torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-            )
-
-            model.num_cultivars = len(torch.unique(cultivar_data))
-            model.cultivars = {
-                "train": torch.stack([cultivar_data[i] for i in inds][x:]).to(torch.float32),
-                "test": torch.stack([cultivar_data[i] for i in inds][:x]).to(torch.float32),
-            }
+    train_inds = np.empty(shape=(0,))
+    test_inds = np.empty(shape=(0,))
+    cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
+    
+    for c in range(len(CROP_NAMES[model.config.dtype])):
+        cultivar_inds = np.argwhere(c == cultivar_data).flatten()
+        if len(cultivar_inds) < 3:
+            continue
         else:
-            model.num_cultivars = None
-            model.cultivars = None
-    else:
-        assert "CULTIVAR" in data[0].columns, "CULTIVAR is not in the data columns. Incorrect data file loaded."
+            print(f'Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}')
+        np.random.shuffle(cultivar_inds)
+        test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
-        train_inds = np.empty(shape=(0,))
-        test_inds = np.empty(shape=(0,))
-        cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
-        
-        for c, v in model.config.withold_cultivars.items():
-            cultivar_inds = np.argwhere(np.where(CROP_NAMES[model.config.dtype] == c)[0][0] == cultivar_data).flatten()
-            np.random.shuffle(cultivar_inds)
-            test_inds = np.concatenate((test_inds, cultivar_inds[:v])).astype(np.int32)
+    train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
+    np.random.shuffle(train_inds)
+    np.random.shuffle(test_inds)
+    model.data = {
+        "train": torch.stack([normalized_input_data[i] for i in train_inds]).to(torch.float32),
+        "test": (
+            torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
+            if len(test_inds) > 0
+            else torch.tensor([])
+        ),
+    }
+    model.val = {
+        "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
+        "test": (
+            torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
+            if len(test_inds) > 0
+            else torch.tensor([])
+        ),
+    }
+    model.dates = {
+        "train": np.array([dates[i] for i in train_inds]),
+        "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
+    }
 
-        train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
-        np.random.shuffle(train_inds)
-        np.random.shuffle(test_inds)
-        model.data = {
-            "train": torch.stack([normalized_input_data[i] for i in train_inds]).to(torch.float32),
-            "test": (
-                torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
-                if len(test_inds) > 0
-                else torch.tensor([])
-            ),
-        }
-        model.val = {
-            "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
-            "test": (
-                torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
-                if len(test_inds) > 0
-                else torch.tensor([])
-            ),
-        }
-        model.dates = {
-            "train": np.array([dates[i] for i in train_inds]),
-            "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
-        }
+    cultivar_data = (
+        torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
+    )
+    model.num_cultivars = len(torch.unique(cultivar_data))
+    model.cultivars = {
+        "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
+        "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
+    }
 
-        cultivar_data = (
-            torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-        )
-        model.num_cultivars = len(torch.unique(cultivar_data))
-        model.cultivars = {
-            "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
-            "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
-        }
-
+    if len(model.data["test"]) < 1:
+        raise Exception("Insuffient per-cultivar data to build test set")
 
 def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
@@ -178,113 +150,75 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     model.max_dlen = max_len
 
     # Shuffle to get train and test splits for data
-    if len(model.config.withold_cultivars) == 0:
-        n = len(data)
-        inds = np.arange(n)
-        test_inds = inds[:2]  # 2 year test set
-        inds = np.asarray(list(set(inds) - set(test_inds)))
-        np.random.shuffle(inds)
-        x = 1
-        model.data = {
-            "train": torch.stack([normalized_input_data[i] for i in inds][x:]).to(torch.float32),
-            "val": (
-                torch.stack([normalized_input_data[i] for i in inds][:x]).to(torch.float32)
-                if x > 0
-                else torch.tensor([])
-            ),
-            "test": (
-                torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
-                if x > 0
-                else torch.tensor([])
-            ),
-        }
-        model.val = {
-            "train": torch.stack([output_data[i] for i in inds][x:]).to(torch.float32),
-            "val": (torch.stack([output_data[i] for i in inds][:x]).to(torch.float32) if x > 0 else torch.tensor([])),
-            "test": (torch.stack([output_data[i] for i in test_inds]).to(torch.float32) if x > 0 else torch.tensor([])),
-        }
-        model.dates = {
-            "train": np.array([dates[i] for i in inds][x:]),
-            "val": np.array([dates[i] for i in inds][:x]) if x else np.array([]),
-            "test": np.array([dates[i] for i in test_inds]) if x else np.array([]),
-        }
-        # Get cultivar weather for use with embedding
-        if "CULTIVAR" in data[0].columns:
-            cultivar_data = (
-                torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-            )
 
-            model.num_cultivars = len(torch.unique(cultivar_data))
-            model.cultivars = {
-                "train": torch.stack([cultivar_data[i] for i in inds][x:]).to(torch.float32),
-                "val": torch.stack([cultivar_data[i] for i in inds][:x]).to(torch.float32),
-                "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
-            }
+
+    train_inds = np.empty(shape=(0,), dtype=np.int32)
+    test_inds = np.empty(shape=(0,), dtype=np.int32)
+    val_inds = np.empty(shape=(0,), dtype=np.int32)
+    cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
+    x = 2
+    v = 1
+    for c in range(len(CROP_NAMES[model.config.dtype])):
+        if len(cultivar_inds) < 4:
+            continue
         else:
-            model.num_cultivars = None
-            model.cultivars = None
-    else:
-        assert "CULTIVAR" in data[0].columns, "CULTIVAR is not in the data columns. Incorrect data file loaded."
+            print(f'Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}')
+        cultivar_inds = np.argwhere(c == cultivar_data).flatten()
+        np.random.shuffle(cultivar_inds)
+        test_inds = np.concatenate((test_inds, cultivar_inds[:x]))
+        val_cultivar_inds = np.asarray(list(set(cultivar_inds) - set(test_inds)))
+        np.random.shuffle(val_cultivar_inds)
+        val_inds = np.concatenate((val_inds, val_cultivar_inds[:v])).astype(np.int32)
 
-        train_inds = np.empty(shape=(0,), dtype=np.int32)
-        test_inds = np.empty(shape=(0,), dtype=np.int32)
-        val_inds = np.empty(shape=(0,), dtype=np.int32)
-        cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
+    train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds) - set(val_inds)))
+    np.random.shuffle(train_inds)
+    np.random.shuffle(val_inds)
+    np.random.shuffle(test_inds)
 
-        for c, v in model.config.withold_cultivars.items():
-            cultivar_inds = np.argwhere(np.where(CROP_NAMES[model.config.dtype] == c)[0][0] == cultivar_data).flatten()
-            np.random.shuffle(cultivar_inds)
-            test_inds = np.concatenate((test_inds, cultivar_inds[:v]))
-            val_cultivar_inds = np.asarray(list(set(cultivar_inds) - set(test_inds)))
-            np.random.shuffle(val_cultivar_inds)
-            val_inds = np.concatenate((val_inds, val_cultivar_inds[:(v)])).astype(np.int32)
+    model.data = {
+        "train": torch.stack([normalized_input_data[i] for i in train_inds]).to(torch.float32),
+        "val": (
+            torch.stack([normalized_input_data[i] for i in val_inds]).to(torch.float32)
+            if len(val_inds) > 0
+            else torch.tensor([])
+        ),
+        "test": (
+            torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
+            if len(test_inds) > 0
+            else torch.tensor([])
+        ),
+    }
+    model.val = {
+        "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
+        "val": (
+            torch.stack([output_data[i] for i in val_inds]).to(torch.float32)
+            if len(val_inds) > 0
+            else torch.tensor([])
+        ),
+        "test": (
+            torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
+            if len(test_inds) > 0
+            else torch.tensor([])
+        ),
+    }
+    model.dates = {
+        "train": np.array([dates[i] for i in train_inds]),
+        "val": (np.array([dates[i] for i in val_inds]) if len(val_inds) > 0 else np.array([])),
+        "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
+    }
 
-        train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds) - set(val_inds)))
-        np.random.shuffle(train_inds)
-        np.random.shuffle(val_inds)
-        np.random.shuffle(test_inds)
+    cultivar_data = (
+        torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
+    )
+    model.num_cultivars = len(torch.unique(cultivar_data))
+    model.cultivars = {
+        "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
+        "val": torch.stack([cultivar_data[i] for i in val_inds]).to(torch.float32),
+        "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
+    }
 
-        model.data = {
-            "train": torch.stack([normalized_input_data[i] for i in train_inds]).to(torch.float32),
-            "val": (
-                torch.stack([normalized_input_data[i] for i in val_inds]).to(torch.float32)
-                if len(val_inds) > 0
-                else torch.tensor([])
-            ),
-            "test": (
-                torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
-                if len(test_inds) > 0
-                else torch.tensor([])
-            ),
-        }
-        model.val = {
-            "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
-            "val": (
-                torch.stack([output_data[i] for i in val_inds]).to(torch.float32)
-                if len(val_inds) > 0
-                else torch.tensor([])
-            ),
-            "test": (
-                torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
-                if len(test_inds) > 0
-                else torch.tensor([])
-            ),
-        }
-        model.dates = {
-            "train": np.array([dates[i] for i in train_inds]),
-            "val": (np.array([dates[i] for i in val_inds]) if len(val_inds) > 0 else np.array([])),
-            "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
-        }
-
-        cultivar_data = (
-            torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-        )
-        model.num_cultivars = len(torch.unique(cultivar_data))
-        model.cultivars = {
-            "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
-            "val": torch.stack([cultivar_data[i] for i in val_inds]).to(torch.float32),
-            "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
-        }
+    if len(model.data["test"]) < 1:
+        raise Exception("Insuffient per-cultivar data to build test set")
 
 
 def process_error(model: nn.Module, fpath: str) -> None:

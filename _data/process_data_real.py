@@ -432,8 +432,10 @@ def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str
             continue
         # Otherwise append
         df_list.append(year_df)
+
     for yr_df in df_list:
-        yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY"], inplace=True)
+        yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY", "Unnamed: 0"], inplace=True)
+
     df_array = np.empty(len(df_list), dtype=object)
     if len(df_list) != 1:
         for i, d in enumerate(df_list):

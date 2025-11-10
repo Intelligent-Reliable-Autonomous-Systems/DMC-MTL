@@ -76,8 +76,6 @@ class Args:
     PConfig: object = PConfig
     """Deep Model Args"""
     DConfig: object = DConfig
-    """Cultivar(s) to withhold from training set"""
-    withold_cultivars: Optional[dict] = None
     """If using a validation set or not"""
     val_set: Optional[bool] = None
     """Path to save model"""
@@ -117,8 +115,13 @@ def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
     config.seed = int(args.seed)
 
     if hasattr(args, "cultivar"):
-        if args.cultivar is not None:
-            config.cultivar = args.cultivar
+        config.cultivar = args.cultivar if args.cultivar is not None else config.cultivar
+    if hasattr(args, "region"):
+        config.region = args.region if args.region is not None else config.region
+    if hasattr(args, "station"):
+        config.station = args.station if args.station is not None else config.station
+    if hasattr(args, "site"):
+        config.site = args.site if args.site is not None else config.site
 
     return config, load_data_from_config(config)
 
@@ -168,10 +171,12 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
                     full_path = os.path.join(dirpath, filename)
                     pickle_paths.append(full_path)
         return pickle_paths
+    
+    dtype = config.dtype.rsplit("_", 1)[0]
 
-    PREFIX = f"{config.data_fpath}{config.dtype}/"
+    PREFIX = f"{config.data_fpath}{dtype}/"
     if config.synth_data is not None:
-        paths = find_pickle_files(f"{PREFIX}synth/", prefix=f"{config.synth_data}_{config.dtype}_")
+        paths = find_pickle_files(f"{PREFIX}synth/", prefix=f"{config.synth_data}_{dtype}_")
     else:
         if config.region == "All":
             paths = find_pickle_files(f"{PREFIX}", contains="" if config.cultivar == "All" else config.cultivar)
@@ -193,7 +198,7 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
                     )
     data = []
     for p in paths:
-        cultivar = p.split(f"{config.dtype}_")[-1].replace(".pkl", "")
+        cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "")
         if cultivar not in CROP_NAMES[config.dtype]:
             continue
         with open(p, "rb") as f:

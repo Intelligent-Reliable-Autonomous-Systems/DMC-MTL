@@ -55,12 +55,12 @@ def main():
     output_data = [[], [], []]
     all_inds = [[], [], []]
     true_cultivar_data = (
-        [[[], [], []] for _ in range(calibrator.num_cultivars)] if len(config.withold_cultivars) != 0 else None
+        [[[], [], []] for _ in range(calibrator.num_cultivars)] 
     )
     output_cultivar_data = (
-        [[[], [], []] for _ in range(calibrator.num_cultivars)] if len(config.withold_cultivars) != 0 else None
+        [[[], [], []] for _ in range(calibrator.num_cultivars)] 
     )
-    cult_inds = [[[], [], []] for _ in range(calibrator.num_cultivars)] if len(config.withold_cultivars) != 0 else None
+    cult_inds = [[[], [], []] for _ in range(calibrator.num_cultivars)]
 
     if args.mode == "default":
         plot_func = gen_all_data_and_plot

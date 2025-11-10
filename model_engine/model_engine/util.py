@@ -57,7 +57,7 @@ CROP_NAMES = {
         ],
         dtype=str,
     ),
-    "grape_coldhardiness": np.array(
+    "grape_coldhardiness_ferg": np.array(
         [
             "Barbera",
             "Cabernet_Franc",
@@ -83,21 +83,57 @@ CROP_NAMES = {
         ],
         dtype=str,
     ),
-    "wofost": np.array(
-        [
-            "Winter_Wheat_101",
-            "Winter_Wheat_102",
-            "Winter_Wheat_103",
-            "Winter_Wheat_104",
-            "Winter_Wheat_105",
-            "Winter_Wheat_106",
-            "Winter_Wheat_107",
-            "Bermude",
-            "Apache",
+    "grape_coldhardiness_reg": np.array(
+        [   
+            "Cabernet_Franc",
+            "Cabernet_Sauvignon",
+            "Chardonnay",
+            "Gewurztraminer",
+            "Merlot",
+            "Pinot_Blanc",
+            "Pinot_Gris",
+            "Pinot_Noir",
+            "Riesling",
+            "Sauvignon_Blanc",
+            "Syrah",
+            "Zinfandel",
         ],
         dtype=str,
     ),
-    "wofost_pheno": np.array(
+        "grape_coldhardiness_all": np.array(
+        [   
+            "Aligote",
+            "Alvarinho",
+            "Auxerrois",
+            "Barbera",
+            "Cabernet_Franc",
+            "Cabernet_Sauvignon",
+            "Chardonnay",
+            "Chenin_Blanc",
+            "Concord",
+            "Gewurztraminer",
+            "Grenache",
+            "Lemberger",
+            "Malbec",
+            "Melon",
+            "Merlot",
+            "Mourvedre",
+            "Muscat_Blanc",
+            "Nebbiolo",
+            "Pinot_Blanc",
+            "Pinot_Gris",
+            "Pinot_Noir",
+            "Riesling",
+            "Sangiovese",
+            "Sauvignon_Blanc",
+            "Semillon",
+            "Syrah",
+            "Viognier",
+            "Zinfandel",
+        ],
+        dtype=str,
+    ),
+    "wofost": np.array(
         [
             "Winter_Wheat_101",
             "Winter_Wheat_102",
@@ -142,29 +178,24 @@ def param_loader(config: dict) -> dict:
     return cv
 
 
-def per_task_param_loader(config: dict, params: list, cultivar: str = None) -> torch.Tensor:
+def per_task_param_loader(config: dict, params: list) -> torch.Tensor:
     """
     Load the available configurations of a model from dictionary and put them on tensor
     """
-    try:
-        model_name, model_num = config["model_parameters"].split(":")
-    except:
-        raise Exception(f"Incorrectly specified model_parameters file `{config['model_parameters']}`")
 
-    fname = f"{os.getcwd()}/{config['config_fpath']}{model_name}.yaml"
+    dtype = config.dtype.rsplit("_", 1)[0]
+    fname = f"{os.getcwd()}/{config.PConfig.config_fpath}{dtype}.yaml"
     try:
         model = yaml.safe_load(open(fname))
     except:
         raise Exception(f"Unable to load file: {fname}. Check that file exists")
     init_params = []
-    for n in CROP_NAMES[model_name]:
-        if cultivar != "All" and n != cultivar:
-            continue
+    for n in CROP_NAMES[config.dtype]:
         try:
             cv = model["ModelParameters"]["Sets"][n]
         except:
             raise Exception(
-                f"Incorrectly specified parameter file {fname}. Ensure that `{model_name}` contains parameter set `{model_num}`"
+                f"Incorrectly specified parameter file {fname}. Ensure that `{config.dtype}` contains parameter set `{n}`"
             )
         task_params = []
         for c in params:

@@ -711,7 +711,99 @@ ModelParameters:
         - 3
         - Parameter for the cold hardiness model
         - ['-']
+    Pinot_Blanc:
+      <<: *grape
+      HCINIT:  
+        - -12.0
+        - Initial cold hardiness value
+        - ['C']
+      HCMIN:  
+        - -1.2
+        - Minimum cold hardiness
+        - ['C']
+      HCMAX:  
+        - -24.1
+        - Maximum cold hardiness
+        - ['C']
+      TENDO:
+        - 13.0
+        - Threshold for degree-days during endodormancy
+        - ['C']  
+      TECO:
+        - 6.0
+        - Threshold for degree-days during ecodormancy
+        - ['C'] 
+      ECOBOUND: 
+        - -400
+        - Temperature threshold for ecodormancy transition
+        - ['C']
+      ENACCLIM:
+        - 0.12
+        - Acclimation rate during endodormancy
+        - ['C.d']  
+      ECACCLIM:
+        - 0.02
+        - Acclimation rate during ecodormancy
+        -  ['C.d'] 
+      ENDEACCLIM:
+        - 0.02
+        - Deacclimation rate during endodormancy
+        - ['C.d']
+      ECDEACCLIM:
+        - 0.20
+        - Deacclimation rate during ecodormancy
+        - ['C.d']  
+      THETA:   
+        - 3
+        - Parameter for the cold hardiness model
+        - ['-']
     Pinot_Gris:
+      <<: *grape
+      HCINIT:  
+        - -12.0
+        - Initial cold hardiness value
+        - ['C']
+      HCMIN:  
+        - -1.2
+        - Minimum cold hardiness
+        - ['C']
+      HCMAX:  
+        - -24.1
+        - Maximum cold hardiness
+        - ['C']
+      TENDO:
+        - 13.0
+        - Threshold for degree-days during endodormancy
+        - ['C']  
+      TECO:
+        - 6.0
+        - Threshold for degree-days during ecodormancy
+        - ['C'] 
+      ECOBOUND: 
+        - -400
+        - Temperature threshold for ecodormancy transition
+        - ['C']
+      ENACCLIM:
+        - 0.12
+        - Acclimation rate during endodormancy
+        - ['C.d']  
+      ECACCLIM:
+        - 0.02
+        - Acclimation rate during ecodormancy
+        -  ['C.d'] 
+      ENDEACCLIM:
+        - 0.02
+        - Deacclimation rate during endodormancy
+        - ['C.d']
+      ECDEACCLIM:
+        - 0.20
+        - Deacclimation rate during ecodormancy
+        - ['C.d']  
+      THETA:   
+        - 3
+        - Parameter for the cold hardiness model
+        - ['-']
+    Pinot_Noir:
       <<: *grape
       HCINIT:  
         - -12.0

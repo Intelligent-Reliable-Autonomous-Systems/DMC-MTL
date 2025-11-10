@@ -8,6 +8,7 @@ import torch.nn.functional as F
 
 from omegaconf import DictConfig
 from train_algs.base.util import set_embedding_op
+from model_engine.util import CROP_NAMES
 
 
 class BaseModule(nn.Module):
@@ -57,7 +58,7 @@ class FCGRU(BaseModule):
             self.param_heads = nn.ModuleList([nn.Linear(self.dim2, self.output_dim) for _ in range(1)])
         else:
             self.param_heads = nn.ModuleList(
-                [nn.Linear(self.dim2, self.output_dim) for _ in range(model.num_cultivars)]
+                [nn.Linear(self.dim2, self.output_dim) for _ in range(len(CROP_NAMES[c.dtype]))]
             )
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
@@ -78,7 +79,7 @@ class FCGRU(BaseModule):
                 params[i] = self.param_heads[0](gru_out[i])
         else:
             for i in range(input.size(0)):
-                params[i] = self.param_heads[self.mapping[cultivars[i][0].to(torch.int)]](gru_out[i])
+                params[i] = self.param_heads[cultivars[i][0].to(torch.int)](gru_out[i])
 
         return params, hn
 
@@ -92,10 +93,55 @@ class EmbeddingFCGRU(BaseModule):
 
         super(EmbeddingFCGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(model.num_cultivars, self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
+        self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
+
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+
+    def forward(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        cultivars: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
+        gru_input = self.embed_op(embed, input)
+        x = self.fc1(gru_input)
+        x = self.fc2(x)
+        gru_out, hn = self.rnn(x.unsqueeze(1), hn)
+        gru_out = F.relu(gru_out)
+        gru_out = F.relu(self.fc3(gru_out))
+        params = self.hidden_to_params(gru_out).squeeze(1)
+
+        return params, hn
+
+
+class EmbeddingFCFF(BaseModule):
+    """
+    Multi Task FF
+    """
+
+    def __init__(self, c: DictConfig, model: nn.Module) -> None:
+
+        super(EmbeddingFCFF, self).__init__(c, model)
+
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
+        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
+        self.rnn = nn.Sequential(
+            nn.Linear(in_features=self.input_dim, out_features=self.hidden_dim),
+            nn.ReLU(),
+            nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim),
+            nn.ReLU(),
+            nn.Linear(in_features=self.hidden_dim, out_features=self.hidden_dim),
+            nn.ReLU(),
+            nn.Linear(in_features=self.hidden_dim, out_features=self.output_dim),
+        )
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
 
@@ -167,7 +213,7 @@ class DeepEmbeddingGRU(BaseModule):
 
         super(DeepEmbeddingGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(model.num_cultivars, self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
@@ -203,7 +249,7 @@ class GHCNDeepEmbeddingGRU(BaseModule):
 
         super(GHCNDeepEmbeddingGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(model.num_cultivars, self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
@@ -268,7 +314,6 @@ class ParamModel(BaseModule):
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
 
         super(ParamModel, self).__init__(c, model)
-
         self.model_params = nn.Parameter(torch.rand((len(c.params))) - 1)
 
     def forward(self, input: torch.Tensor, **kwargs) -> tuple[torch.Tensor, torch.Tensor]:

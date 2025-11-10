@@ -130,16 +130,16 @@ def cumulative_error(
     return avgs
 
 
-def setup_logging(args: Namespace) -> tuple[SummaryWriter, str]:
+def setup_logging(config: Namespace) -> tuple[SummaryWriter, str]:
     """Setup Tensorboard Logging and W&B"""
 
-    run_name = f"{args.run_name}__{int(time.time())}"
-    log_path = f"{os.getcwd()}{args.log_path}{args.cultivar}/{run_name}"
+    run_name = f"{config.run_name}__{int(time.time())}"
+    log_path = f"{os.getcwd()}{config.log_path}/{config.region}/{config.station}/{config.site}/{config.cultivar}/{run_name}"
     writer = SummaryWriter(log_path)
     writer.add_text(
         "hyperparameters",
         "|param|value|\n|-|-|\n%s"
-        % ("\n".join([f"|{key}|{value}|" for key, value in OmegaConf.to_container(args).items()])),
+        % ("\n".join([f"|{key}|{value}|" for key, value in OmegaConf.to_container(config).items()])),
     )
     return writer, run_name, log_path
 
@@ -194,7 +194,7 @@ def log_training(
             calibrator.best_cum_rmse = best_avg
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
             calibrator.best_rmse = eval_avg
-    elif calibrator.config.dtype == "grape_coldhardiness":
+    elif "grape_coldhardiness" in calibrator.config.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")

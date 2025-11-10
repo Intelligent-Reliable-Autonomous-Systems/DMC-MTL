@@ -14,12 +14,11 @@ import pickle
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--cultivar", default="Aligote", type=str, help="Path to Config")
-    parser.add_argument("--name", default="grape_phenology", type=str)
+    parser.add_argument("--cultivar", default="Chardonnay", type=str, help="Path to Config")
+    parser.add_argument("--name", default="grape_coldhardiness", type=str)
     parser.add_argument("--region", default="WA", type=str)
     parser.add_argument("--site", default="Prosser", type=str)
     parser.add_argument("--station", default="Roza2", type=str)
-    parser.add_argument("--path", type=str)
     args = parser.parse_args()
 
     if args.name == "grape_phenology":

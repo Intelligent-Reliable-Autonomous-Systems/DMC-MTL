@@ -182,7 +182,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif config.dtype == "grape_coldhardiness":
+        elif "grape_coldhardiness" in config.dtype:
             inds = plot_output_coldhardiness(
                 config,
                 fpath,
@@ -216,11 +216,10 @@ def gen_all_data_and_plot(
         [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
         [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
 
-        if len(config.withold_cultivars) != 0:
-            for k in range(len(true)):
-                true_cultivar_data[int(cultivars[k].item())][n].append(true[k][inds[k]])
-                output_cultivar_data[int(cultivars[k].item())][n].append(output[k][inds[k]])
-                cult_inds[int(cultivars[k].item())][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
+        for k in range(len(true)):
+            true_cultivar_data[int(cultivars[k].item())][n].append(true[k][inds[k]])
+            output_cultivar_data[int(cultivars[k].item())][n].append(output[k][inds[k]])
+            cult_inds[int(cultivars[k].item())][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
 
         if args.break_early:
             break

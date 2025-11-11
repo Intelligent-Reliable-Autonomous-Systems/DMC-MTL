@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
     output_vars: [PHENOLOGY]
 # Log configuration
-log_path: /_runs/PaperExperiments/Phenology/ParamMTL/
+log_path: /_runs/PaperExperiments/Phenology/ParamMTL64/
 run_name: param_zscore
 seed: 0
 # Data use
@@ -25,7 +25,7 @@ params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [
 DConfig: 
     type: Param
     arch: EmbedFCGRU 
-    hidden_dim: 64
+    hidden_dim: 1024
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002

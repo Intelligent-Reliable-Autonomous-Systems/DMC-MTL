@@ -22,7 +22,7 @@ params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [
 DConfig: 
     type: Hybrid
     arch: FFTempResponse 
-    hidden_dim: 64
+    hidden_dim: 1024
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .02

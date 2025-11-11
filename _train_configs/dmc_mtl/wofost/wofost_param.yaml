@@ -23,7 +23,7 @@ params_range: [[12,18], [500, 1500], [500, 1500], [0,25], [0,100], [.5, .8], [0.
 DConfig: 
     type: NoObsParam
     arch: EmbedFCGRU
-    hidden_dim: 64
+    hidden_dim: 1024
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002

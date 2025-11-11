@@ -14,7 +14,6 @@ run_name: agg_param
 seed: 0
 # Data use
 cultivar: All
-
 data_fpath: _data/processed_data/
 dtype: wofost_
 synth_data: synth

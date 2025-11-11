@@ -133,7 +133,7 @@ CROP_NAMES = {
         ],
         dtype=str,
     ),
-    "wofost": np.array(
+    "wofost_": np.array(
         [
             "Winter_Wheat_101",
             "Winter_Wheat_102",

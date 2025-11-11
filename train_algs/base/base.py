@@ -141,17 +141,15 @@ class BaseModel(nn.Module):
         except:
             print("Unable to load NN model..")
 
-    def param_cast(self, params: torch.Tensor, prev_params: torch.Tensor=None) -> torch.Tensor:
+    def param_cast(self, params: torch.Tensor, prev_params: torch.Tensor = None) -> torch.Tensor:
         """
         Performs TanH activiation on parameters to cast to range
         """
         # Cast to range [0,2] from tanh activation and cast to actual parameter range
-        
+
         if self.config.param_scale != None:
-            params_predict = torch.tanh(params) 
-            params_predict = (
-                0 + params_predict * (self.params_range[:, 1] - self.params_range[:, 0]) / 2
-            )
+            params_predict = torch.tanh(params)
+            params_predict = 0 + params_predict * (self.params_range[:, 1] - self.params_range[:, 0]) / 2
             params_predict = params_predict * self.config.param_scale
             params_predict = prev_params + params_predict
         else:

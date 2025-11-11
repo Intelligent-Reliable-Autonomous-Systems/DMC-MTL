@@ -58,8 +58,6 @@ def main():
     obs_cultivar_avg_ch = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs, 250)) - 1
     all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs))
 
-    
-
     for i, config in enumerate(config_dirs):
         print(config)
         if args.prefix is not None:

@@ -12,7 +12,6 @@ log_path: /_data/
 run_name: synth_data
 seed: 0
 cultivar: Aligote
-
 data_fpath: _data/processed_data/
 val_set: True
 params: ["TBASEM"]

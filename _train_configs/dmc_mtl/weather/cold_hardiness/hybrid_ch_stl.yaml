@@ -15,7 +15,6 @@ run_name: ch_stl
 seed: 0
 # Data use
 cultivar: Aligote
-
 data_fpath: _data/processed_data/
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]

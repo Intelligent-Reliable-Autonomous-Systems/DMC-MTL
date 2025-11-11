@@ -113,7 +113,7 @@ class EmbeddingFCGRU(BaseModule):
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
-        
+
         if input.ndim == 2:
             input = input.unsqueeze(1)
 
@@ -237,7 +237,7 @@ class DeepEmbeddingGRU(BaseModule):
         if input.ndim == 2:
             input = input.unsqueeze(1)
         embed = embed.unsqueeze(1).expand_as(input)
-        
+
         gru_input = self.embed_op(embed, input)
         x = F.relu(self.fc1(gru_input))
         x = F.relu(self.fc2(x))

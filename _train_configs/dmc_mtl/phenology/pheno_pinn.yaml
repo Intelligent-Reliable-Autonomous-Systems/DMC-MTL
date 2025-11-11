@@ -14,7 +14,6 @@ run_name: regression_mtl
 seed: 0
 # Data use
 cultivar: All
-
 data_fpath: _data/processed_data/
 dtype: grape_phenology_
 region: WA

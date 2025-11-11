@@ -270,7 +270,9 @@ class ParamRNN(BaseRNN):
         # Run through entirety of time series predicting params
         for i in range(dlen):
             params_predict, hn_cn = self.nn(
-                torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1), hn=hn_cn, cultivars=cultivars
+                torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
+                hn=hn_cn,
+                cultivars=cultivars,
             )
 
             params_predict = self.param_cast(params_predict, prev_params=batch_params)
@@ -394,9 +396,9 @@ class WindowParamRNN(BaseRNN):
         output = self.model.reset(b_size)
         # Run through entirety of time series predicting parameters for physical model at each step
         for i in range(dlen):
-            k = 0 if i-self.config.DConfig.window_size < 0 else i-self.config.DConfig.window_size
+            k = 0 if i - self.config.DConfig.window_size < 0 else i - self.config.DConfig.window_size
 
-            params_predict, _ = self.nn(data[:, k:i+1], hn_cn, cultivars)
+            params_predict, _ = self.nn(data[:, k : i + 1], hn_cn, cultivars)
             params_predict = self.param_cast(params_predict)
             self.model.set_model_params(params_predict, self.params)
 

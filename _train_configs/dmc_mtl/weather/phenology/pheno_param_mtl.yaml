@@ -15,7 +15,6 @@ run_name: param_mtl
 seed: 0
 # Data use
 cultivar: All
-
 data_fpath: _data/processed_data/
 # Parameters 
 params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]

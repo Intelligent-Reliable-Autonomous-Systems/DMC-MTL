@@ -15,7 +15,6 @@ run_name: deep_mtl
 seed: 0
 # Data use
 cultivar: All
-
 data_fpath: _data/processed_data/
 # Parameters 
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]

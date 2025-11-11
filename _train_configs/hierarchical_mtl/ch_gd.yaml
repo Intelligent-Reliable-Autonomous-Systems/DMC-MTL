@@ -13,7 +13,6 @@ log_path: /_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/
 run_name: gd_stl
 seed: 0
 # Data use
-
 data_fpath: _data/processed_data/
 dtype: grape_coldhardiness_reg
 region: BCOV

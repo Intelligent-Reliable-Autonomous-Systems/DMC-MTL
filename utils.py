@@ -111,6 +111,7 @@ class Args:
     """Parameters smoothing coefficient"""
     param_scale: Optional[float] = None
 
+
 def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
     """
     Load the configuration and data and assumes

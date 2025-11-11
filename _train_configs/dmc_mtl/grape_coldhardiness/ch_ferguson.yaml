@@ -14,7 +14,6 @@ run_name: statmodel
 seed: 0
 # Data use
 cultivar: Aligote
-
 data_fpath: _data/processed_data/
 dtype: grape_coldhardiness_ferg
 region: WA

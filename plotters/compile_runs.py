@@ -150,14 +150,14 @@ def main():
             obs_avg_ch[0, i, : len(obs_rmse)] = obs_rmse
             obs_avg_ch[1, i, : len(val_obs_rmse)] = val_obs_rmse
             obs_avg_ch[2, i, : len(test_obs_rmse)] = test_obs_rmse
-        elif config.dtype == "wofost":
+        elif "wofost" in config.dtype:
             obs_rmse, _ = compute_obs_RMSE(true_data[0], output_data[0])
             val_obs_rmse, _ = compute_obs_RMSE(true_data[1], output_data[1])
             test_obs_rmse, _ = compute_obs_RMSE(true_data[2], output_data[2])
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
             test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
-            all_avg_wf[:, i] = np.array([total_rmse, val_total_rmse])
+            all_avg_wf[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
 
         for k in range(calibrator.num_cultivars):
             if len(true_cultivar_data[k][0]) == 0:
@@ -211,7 +211,7 @@ def main():
                 obs_cultivar_avg_ch[k, 0, i, : len(cultivar_obs_rmse)] = cultivar_obs_rmse
                 obs_cultivar_avg_ch[k, 1, i, : len(cultivar_val_obs_rmse)] = cultivar_val_obs_rmse
                 obs_cultivar_avg_ch[k, 2, i, : len(cultivar_test_obs_rmse)] = cultivar_test_obs_rmse
-            elif config.dtype == "wofost":
+            elif "wofost" in config.dtype:
                 cultivar_train_rmse, _ = compute_total_RMSE(true_cultivar_data[k][0], output_cultivar_data[k][0])
                 cultivar_val_rmse, _ = compute_total_RMSE(true_cultivar_data[k][1], output_cultivar_data[k][1])
                 cultivar_test_rmse, _ = compute_total_RMSE(true_cultivar_data[k][2], output_cultivar_data[k][2])
@@ -238,7 +238,7 @@ def main():
         with open(f"{args.start_dir}/{prefix}results_obs_per_cultivars.pkl", "wb") as f:
             pkl.dump(obs_cultivar_avg_ch, f)
         f.close()
-    elif config.dtype == "wofost" or config.dtype == "wofost_pheno":
+    elif "wofost" in config.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_wf, f)
         f.close()

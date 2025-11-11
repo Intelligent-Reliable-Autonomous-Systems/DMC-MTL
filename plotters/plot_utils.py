@@ -193,7 +193,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif config.dtype == "wofost" or config.dtype == "wofost_pheno":
+        elif "wofost" in config.dtype:
             inds = plot_output_wofost(
                 config,
                 fpath,

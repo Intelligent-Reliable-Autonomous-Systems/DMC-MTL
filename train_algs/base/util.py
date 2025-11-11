@@ -200,7 +200,7 @@ def log_training(
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
-    elif calibrator.config.dtype == "wofost":
+    elif "wofost" in calibrator.config.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")

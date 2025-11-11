@@ -46,17 +46,16 @@ def main():
     args = argparser.parse_args()
 
     config_dirs = find_config_yaml_dirs(args.start_dir)
-    dtype = config_dirs[0].dtype
 
     # Setup total storage
     all_avg_pheno = np.zeros((12, args.num_runs))
     all_avg_ch = np.zeros((3, args.num_runs))
     obs_avg_ch = np.zeros((3, args.num_runs, 250)) - 1
     all_avg_wf = np.zeros((3, args.num_runs))
-    all_cultivar_avg_pheno = np.zeros((len(CROP_NAMES[dtype]), 12, args.num_runs))
-    all_cultivar_avg_ch = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs))
-    obs_cultivar_avg_ch = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs, 250)) - 1
-    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[dtype]), 3, args.num_runs))
+    all_cultivar_avg_pheno = np.zeros((len(CROP_NAMES["grape_phenology_"]), 12, args.num_runs))
+    all_cultivar_avg_ch = np.zeros((len(CROP_NAMES["grape_coldhardiness_ferg"]), 3, args.num_runs))
+    obs_cultivar_avg_ch = np.zeros((len(CROP_NAMES["grape_coldhardiness_ferg"]), 3, args.num_runs, 250)) - 1
+    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost_"]), 3, args.num_runs))
 
     for i, config in enumerate(config_dirs):
         print(config)

@@ -1,18 +1,28 @@
 #!/bin/bash
 
-python3 -m plotters.compile_runs --print --start_dir _runs/JournalExperiments/Pred/Phenology/ParamMTL/Multi --prefix param_mtl
-python3 -m plotters.compile_runs --print --start_dir _runs/JournalExperiments/Pred/Phenology/ClassMTL/Multi --prefix class_mtl
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL1_1
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL1_2
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL2_1
 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/ErrorFCGRU/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/ErrorTransformer/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/VecFCGRU/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/VecTransformer/Multi 
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL2_2
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL1
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL2
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL3
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL5
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL10
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologyLimited/ParamMTL15
 
-python3 -m plotters.compile_runs_error_ch --start_dir _runs/JournalExperiments/RTMC/ColdHardiness/Synth/ErrorFCGRU/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/Synth/GatedDecayError/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/Synth/GatedError/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/Synth/IterativeScaledVecFCGRU/Multi 
-python3 -m plotters.compile_runs_error --start_dir _runs/JournalExperiments/RTMC/Phenology/Synth/ScaledVecFCGRU/Multi 
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologySmoothing/ParamMTL0.2
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologySmoothing/ParamMTL0.1
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologySmoothing/ParamMTL0.01
+python3 -m plotters.compile_runs --start_dir _runs/PaperExperiments/PhenologySmoothing/ParamMTL0.001
+
+
+python3 -m plotters.load_results --config _runs/PaperExperiments/PhenologyLimited/ParamMTL1_1
+python3 -m plotters.load_results --config _runs/PaperExperiments/PhenologyLimited/ParamMTL1_2
+python3 -m plotters.load_results --config _runs/PaperExperiments/PhenologyLimited/ParamMTL2_1
+
+
 
 
 

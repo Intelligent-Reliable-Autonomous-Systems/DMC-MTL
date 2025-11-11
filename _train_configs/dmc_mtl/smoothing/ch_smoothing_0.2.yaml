@@ -1,16 +1,16 @@
 # Model Configuration
 PConfig:
     config_fpath: _configs_models/
-    model: Grape_ColdHardiness_TensorBatch 
-    model_parameters: grape_coldhardiness:1 
+    model: Grape_Phenology_TensorBatch
+    model_parameters: grape_phenology:1
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
-    output_vars: [LTE50]
+    output_vars: [PHENOLOGY]
 # Log configuration
-log_path: /_runs/PaperExperiments/ColdHardiness/ParamMTL/
-run_name: paramMTL
+log_path: /_runs/PaperExperiments/ColdHardinessSmoothing/ParamMTL0.2/
+run_name: param_mtl
 seed: 0
 # Data use
 cultivar: All
@@ -22,11 +22,12 @@ site: Prosser
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]] 
+param_scale: 0.2
 DConfig: 
     type: Param
-    arch: EmbedFCGRU
-    embed_op: concat
+    arch: EmbedFCGRU 
     hidden_dim: 1024
+    embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95

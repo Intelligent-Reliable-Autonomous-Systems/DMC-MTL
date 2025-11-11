@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
     output_vars: [PHENOLOGY]
 # Log configuration
-log_path: /_runs/PaperExperiments/PhenologyLimited/ParamMTL2_2/
+log_path: /_runs/PaperExperiments/PhenologyLimited/ParamMTL1_2/
 run_name: param_mtl
 seed: 0
 # Data use

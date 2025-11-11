@@ -61,12 +61,14 @@ def main():
     stl_array = np.array(list(stl_model.values()))[sorted_keys][np.newaxis, :]
 
     # Compute avg RMSE
-    print(mtl_array)
-    print(mtl_array.shape)
+
     mtl_array = mtl_array[0,:,-1,:]
     stl_array = stl_array[0,:,-1,:]
-    mtl_array = np.delete(mtl_array,1, axis=0) # delete cab franc
-    stl_array = np.delete(stl_array,1, axis=0)
+    if args.biomodel == "ColdHardiness":
+        mtl_array = np.delete(mtl_array,1, axis=0) # delete cab franc
+        stl_array = np.delete(stl_array,1, axis=0)
+
+
 
     # Per run error
     mask = mtl_array < stl_array
@@ -82,6 +84,8 @@ def main():
 
     mtl_array = np.mean(mtl_array,axis=-1)
     stl_array = np.mean(stl_array,axis=-1)
+    print(mtl_array)
+    print(stl_array)
 
     mask = mtl_array < stl_array
     perc_mean = np.mean(mask)

@@ -26,7 +26,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, exclude_multi:
             try:
                 # Get relative subdirectory name
                 subdir = "/".join(pkl_file.parent.parts[-2:])
-                if "Multi" in subdir and exclude_multi:
+                if "All" in subdir and exclude_multi:
                     continue
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
@@ -57,7 +57,7 @@ def main():
     mtl_arr = np.array(list(mtl_models.values()))[sorted_keys]
     mtl_arr = np.where(mtl_arr < 0, np.nan, mtl_arr)
     mtl_arr = np.transpose(mtl_arr, (0, 1, 2, 4, 3)) if args.obs else mtl_arr
-
+    mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr) # Replace 0.0s with nan
     if args.per:
         if args.cult:
             mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
@@ -102,7 +102,6 @@ def main():
                 all_std = np.round(np.nanstd(mtl_arr, axis=(0, -1)), decimals=2)
                 for i in range(len(all_mean)):
                     all_str += f"{all_mean[i]} +/- {all_std[i]}, "
-
     else:
         if len(mean.shape) == 2:
             for j in range(mean.shape[1]):

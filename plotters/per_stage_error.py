@@ -29,7 +29,7 @@ def load_named_pickles(biomodel: str, folder_paths: list[str], target_name: str,
             try:
                 # Get relative subdirectory name
                 subdir = "/".join(pkl_file.parent.parts[-2:])
-                if "Multi" in subdir and exclude_multi:
+                if "All" in subdir and exclude_multi:
                     continue
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)

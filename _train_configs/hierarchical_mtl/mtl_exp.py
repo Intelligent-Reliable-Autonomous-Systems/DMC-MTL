@@ -46,24 +46,45 @@ def main():
     args = parser.parse_args()
 
     jobs = []
-    for seed in range(5):
-        for region in ["BCOV", "ONNP", "WA"]:
-            stations = get_subfolders(f"{args.dpath}/{region}/")
-            for station in stations:
-                sites = get_subfolders(f"{args.dpath}/{region}/{station}")
-                for site in sites:
+    config = ["hierarchical_mtl/ch_deep", "hierarchical_mtl/ch_param"]
+    for c in config: 
+        for seed in range(5):
+            for region in ["BCOV", "ONNP", "WA"]:
+                stations = get_subfolders(f"{args.dpath}/{region}/")
+                for station in stations:
+                    sites = get_subfolders(f"{args.dpath}/{region}/{station}")
+                    for site in sites:
+                        jobs.append(
+                            (
+                                args.file,
+                                [
+                                    "--config",
+                                    c,
+                                    "--region",
+                                    region,
+                                    "--station",
+                                    station,
+                                    "--site",
+                                    site,
+                                    "--cultivar",
+                                    "All",
+                                    "--seed",
+                                    str(seed),
+                                ],
+                            )
+                        )
                     jobs.append(
                         (
                             args.file,
                             [
                                 "--config",
-                                args.config,
+                                c,
                                 "--region",
                                 region,
                                 "--station",
                                 station,
                                 "--site",
-                                site,
+                                "All",
                                 "--cultivar",
                                 "All",
                                 "--seed",
@@ -76,11 +97,11 @@ def main():
                         args.file,
                         [
                             "--config",
-                            args.config,
+                            c,
                             "--region",
                             region,
                             "--station",
-                            station,
+                            "All",
                             "--site",
                             "All",
                             "--cultivar",
@@ -95,9 +116,9 @@ def main():
                     args.file,
                     [
                         "--config",
-                        args.config,
+                        c,
                         "--region",
-                        region,
+                        "All",
                         "--station",
                         "All",
                         "--site",
@@ -109,25 +130,6 @@ def main():
                     ],
                 )
             )
-        jobs.append(
-            (
-                args.file,
-                [
-                    "--config",
-                    args.config,
-                    "--region",
-                    "All",
-                    "--station",
-                    "All",
-                    "--site",
-                    "All",
-                    "--cultivar",
-                    "All",
-                    "--seed",
-                    str(seed),
-                ],
-            )
-        )
 
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]

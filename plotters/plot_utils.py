@@ -217,9 +217,9 @@ def gen_all_data_and_plot(
         [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
 
         for k in range(len(true)):
-            true_cultivar_data[int(cultivars[k].item())][n].append(true[k][inds[k]])
-            output_cultivar_data[int(cultivars[k].item())][n].append(output[k][inds[k]])
-            cult_inds[int(cultivars[k].item())][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
+            true_cultivar_data[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(true[k][inds[k]])
+            output_cultivar_data[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(output[k][inds[k]])
+            cult_inds[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
 
         if args.break_early:
             break

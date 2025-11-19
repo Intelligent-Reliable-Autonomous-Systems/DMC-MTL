@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH -J pheno_smoothing0.01
-#SBATCH -o output/pheno_smoothing0.01.out
-#SBATCH -e output/pheno_smoothing0.01.err
+#SBATCH -J pheno_smoothing_0.01
+#SBATCH -o output/pheno_smoothing_0.01.out
+#SBATCH -e output/pheno_smoothing_0.01.err
 #SBATCH -p eecs,share,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 
-python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 0
-python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 1
-python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 2
-python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 3
-python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing0.01 --seed 4
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing_0.01 --seed 0
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing_0.01 --seed 1
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing_0.01 --seed 2
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing_0.01 --seed 3
+python3 -m trainers.train_model --config dmc_mtl/smoothing/pheno_smoothing_0.01 --seed 4

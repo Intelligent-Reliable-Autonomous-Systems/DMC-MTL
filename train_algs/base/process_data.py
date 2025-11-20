@@ -18,7 +18,7 @@ import copy
 import os
 import pickle as pkl
 
-from model_engine.util import EPS, CROP_NAMES
+from model_engine.util import EPS, CROP_NAMES, REGIONS, STATIONS, SITES
 from model_engine.inputs.input_providers import (
     MultiTensorWeatherDataProvider,
     WeatherDataProvider,
@@ -68,6 +68,9 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     train_inds = np.empty(shape=(0,))
     test_inds = np.empty(shape=(0,))
     cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
+    region_data = np.array([d.loc[0, "REGION"] for d in data])
+    station_data = np.array([d.loc[0, "STATION"] for d in data])
+    site_data = np.array([d.loc[0, "SITE"] for d in data])
 
     c_counts = []
     for c in range(len(CROP_NAMES[model.config.dtype])):
@@ -76,22 +79,27 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     c_inds = (
         np.argsort(c_counts)[::-1][: model.config.prim_cultivars :] if model.config.prim_cultivars else np.array([])
     )
+    for r in range(len(REGIONS)):
+        for s in range(len(STATIONS)):
+            for si in range(len(SITES)):
+                for c in range(len(CROP_NAMES[model.config.dtype])):
+                    cultivar_inds = np.argwhere(
+                        (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
+                    ).flatten()
+                    if len(cultivar_inds) < 3:
+                        continue
 
-    for c in range(len(CROP_NAMES[model.config.dtype])):
-        cultivar_inds = np.argwhere(c == cultivar_data).flatten()
-        if len(cultivar_inds) < 3:
-            print(f"Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}")
-            continue
+                    np.random.shuffle(cultivar_inds)
+                    test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
-        np.random.shuffle(cultivar_inds)
-        test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
-
-        if model.config.data_cap is None or c in c_inds:
-            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-        elif len(cultivar_inds[x:]) <= model.config.data_cap:
-            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-        else:
-            train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.data_cap])).astype(np.int32)
+                    if model.config.data_cap is None or c in c_inds:
+                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+                    elif len(cultivar_inds[x:]) <= model.config.data_cap:
+                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+                    else:
+                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.data_cap])).astype(
+                            np.int32
+                        )
 
     # train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
     np.random.shuffle(train_inds)
@@ -117,11 +125,31 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
     }
 
-    cultivar_data = torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
+    cultivar_data = torch.tensor(cultivar_data).to(torch.float32).to(model.device).unsqueeze(1)
+    region_data = torch.tensor(region_data).to(torch.float32).to(model.device).unsqueeze(1)
+    station_data = torch.tensor(station_data).to(torch.float32).to(model.device).unsqueeze(1)
+    site_data = torch.tensor(site_data).to(torch.float32).to(model.device).unsqueeze(1)
+
     model.num_cultivars = len(torch.unique(cultivar_data))
+    model.num_regions = len(torch.unique(region_data))
+    model.num_stations = len(torch.unique(station_data))
+    model.num_sites = len(torch.unique(site_data))
+
     model.cultivars = {
         "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
         "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
+    }
+    model.regions = {
+        "train": torch.stack([region_data[i] for i in train_inds]).to(torch.float32),
+        "test": torch.stack([region_data[i] for i in test_inds]).to(torch.float32),
+    }
+    model.stations = {
+        "train": torch.stack([station_data[i] for i in train_inds]).to(torch.float32),
+        "test": torch.stack([station_data[i] for i in test_inds]).to(torch.float32),
+    }
+    model.sites = {
+        "train": torch.stack([site_data[i] for i in train_inds]).to(torch.float32),
+        "test": torch.stack([site_data[i] for i in test_inds]).to(torch.float32),
     }
 
     if len(model.data["test"]) < 1:

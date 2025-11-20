@@ -56,7 +56,7 @@ def main():
                         [
                             "--config",
                             f"_runs/MTLHierarchy/GrapeColdhardiness/DeepMTL/{region}/{station}/{site}/",
-                            "--stl"
+                            "--stl",
                         ],
                     )
                 )
@@ -67,11 +67,10 @@ def main():
                         [
                             "--config",
                             f"_runs/MTLHierarchy/GrapeColdhardiness/ParamMTL/{region}/{station}/{site}/",
-                            "--stl"
+                            "--stl",
                         ],
                     )
                 )
-
 
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]

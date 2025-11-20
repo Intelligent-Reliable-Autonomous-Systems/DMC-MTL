@@ -59,7 +59,7 @@ def main():
                             [
                                 "--config",
                                 f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/{station}/{site}/{cult}/",
-                                "--per"
+                                "--per",
                             ],
                         )
                     )
@@ -69,7 +69,7 @@ def main():
                         [
                             "--start_dir",
                             f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/{station}/All/{cult}/",
-                            "--per"
+                            "--per",
                         ],
                     )
                 )
@@ -79,18 +79,14 @@ def main():
                     [
                         "--start_dir",
                         f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/All/All/{cult}/",
-                        "--per"
+                        "--per",
                     ],
                 )
             )
         jobs.append(
             (
                 args.file,
-                [
-                    "--start_dir",
-                    f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/All/All/All/{cult}/",
-                    "--per"
-                ],
+                ["--start_dir", f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/All/All/All/{cult}/", "--per"],
             )
         )
 

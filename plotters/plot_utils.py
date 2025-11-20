@@ -99,13 +99,17 @@ def gen_batch_data(
     dates: np.ndarray,
     val_data: torch.Tensor,
     cultivars: torch.Tensor,
-    days: int = None,
+    regions: torch.Tensor,
+    stations: torch.Tensor,
+    sites: torch.Tensor,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Generates model output from a single batch
     """
     with torch.no_grad():
-        (output, params, _) = calibrator.forward(input_data, dates, cultivars=cultivars, val_data=val_data)
+        (output, params, _) = calibrator.forward(
+            input_data, dates, cultivars=cultivars, val_data=val_data, regions=regions, stations=stations, sites=sites
+        )
 
     true_data = val_data.cpu().squeeze().numpy()
     if output.size(-1) == len(PHENOLOGY_INT):
@@ -127,8 +131,6 @@ def gen_all_data_and_plot(
     output_data: list[np.ndarray],
     true_cultivar_data: list[np.ndarray],
     output_cultivar_data: list[np.ndarray],
-    all_inds: list[np.ndarray],
-    cult_inds: list[np.ndarray],
     name: str = "train",
 ) -> None:
     """
@@ -143,12 +145,14 @@ def gen_all_data_and_plot(
 
     true_arr = []
     output_arr = []
-    err_arr = []
     for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
 
         cultivars = (
             calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
         )
+        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
+        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
+        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
 
         true, output, params = gen_batch_data(
             calibrator,
@@ -156,10 +160,12 @@ def gen_all_data_and_plot(
             calibrator.dates[name][i : i + calibrator.batch_size],
             calibrator.val[name][i : i + calibrator.batch_size],
             cultivars,
+            regions,
+            stations,
+            sites,
         )
         true_arr.append(true)
         output_arr.append(output)
-        weather = unnormalize(calibrator.data[name][i : i + calibrator.batch_size], calibrator.drange).cpu().numpy()
 
         if "grape_phenology" in config.dtype:
             inds = plot_output_phenology(
@@ -212,14 +218,22 @@ def gen_all_data_and_plot(
             true = true[:, :, 0]
             output = output[:, :, 0]
 
-        [all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) for k in range(len(inds))]
         [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
         [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
 
+        cm = calibrator.nn.cult_mapping
+        rm = calibrator.nn.reg_mapping
+        sm = calibrator.nn.stat_mapping
+        sim = calibrator.nn.site_mapping
+
         for k in range(len(true)):
-            true_cultivar_data[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(true[k][inds[k]])
-            output_cultivar_data[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(output[k][inds[k]])
-            cult_inds[calibrator.nn.mapping[int(cultivars[k].item())]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
+            ck = int(cultivars[k].item())
+            rk = int(regions[k].item())
+            sk = int(stations[k].item())
+            sik = int(sites[k].item())
+
+            true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
+            output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
 
         if args.break_early:
             break

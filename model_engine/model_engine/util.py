@@ -149,6 +149,57 @@ CROP_NAMES = {
     ),
 }
 
+REGIONS = np.array(["BCOV", "ONNP", "WA"])
+STATIONS = np.array(["Kelowna", "Kelowna_UBC", "Osoyoos_CS", "Summerland", "Grimbsy_Mtn", "Vineland_Station", "Roza2"])
+SITES = np.array(
+    [
+        "WestKelowna",
+        "OKFallsEast",
+        "OKFallsWest",
+        "OliverEast",
+        "OliverSouth",
+        "OliverWest",
+        "BlackSage",
+        "OsoyoosNorth",
+        "OsoyoosNortheast",
+        "OsoyoosSoutheast",
+        "OsoyoosWest",
+        "NaramataBench",
+        "BeamsvilleBench",
+        "LincolnLakeshore",
+        "TwentyMileBench",
+        "VinemountRidge",
+        "CreekShores",
+        "FourMileCreek",
+        "NiagaraLakeshores",
+        "NiagaraRiver",
+        "ShortHillsBench",
+        "StDavidsBench",
+        "Prosser",
+    ]
+)
+
+REGION_NAMES = {
+    "BCOV": {
+        "Kelowna": ["WestKelowna"],
+        "Kelowna_UBC": ["OKFallsEast", "OKFallsWest", "OliverEast", "OliverSouth", "OliverWest"],
+        "Osoyoos_CS": ["BlackSage", "OsoyoosNorth", "OsoyoosNortheast", "OsoyoosSoutheast", "OsoyoosWest"],
+        "Summerland": ["NaramataBench"],
+    },
+    "ONNP": {
+        "Grimbsy_Mtn": ["BeamsvilleBench", "LincolnLakeshore", "TwentyMileBench", "VinemountRidge"],
+        "Vineland_Station": [
+            "CreekShores",
+            "FourMileCreek",
+            "NiagaraLakeshores",
+            "NiagaraRiver",
+            "ShortHillsBench",
+            "StDavidsBench",
+        ],
+    },
+    "WA": {"Roza2": ["Prosser"]},
+}
+
 
 def param_loader(config: dict) -> dict:
     """

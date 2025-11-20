@@ -47,7 +47,7 @@ def main():
 
     jobs = []
     config = ["hierarchical_mtl/ch_deep", "hierarchical_mtl/ch_param"]
-    for c in config: 
+    for c in config:
         for seed in range(5):
             for region in ["BCOV", "ONNP", "WA"]:
                 stations = get_subfolders(f"{args.dpath}/{region}/")

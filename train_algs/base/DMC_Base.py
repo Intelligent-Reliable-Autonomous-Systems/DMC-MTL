@@ -21,9 +21,21 @@ class BaseModule(nn.Module):
         self.output_dim = model.get_output_dim(c)
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
 
-        orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
-        self.mapping = torch.zeros((int(orig.max()) + 1,)).to(torch.int).to(model.device)
-        self.mapping[orig] = torch.arange(len(orig)).to(torch.int).to(model.device)
+        cult_orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
+        self.cult_mapping = torch.zeros((int(cult_orig.max()) + 1,)).to(torch.int).to(model.device)
+        self.cult_mapping[cult_orig] = torch.arange(len(cult_orig)).to(torch.int).to(model.device)
+
+        reg_orig = torch.unique(torch.concatenate(list(model.regions.values()), axis=0)).to(torch.int)
+        self.reg_mapping = torch.zeros((int(reg_orig.max()) + 1,)).to(torch.int).to(model.device)
+        self.reg_mapping[reg_orig] = torch.arange(len(reg_orig)).to(torch.int).to(model.device)
+
+        stat_orig = torch.unique(torch.concatenate(list(model.stations.values()), axis=0)).to(torch.int)
+        self.stat_mapping = torch.zeros((int(stat_orig.max()) + 1,)).to(torch.int).to(model.device)
+        self.stat_mapping[stat_orig] = torch.arange(len(stat_orig)).to(torch.int).to(model.device)
+
+        site_orig = torch.unique(torch.concatenate(list(model.sites.values()), axis=0)).to(torch.int)
+        self.site_mapping = torch.zeros((int(site_orig.max()) + 1,)).to(torch.int).to(model.device)
+        self.site_mapping[site_orig] = torch.arange(len(site_orig)).to(torch.int).to(model.device)
 
     def get_init_state(self, batch_size: int = 1) -> torch.Tensor:
 
@@ -112,7 +124,7 @@ class EmbeddingFCGRU(BaseModule):
         cultivars: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
+        embed = self.embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
 
         if input.ndim == 2:
             input = input.unsqueeze(1)
@@ -159,7 +171,7 @@ class EmbeddingFCFF(BaseModule):
         cultivars: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        embed = self.embedding_layer(self.mapping[cultivars.flatten().to(torch.int)])
+        embed = self.embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
         gru_input = self.embed_op(embed, input)
         x = self.fc1(gru_input)
         x = self.fc2(x)

@@ -71,7 +71,6 @@ def main():
                     )
                 )
 
-
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]
         for fut in as_completed(futures):

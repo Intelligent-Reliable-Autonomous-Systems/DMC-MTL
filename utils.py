@@ -17,8 +17,7 @@ import numpy as np
 import pandas as pd
 from torch import nn
 from omegaconf import OmegaConf, DictConfig
-from model_engine import util
-from model_engine.util import CROP_NAMES
+from model_engine.util import CROP_NAMES, REGION_NAMES, REGIONS, STATIONS, SITES
 
 from train_algs import DMC
 
@@ -205,14 +204,21 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
                         contains="" if config.cultivar == "All" else config.cultivar,
                     )
     data = []
+
     for p in paths:
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "")
+        region = p.split("/")[3]
+        station = p.split("/")[4]
+        site = p.split("/")[5]
         if cultivar not in CROP_NAMES[config.dtype]:
             continue
         with open(p, "rb") as f:
             cult_data = pickle.load(f)
         for cult in cult_data:
             cult["CULTIVAR"] = np.where(CROP_NAMES[config.dtype] == cultivar)[0][0]
+            cult["REGION"] = np.where(REGIONS == region)[0][0]
+            cult["STATION"] = np.where(STATIONS == station)[0][0]
+            cult["SITE"] = np.where(SITES == site)[0][0]
             data.append(cult)
     for d in data:
         d.rename(columns={"DATE": "DAY"}, inplace=True)

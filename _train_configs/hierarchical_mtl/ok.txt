@@ -1,23 +1,41 @@
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site All --cultivar All --seed 4
 
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OliverEast --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OliverEast --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OliverEast --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OliverEast --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Kelowna_UBC --site OliverEast --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Osoyoos_CS --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Osoyoos_CS --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Osoyoos_CS --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Osoyoos_CS --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station Osoyoos_CS --site All --cultivar All --seed 4
 
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OKFallsEast --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Vineland_Station --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Vineland_Station --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Vineland_Station --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Vineland_Station --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Vineland_Station --site All --cultivar All --seed 4
 
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OliverEast --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OliverEast --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OliverEast --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OliverEast --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_param --region BCOV --station Kelowna_UBC --site OliverEast --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Grimbsy_Mtn --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Grimbsy_Mtn --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Grimbsy_Mtn --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Grimbsy_Mtn --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station Grimbsy_Mtn --site All --cultivar All --seed 4
+
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station All --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station All --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station All --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station All --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region BCOV --station All --site All --cultivar All --seed 4
+
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station All --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station All --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station All --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station All --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region ONNP --station All --site All --cultivar All --seed 4
+
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region All --station All --site All --cultivar All --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region All --station All --site All --cultivar All --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region All --station All --site All --cultivar All --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region All --station All --site All --cultivar All --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/ch_deep --region All --station All --site All --cultivar All --seed 4

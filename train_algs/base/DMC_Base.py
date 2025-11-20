@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from omegaconf import DictConfig
 from train_algs.base.util import set_embedding_op
-from model_engine.util import CROP_NAMES
+from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 
 
 class BaseModule(nn.Module):
@@ -20,6 +20,8 @@ class BaseModule(nn.Module):
         self.input_dim = model.get_input_dim(c)
         self.output_dim = model.get_output_dim(c)
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
+
+        self.embed_op_str = c.DConfig.embed_op
 
         cult_orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
         self.cult_mapping = torch.zeros((int(cult_orig.max()) + 1,)).to(torch.int).to(model.device)
@@ -108,7 +110,11 @@ class EmbeddingFCGRU(BaseModule):
 
         super(EmbeddingFCGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim)
+        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim)
+        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim)
+
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
@@ -122,15 +128,33 @@ class EmbeddingFCGRU(BaseModule):
         input: torch.Tensor = None,
         hn: torch.Tensor = None,
         cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        embed = self.embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
+        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
+        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
 
         if input.ndim == 2:
             input = input.unsqueeze(1)
 
-        embed = embed.unsqueeze(1).expand_as(input)
-        gru_input = self.embed_op(embed, input)
+        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
+        reg_embed = reg_embed.unsqueeze(1).expand_as(input)
+        stat_embed = stat_embed.unsqueeze(1).expand_as(input)
+        site_embed = site_embed.unsqueeze(1).expand_as(input)
+
+        if self.embed_op_str == "concat_reg":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
+        elif self.embed_op_str == "concat_stat":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
+        elif self.embed_op_str == "concat_site":
+            gru_input = self.embed_op(cult_embed, site_embed, input)
+        elif self.embed_op_str == "concat":
+            gru_input = self.embed_op(cult_embed, input)
+
         x = self.fc1(gru_input)
         x = self.fc2(x)
         _, hn = self.rnn(x, hn)
@@ -219,45 +243,6 @@ class OneHotEmbeddingFCGRU(BaseModule):
         params = self.hidden_to_params(out).squeeze(0)
 
         return params, hn
-
-
-class DeepEmbeddingGRU(BaseModule):
-    """
-    DeepRNN Embedding GRU
-    Takes one hot embedding of cultivar and passes through RNN
-    to create a regression prediction of the output
-    """
-
-    def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
-        super(DeepEmbeddingGRU, self).__init__(c, model)
-
-        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
-        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
-        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
-        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
-        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
-        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
-
-        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
-    def forward(
-        self, input: torch.Tensor = None, hn: torch.Tensor = None, cultivars: torch.Tensor = None, **kwargs
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        embed = self.embedding_layer(cultivars.flatten().to(torch.long))
-        if input.ndim == 2:
-            input = input.unsqueeze(1)
-        embed = embed.unsqueeze(1).expand_as(input)
-
-        gru_input = self.embed_op(embed, input)
-        x = F.relu(self.fc1(gru_input))
-        x = F.relu(self.fc2(x))
-        _, hn = self.rnn(x, hn)
-        out = F.relu(self.fc3(hn))
-        output = self.hidden_to_output(out).squeeze(0)
-
-        return output, hn
 
 
 class GHCNDeepEmbeddingGRU(BaseModule):

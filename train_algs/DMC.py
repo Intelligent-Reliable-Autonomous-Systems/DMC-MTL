@@ -19,7 +19,6 @@ from model_engine.engine import get_engine
 from train_algs.base.DMC_Base import (
     FCGRU,
     EmbeddingFCGRU,
-    DeepEmbeddingGRU,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
     FFTempResponse,
@@ -60,9 +59,7 @@ class BaseRNN(BaseModel):
             nn = FCGRU(config, model)
         elif config.DConfig.arch == "EmbedFCGRU":
             nn = EmbeddingFCGRU(config, model)
-        elif config.DConfig.arch == "DeepEmbedGRU":
-            nn = DeepEmbeddingGRU(config, model)
-        elif config.DConfig.arch == "GHCNDeepEmbedGRU":
+        elif config.DConfig.arch == "GHCNDeepEmbedFCGRU":
             nn = GHCNDeepEmbeddingGRU(config, model)
         elif config.DConfig.arch == "OneHotEmbedFCGRU":
             nn = OneHotEmbeddingFCGRU(config, model)
@@ -106,6 +103,9 @@ class BaseRNN(BaseModel):
             val_shuffled = self.val[train_name][inds]
             dates_shuffled = self.dates[train_name][inds]
             cultivars_shuffled = self.cultivars[train_name][inds] if self.cultivars is not None else None
+            regions_shuffled = self.regions[train_name][inds] if self.regions is not None else None
+            stations_shuffled = self.stations[train_name][inds] if self.stations is not None else None
+            sites_shuffled = self.sites[train_name][inds] if self.sites is not None else None
             train_avg = torch.zeros(size=(4,)).to(self.device)
 
             # Training
@@ -117,8 +117,18 @@ class BaseRNN(BaseModel):
                 batch_cultivars = (
                     cultivars_shuffled[i : i + self.batch_size] if cultivars_shuffled is not None else None
                 )
+                batch_regions = regions_shuffled[i : i + self.batch_size] if regions_shuffled is not None else None
+                batch_stations = stations_shuffled[i : i + self.batch_size] if stations_shuffled is not None else None
+                batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
-                output, _, model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
+                output, _, model_output = self.forward(
+                    batch_data,
+                    batch_dates,
+                    cultivars=batch_cultivars,
+                    regions=batch_regions,
+                    stations=batch_stations,
+                    sites=batch_sites,
+                )
 
                 # Compute PINN Loss
                 if self.config.DConfig.type == "PINN":
@@ -173,8 +183,21 @@ class BaseRNN(BaseModel):
                 batch_cultivars = (
                     self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                 )
+                batch_regions = self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
+                batch_stations = (
+                    self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
+                )
+                batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
+
                 eval_target = self.val[test_name][j : j + self.batch_size]
-                eval_output, _, eval_model_output = self.forward(batch_data, batch_dates, cultivars=batch_cultivars)
+                eval_output, _, eval_model_output = self.forward(
+                    batch_data,
+                    batch_dates,
+                    cultivars=batch_cultivars,
+                    regions=batch_regions,
+                    stations=batch_stations,
+                    sites=batch_sites,
+                )
 
                 # Compute PINN Loss
                 if self.config.DConfig.type == "PINN":
@@ -248,6 +271,9 @@ class ParamRNN(BaseRNN):
         data: torch.Tensor,
         dates: np.ndarray,
         cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
@@ -273,6 +299,9 @@ class ParamRNN(BaseRNN):
                 torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn=hn_cn,
                 cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites,
             )
 
             params_predict = self.param_cast(params_predict, prev_params=batch_params)
@@ -416,7 +445,14 @@ class DeepRNN(BaseRNN):
         super(DeepRNN, self).__init__(config, data)
 
     def forward(
-        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
@@ -428,7 +464,9 @@ class DeepRNN(BaseRNN):
 
         # Run through entirety of time series predicting output for each step
         for i in range(dlen):
-            output_predict, hn_cn = self.nn(data[:, i], hn_cn, cultivars)
+            output_predict, hn_cn = self.nn(
+                data[:, i], hn_cn, cultivars=cultivars, regions=regions, stations=stations, sites=sites
+            )
             output_tens[:, i] = output_predict
 
         return output_tens, None, None

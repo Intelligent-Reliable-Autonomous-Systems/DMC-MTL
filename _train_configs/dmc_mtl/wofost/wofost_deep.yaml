@@ -22,7 +22,7 @@ params: ["DLO", "TSUM1", "TSUM2", "VERNBASE", "VERNSAT", "CVO", "RMO"]
 params_range: [[12,18], [500, 1500], [500, 1500], [0,25], [0,100], [.5, .8], [0.05, 0.2]]
 DConfig: 
     type: Deep
-    arch: DeepEmbedGRU
+    arch: EmbedFCGRU
     hidden_dim: 2048
     embed_op: concat
     loss_func: MSELoss

@@ -53,7 +53,7 @@ def main():
 
     sorted_keys = np.argsort(list(mtl_models.keys()))  # Reorder based on alphabetical
     mtl_arr = np.array(list(mtl_models.values()))[sorted_keys]
-    mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr).squeeze()  # Replace 0.0s with nan
+    mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr)  # Replace 0.0s with nan
 
     # Take average over runs and cultivars
     if args.per:
@@ -136,7 +136,16 @@ def main():
                         all_str += "\n"
                     all_str += "\n"
                 all_str += "\n"
-        elif mean.ndim == 2:  # For when we have multiple stl models
+        elif mean.ndim == 3:  # For when we have region/station
+            for j in range(mean.shape[0]):
+                for k in range(mean.shape[1]):
+                    if (np.isnan(mean[j, k])).all():
+                        continue
+                    for i in range(mean.shape[2]):
+                        all_str += f"{mean[j,k,i]} +/- {std[j,k,i]}, "
+                    all_str += "\n"
+                all_str += "\n"
+        elif mean.ndim == 2 and args.stl:  # For when we have multiple stl models
             for j in range(mean.shape[0]):
                 for i in range(mean.shape[1]):
                     all_str += f"{mean[j,i]} +/- {std[j,i]}, "

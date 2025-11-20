@@ -6,30 +6,29 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
-    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/PaperExperiments/ColdHardiness/PINNMTL/
-run_name: pinn_mtl
+log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLSite/
+run_name: deep_mtl
 seed: 0
-# Data use
-cultivar: All
+#
 data_fpath: _data/processed_data/
-dtype: grape_coldhardiness_ferg
-region: WA
-station: Roza2
-site: Prosser
-# Parameters 
+dtype: grape_coldhardiness_reg
+region: All
+station: All
+site: All
+cultivar: All
+# Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]
 DConfig: 
-    type: PINN
-    arch: EmbedFCGRU 
-    embed_op: concat
+    type: Deep
+    arch: EmbedFCGRU
     hidden_dim: 2048
+    embed_op: concat_site
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95
     batch_size: 12
     epochs: 400
-    pinn_p: 0.5

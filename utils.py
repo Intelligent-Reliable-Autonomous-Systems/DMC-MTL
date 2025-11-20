@@ -158,7 +158,7 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     Loads data from a OmegaConf configuration file
     """
 
-    def find_pickle_files(root_dir: str, prefix: str = "", contains: str = ""):
+    def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = ""):
         """
         Recursively find all pickle files in root_dir and subdirectories
         that match a given prefix and contain a specified substring.
@@ -174,7 +174,12 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         pickle_paths = []
         for dirpath, dirnames, filenames in os.walk(root_dir):
             for filename in filenames:
-                if filename.endswith(".pkl") and filename.startswith(prefix) and contains in filename:
+                if (
+                    filename.endswith(".pkl")
+                    and filename.startswith(prefix)
+                    and contains in filename
+                    and exclude not in filename
+                ):
                     full_path = os.path.join(dirpath, filename)
                     pickle_paths.append(full_path)
         return pickle_paths
@@ -186,22 +191,28 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         paths = find_pickle_files(f"{PREFIX}synth/", prefix=f"{config.synth_data}_{dtype}_")
     else:
         if config.region == "All":
-            paths = find_pickle_files(f"{PREFIX}", contains="" if config.cultivar == "All" else config.cultivar)
+            paths = find_pickle_files(
+                f"{PREFIX}", contains="" if config.cultivar == "All" else config.cultivar, exclude="synth"
+            )
         else:
             if config.station == "All":
                 paths = find_pickle_files(
-                    f"{PREFIX}{config.region}/", contains="" if config.cultivar == "All" else config.cultivar
+                    f"{PREFIX}{config.region}/",
+                    contains="" if config.cultivar == "All" else config.cultivar,
+                    exclude="synth",
                 )
             else:
                 if config.site == "All":
                     paths = find_pickle_files(
                         f"{PREFIX}{config.region}/{config.station}/",
                         contains="" if config.cultivar == "All" else config.cultivar,
+                        exclude="synth",
                     )
                 else:
                     paths = find_pickle_files(
                         f"{PREFIX}{config.region}/{config.station}/{config.site}/",
                         contains="" if config.cultivar == "All" else config.cultivar,
+                        exclude="synth",
                     )
     data = []
 

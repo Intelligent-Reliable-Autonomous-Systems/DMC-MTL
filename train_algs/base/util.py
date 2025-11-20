@@ -33,6 +33,27 @@ def set_embedding_op(model: nn.Module, embed_op: str) -> int:
 
         model.embed_op = concat
         return 2 * model.input_dim
+    elif embed_op == "concat_reg":
+
+        def concat(embed1, embed2, embed3, embed4, input):
+            return torch.concatenate((embed1, embed2, embed3, embed4, input), dim=-1)
+
+        model.embed_op = concat
+        return 5 * model.input_dim
+    elif embed_op == "concat_stat":
+
+        def concat(embed1, embed2, embed3, input):
+            return torch.concatenate((embed1, embed2, embed3, input), dim=-1)
+
+        model.embed_op = concat
+        return 4 * model.input_dim
+    elif embed_op == "concat_site":
+
+        def concat(embed1, embed2, input):
+            return torch.concatenate((embed1, embed2, input), dim=-1)
+
+        model.embed_op = concat
+        return 3 * model.input_dim
     elif embed_op == "add":
 
         def add(embed, input):

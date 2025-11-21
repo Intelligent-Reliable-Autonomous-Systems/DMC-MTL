@@ -69,6 +69,30 @@ class DConfig:
     """Window size for RNN"""
     window_size: Optional[int] = None
 
+@dataclass
+class RTMCConfig:
+    """Finetuner Type"""
+
+    arch: Optional[str] = None
+    """Hidden dimension of Layers"""
+    hidden_dim: Optional[int] = None
+    """Loss function"""
+    loss_func: Optional[str] = None
+    """Learning rate for training"""
+    learning_rate: Optional[float] = None
+    """Learning rate reduction factor"""
+    lr_factor: Optional[float] = None
+    """Batch size"""
+    batch_size: Optional[int] = None
+    """Epochs for training"""
+    epochs: Optional[int] = None
+    """Path to base model"""
+    rnn_fpath: Optional[str] = None
+    """If bias is included"""
+    bias: Optional[bool] = None
+    """Random day masking flag"""
+    day_masking: Optional[bool] = None
+
 
 @dataclass
 class Args:
@@ -77,6 +101,8 @@ class Args:
     PConfig: object = PConfig
     """Deep Model Args"""
     DConfig: object = DConfig
+    """RTMC Config"""
+    RTMCConfig: object = RTMCConfig
     """If using a validation set or not"""
     val_set: Optional[bool] = None
     """Path to save model"""

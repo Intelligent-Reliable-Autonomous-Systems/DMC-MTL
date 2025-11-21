@@ -8,7 +8,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Transformer
-from train_algs.base.base import TLSTM
 from omegaconf import DictConfig
 
 

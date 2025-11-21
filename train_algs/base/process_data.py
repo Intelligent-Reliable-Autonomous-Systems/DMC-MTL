@@ -67,10 +67,10 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     # Shuffle to get train and test splits for data
     train_inds = np.empty(shape=(0,))
     test_inds = np.empty(shape=(0,))
-    cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
-    region_data = np.array([d.loc[0, "REGION"] for d in data])
-    station_data = np.array([d.loc[0, "STATION"] for d in data])
-    site_data = np.array([d.loc[0, "SITE"] for d in data])
+    cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data]) if "CULTIVAR" in data[0].columns else None
+    region_data = np.array([d.loc[0, "REGION"] for d in data]) if "REGION" in data[0].columns else None
+    station_data = np.array([d.loc[0, "STATION"] for d in data]) if "STATION" in data[0].columns else None
+    site_data = np.array([d.loc[0, "SITE"] for d in data]) if "SITE" in data[0].columns else None
 
     c_counts = []
     for c in range(len(CROP_NAMES[model.config.dtype])):
@@ -79,27 +79,42 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     c_inds = (
         np.argsort(c_counts)[::-1][: model.config.prim_cultivars :] if model.config.prim_cultivars else np.array([])
     )
-    for r in range(len(REGIONS)):
-        for s in range(len(STATIONS)):
-            for si in range(len(SITES)):
-                for c in range(len(CROP_NAMES[model.config.dtype])):
-                    cultivar_inds = np.argwhere(
-                        (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
-                    ).flatten()
-                    if len(cultivar_inds) < 3:
-                        continue
+    if model.config.synth_data is None:
+        for r in range(len(REGIONS)):
+            for s in range(len(STATIONS)):
+                for si in range(len(SITES)):
+                    for c in range(len(CROP_NAMES[model.config.dtype])):
+                        cultivar_inds = np.argwhere(
+                            (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
+                        ).flatten()
+                        if len(cultivar_inds) < 3:
+                            continue
 
-                    np.random.shuffle(cultivar_inds)
-                    test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
+                        np.random.shuffle(cultivar_inds)
+                        test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
-                    if model.config.data_cap is None or c in c_inds:
-                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-                    elif len(cultivar_inds[x:]) <= model.config.data_cap:
-                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-                    else:
-                        train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.data_cap])).astype(
-                            np.int32
-                        )
+                        if model.config.data_cap is None or c in c_inds:
+                            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+                        elif len(cultivar_inds[x:]) <= model.config.data_cap:
+                            train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+                        else:
+                            train_inds = np.concatenate(
+                                (train_inds, cultivar_inds[x:][: model.config.data_cap])
+                            ).astype(np.int32)
+    else:
+        for c in range(len(CROP_NAMES[model.config.dtype])):
+            cultivar_inds = np.argwhere(c == cultivar_data).flatten()
+            if len(cultivar_inds) < 3:
+                continue
+            np.random.shuffle(cultivar_inds)
+            test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
+
+            if model.config.data_cap is None or c in c_inds:
+                train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+            elif len(cultivar_inds[x:]) <= model.config.data_cap:
+                train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
+            else:
+                train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.data_cap])).astype(np.int32)
 
     # train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
     np.random.shuffle(train_inds)
@@ -125,32 +140,54 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
     }
 
-    cultivar_data = torch.tensor(cultivar_data).to(torch.float32).to(model.device).unsqueeze(1)
-    region_data = torch.tensor(region_data).to(torch.float32).to(model.device).unsqueeze(1)
-    station_data = torch.tensor(station_data).to(torch.float32).to(model.device).unsqueeze(1)
-    site_data = torch.tensor(site_data).to(torch.float32).to(model.device).unsqueeze(1)
+    cultivar_data = (
+        torch.tensor(cultivar_data).to(torch.float32).to(model.device).unsqueeze(1)
+        if cultivar_data is not None
+        else None
+    )
+    region_data = (
+        torch.tensor(region_data).to(torch.float32).to(model.device).unsqueeze(1) if region_data is not None else None
+    )
+    station_data = (
+        torch.tensor(station_data).to(torch.float32).to(model.device).unsqueeze(1) if station_data is not None else None
+    )
+    site_data = (
+        torch.tensor(site_data).to(torch.float32).to(model.device).unsqueeze(1) if site_data is not None else None
+    )
 
-    model.num_cultivars = len(torch.unique(cultivar_data))
-    model.num_regions = len(torch.unique(region_data))
-    model.num_stations = len(torch.unique(station_data))
-    model.num_sites = len(torch.unique(site_data))
+    model.num_cultivars = len(torch.unique(cultivar_data)) if cultivar_data is not None else None
+    model.num_regions = len(torch.unique(region_data)) if region_data is not None else None
+    model.num_stations = len(torch.unique(station_data)) if station_data is not None else None
+    model.num_sites = len(torch.unique(site_data)) if site_data is not None else None
 
     model.cultivars = {
         "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
         "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
     }
-    model.regions = {
-        "train": torch.stack([region_data[i] for i in train_inds]).to(torch.float32),
-        "test": torch.stack([region_data[i] for i in test_inds]).to(torch.float32),
-    }
-    model.stations = {
-        "train": torch.stack([station_data[i] for i in train_inds]).to(torch.float32),
-        "test": torch.stack([station_data[i] for i in test_inds]).to(torch.float32),
-    }
-    model.sites = {
-        "train": torch.stack([site_data[i] for i in train_inds]).to(torch.float32),
-        "test": torch.stack([site_data[i] for i in test_inds]).to(torch.float32),
-    }
+    model.regions = (
+        {
+            "train": torch.stack([region_data[i] for i in train_inds]).to(torch.float32),
+            "test": torch.stack([region_data[i] for i in test_inds]).to(torch.float32),
+        }
+        if region_data is not None
+        else None
+    )
+    model.stations = (
+        {
+            "train": torch.stack([station_data[i] for i in train_inds]).to(torch.float32),
+            "test": torch.stack([station_data[i] for i in test_inds]).to(torch.float32),
+        }
+        if station_data is not None
+        else None
+    )
+    model.sites = (
+        {
+            "train": torch.stack([site_data[i] for i in train_inds]).to(torch.float32),
+            "test": torch.stack([site_data[i] for i in test_inds]).to(torch.float32),
+        }
+        if site_data is not None
+        else None
+    )
 
     if len(model.data["test"]) < 1:
         raise Exception("Insuffient per-cultivar data to build test set")

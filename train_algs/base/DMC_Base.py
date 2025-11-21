@@ -22,22 +22,24 @@ class BaseModule(nn.Module):
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
 
         self.embed_op_str = c.DConfig.embed_op
+        self.synth_data = c.synth_data
 
         cult_orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
         self.cult_mapping = torch.zeros((int(cult_orig.max()) + 1,)).to(torch.int).to(model.device)
         self.cult_mapping[cult_orig] = torch.arange(len(cult_orig)).to(torch.int).to(model.device)
 
-        reg_orig = torch.unique(torch.concatenate(list(model.regions.values()), axis=0)).to(torch.int)
-        self.reg_mapping = torch.zeros((int(reg_orig.max()) + 1,)).to(torch.int).to(model.device)
-        self.reg_mapping[reg_orig] = torch.arange(len(reg_orig)).to(torch.int).to(model.device)
+        if self.synth_data is None:
+            reg_orig = torch.unique(torch.concatenate(list(model.regions.values()), axis=0)).to(torch.int)
+            self.reg_mapping = torch.zeros((int(reg_orig.max()) + 1,)).to(torch.int).to(model.device)
+            self.reg_mapping[reg_orig] = torch.arange(len(reg_orig)).to(torch.int).to(model.device)
 
-        stat_orig = torch.unique(torch.concatenate(list(model.stations.values()), axis=0)).to(torch.int)
-        self.stat_mapping = torch.zeros((int(stat_orig.max()) + 1,)).to(torch.int).to(model.device)
-        self.stat_mapping[stat_orig] = torch.arange(len(stat_orig)).to(torch.int).to(model.device)
+            stat_orig = torch.unique(torch.concatenate(list(model.stations.values()), axis=0)).to(torch.int)
+            self.stat_mapping = torch.zeros((int(stat_orig.max()) + 1,)).to(torch.int).to(model.device)
+            self.stat_mapping[stat_orig] = torch.arange(len(stat_orig)).to(torch.int).to(model.device)
 
-        site_orig = torch.unique(torch.concatenate(list(model.sites.values()), axis=0)).to(torch.int)
-        self.site_mapping = torch.zeros((int(site_orig.max()) + 1,)).to(torch.int).to(model.device)
-        self.site_mapping[site_orig] = torch.arange(len(site_orig)).to(torch.int).to(model.device)
+            site_orig = torch.unique(torch.concatenate(list(model.sites.values()), axis=0)).to(torch.int)
+            self.site_mapping = torch.zeros((int(site_orig.max()) + 1,)).to(torch.int).to(model.device)
+            self.site_mapping[site_orig] = torch.arange(len(site_orig)).to(torch.int).to(model.device)
 
     def get_init_state(self, batch_size: int = 1) -> torch.Tensor:
 
@@ -111,9 +113,9 @@ class EmbeddingFCGRU(BaseModule):
         super(EmbeddingFCGRU, self).__init__(c, model)
 
         self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
-        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim)
-        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim)
-        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim)
+        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
+        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
+        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
 
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -134,17 +136,29 @@ class EmbeddingFCGRU(BaseModule):
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
+        reg_embed = (
+            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        stat_embed = (
+            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        site_embed = (
+            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
 
         if input.ndim == 2:
             input = input.unsqueeze(1)
 
         cult_embed = cult_embed.unsqueeze(1).expand_as(input)
-        reg_embed = reg_embed.unsqueeze(1).expand_as(input)
-        stat_embed = stat_embed.unsqueeze(1).expand_as(input)
-        site_embed = site_embed.unsqueeze(1).expand_as(input)
+        reg_embed = reg_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+        stat_embed = stat_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+        site_embed = site_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
 
         if self.embed_op_str == "concat_reg":
             gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)

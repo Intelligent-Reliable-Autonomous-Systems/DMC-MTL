@@ -15,8 +15,6 @@ from collections.abc import Iterable
 
 from bisect import bisect_left
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 class Tensor(TraitType):
     """An AFGEN table trait"""
@@ -26,13 +24,13 @@ class Tensor(TraitType):
 
     def validate(self, obj: object, value: torch.Tensor | Iterable | float | int) -> torch.Tensor:
         if isinstance(value, torch.Tensor):
-            return value.to(torch.float32).to(device)
+            return value.to(torch.float32)
         elif isinstance(value, Iterable):
-            return torch.tensor(value, dtype=torch.float32).to(device)
+            return torch.tensor(value, dtype=torch.float32)
         elif isinstance(value, float):
-            return torch.tensor([value], dtype=torch.float32).to(device)
+            return torch.tensor([value], dtype=torch.float32)
         elif isinstance(value, int):
-            return torch.tensor([float(value)], dtype=torch.float32).to(device)
+            return torch.tensor([float(value)], dtype=torch.float32)
         self.error(obj, value)
 
 
@@ -89,12 +87,12 @@ class TensorAfgen(object):
     def __init__(self, tbl_xy: list) -> None:
 
         x_list, y_list = self._check_x_ascending(tbl_xy)
-        self.x_list = torch.tensor(list(map(float, x_list))).to(device)
-        self.y_list = torch.tensor(list(map(float, y_list))).to(device)
+        self.x_list = torch.tensor(list(map(float, x_list)))
+        self.y_list = torch.tensor(list(map(float, y_list)))
         x_list = list(map(float, x_list))
         y_list = list(map(float, y_list))
         intervals = list(zip(x_list, x_list[1:], y_list, y_list[1:]))
-        self.slopes = torch.tensor([(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intervals]).to(device)
+        self.slopes = torch.tensor([(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intervals])
 
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
 
@@ -148,12 +146,10 @@ class TensorBatchAfgen(object):
     def __init__(self, tbl_xy: list) -> None:
 
         x_list, y_list = self._check_x_ascending(tbl_xy)
-        self.x_list = torch.tensor(x_list).to(device)
-        self.y_list = torch.tensor(y_list).to(device)
+        self.x_list = torch.tensor(x_list)
+        self.y_list = torch.tensor(y_list)
         intervals = [list(zip(x_list[i], x_list[i][1:], y_list[i], y_list[i][1:])) for i in range(len(x_list))]
-        self.slopes = torch.tensor(
-            np.array([[(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intb] for intb in intervals])
-        ).to(device)
+        self.slopes = torch.tensor(np.array([[(y2 - y1) / (x2 - x1) for x1, x2, y1, y2 in intb] for intb in intervals]))
 
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
         # Equivalent to Bisect left
@@ -281,12 +277,13 @@ class ParamTemplate(HasTraits):
     Template for storing parameter values.
     """
 
-    def __init__(self, parvalues: dict, num_models: int = None) -> None:
+    def __init__(self, parvalues: dict, num_models: int = None, device: str = "cpu") -> None:
         """Initialize parameter template
         Args:
             parvalues - parameter values to include
         """
         HasTraits.__init__(self)
+        self._device = device
 
         for parname in self.trait_names():
             # Check if the parname is available in the dictionary of parvalues
@@ -300,7 +297,7 @@ class ParamTemplate(HasTraits):
                 if isinstance(parvalues[parname], list):
                     value = np.reshape(value, (num_models, -1))
             # Single value parameter
-            setattr(self, parname, value)
+            setattr(self, parname, torch.tensor(value).to(self._device))
 
     def __setattr__(self, attr: str, value: torch.Tensor) -> None:
         if attr.startswith("_"):
@@ -326,7 +323,7 @@ class StatesRatesCommon(HasTraits):
 
     _valid_vars = Instance(set)
 
-    def __init__(self, kiosk: VariableKiosk = None, publish: list = []) -> None:
+    def __init__(self, kiosk: VariableKiosk = None, publish: list = [], device: str = "cpu") -> None:
         """Set up the common stuff for the states and rates template
         including variables that have to be published in the kiosk
         """
@@ -335,7 +332,7 @@ class StatesRatesCommon(HasTraits):
 
         # Determine the rate/state attributes defined by the user
         self._valid_vars = self._find_valid_variables()
-
+        self.device = device
         self._kiosk = kiosk
         self._published_vars = []
         if self._kiosk is not None:
@@ -383,6 +380,7 @@ class StatesTemplate(StatesRatesCommon):
         kiosk: VariableKiosk = None,
         publish: list = [],
         num_models: int = None,
+        device: str = "cpu",
         **kwargs: dict,
     ) -> None:
         """Initialize the StatesTemplate class
@@ -390,7 +388,7 @@ class StatesTemplate(StatesRatesCommon):
         Args:
             kiosk - VariableKiosk to handle default parameters
         """
-        StatesRatesCommon.__init__(self, kiosk=kiosk, publish=publish)
+        StatesRatesCommon.__init__(self, kiosk=kiosk, publish=publish, device=device)
 
         # set initial state value
         for attr in self._valid_vars:
@@ -401,14 +399,16 @@ class StatesTemplate(StatesRatesCommon):
                 else:
                     if isinstance(value, torch.Tensor):
                         if value.ndim == 0:
-                            setattr(self, attr, torch.tile(value, (num_models,)).to(torch.float32))
+                            setattr(self, attr, torch.tile(value, (num_models,)).to(torch.float32).to(self.device))
                         else:
                             if value.size(0) == num_models:
                                 setattr(self, attr, value)
                             else:
-                                setattr(self, attr, torch.tile(value, (num_models,)).to(torch.float32))
+                                setattr(self, attr, torch.tile(value, (num_models,)).to(torch.float32).to(self.device))
                     else:
-                        setattr(self, attr, np.tile(value, num_models).astype(np.float32))
+                        setattr(
+                            self, attr, torch.tile(torch.tensor(value), (num_models,)).to(torch.float32).to(self.device)
+                        )
             else:
                 msg = "Initial value for state %s missing." % attr
                 raise Exception(msg)
@@ -424,12 +424,14 @@ class RatesTemplate(StatesRatesCommon):
 
     _vartype = "R"
 
-    def __init__(self, kiosk: VariableKiosk = None, publish=[], num_models: int = None, **kwargs: dict) -> None:
+    def __init__(
+        self, kiosk: VariableKiosk = None, publish=[], num_models: int = None, device: str = "cpu", **kwargs: dict
+    ) -> None:
         """Set up the RatesTemplate and set monitoring on variables that
         have to be published.
         """
         self.num_models = num_models
-        StatesRatesCommon.__init__(self, kiosk=kiosk, publish=publish)
+        StatesRatesCommon.__init__(self, kiosk=kiosk, publish=publish, device=device)
 
         # Determine the zero value for all rate variable if possible
         self._rate_vars_zero = self._find_rate_zero_values()
@@ -447,9 +449,9 @@ class RatesTemplate(StatesRatesCommon):
 
         # Define the zero value for Float, Int and Bool
         if self.num_models is None:
-            tensor = torch.tensor([0.0]).to(device)
+            tensor = torch.tensor([0.0]).to(self.device)
         else:
-            tensor = torch.tensor(np.tile(0.0, self.num_models).astype(np.float32)).to(device)
+            tensor = torch.tensor(np.tile(0.0, self.num_models).astype(np.float32)).to(self.device)
         zero_value = {Bool: False, Int: 0, Float: 0.0, Tensor: tensor}
 
         d = {}

@@ -162,7 +162,7 @@ class TensorModel(HasTraits, Model):
         Initialize the model with parameters and states
         """
         self.device = device
-        self.params = self.Parameters(parvalues)
+        self.params = self.Parameters(parvalues, device=self.device)
         self.kiosk = kiosk
 
     def set_model_params(self, args: dict[str, torch.Tensor]) -> None:
@@ -200,7 +200,7 @@ class BatchTensorModel(HasTraits, Model):
         """
         self.device = device
         self.num_models = num_models
-        self.params = self.Parameters(parvalues, self.num_models)
+        self.params = self.Parameters(parvalues, self.num_models, device=self.device)
         self.kiosk = kiosk
 
     def set_model_params(self, args: dict[str, torch.Tensor]) -> None:

@@ -33,7 +33,7 @@ def main():
     config.PConfig.model_parameters = f"{model_name}:{args.crop_variety}"
 
     # Create Model
-    eng = BatchModelEngine(config=config.PConfig, device="cuda")
+    eng = BatchModelEngine(config=config.PConfig, device="cpu")
     if args.model == "wofost":
         end_date = datetime.date(1990, 9, 1)  # WOFOST
     elif args.model == "ch":
@@ -43,10 +43,10 @@ def main():
 
     same_yr = False if args.model == "ch" else True  # False for CH, True for Phenology and WOFOST
 
-    path = f"_data/processed_data/synth5_{model_name}_{args.crop_variety}.pkl"
+    path = f"_data/processed_data/{model_name}/synth_rtmc_train/synth_dvs_{model_name}_{args.crop_variety}.pkl"
 
-    yrs = np.random.choice(np.arange(1991, 2023), size=9, replace=False)
-    # yrs = [1995, 2000, 2005, 2010, 2015, 2020]
+    # yrs = np.random.choice(np.arange(1990, 2023), size=9, replace=False)
+    yrs = np.arange(1990, 2005)
     eng.reset()
     df = eng.run_all(end_date=end_date, same_yr=same_yr)
 
@@ -66,10 +66,11 @@ def main():
         df[df.columns.difference(["DAY"])] = df[df.columns.difference(["DAY"])].astype(np.float32)
         df["LAT"] = LAT
         df["LON"] = config.PConfig.longitude
-        # mask = np.random.rand(len(df)) > prob
         mask = ~(np.arange(len(df)) % 7 == 0)
         if args.model == "ch":
             df.loc[mask, "LTE50"] = np.nan  # Uncomment for cold-hardiness
+        if args.model == "pheno" and "DVS" in config.PConfig.output_vars:
+            df.loc[mask, "DVS"] = np.nan
         print(df)
 
     with open(path, "wb") as f:

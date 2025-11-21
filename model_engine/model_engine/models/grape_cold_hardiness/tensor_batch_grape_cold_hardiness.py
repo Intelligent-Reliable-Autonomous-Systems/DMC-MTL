@@ -90,10 +90,11 @@ class Grape_ColdHardiness_TensorBatch(BatchTensorModel):
             LTE50=p.HCINIT[0].detach().cpu(),
             CSUM=0.0,
             LTE10=LTE10[0].detach().cpu(),
-            LTE90=LTE90.detach().cpu(),
+            LTE90=LTE90[0].detach().cpu(),
+            device=self.device,
         )
 
-        self.rates = self.RateVariables(num_models=self.num_models)
+        self.rates = self.RateVariables(num_models=self.num_models, device=self.device)
         self.min_tensor = torch.tensor([0.0]).to(self.device)
         self.base_tensor = torch.tensor([10.0]).to(self.device)
         self._HC_YESTERDAY = p.HCINIT[0].detach().clone()
@@ -231,7 +232,6 @@ class Grape_ColdHardiness_TensorBatch(BatchTensorModel):
 
         LTE10 = p.HCINIT * p.LTE10M + p.LTE10B
         LTE90 = p.HCINIT * p.LTE90M + p.LTE90B
-
         s.DHSUM = torch.where(inds, 0.0, s.DCSUM).detach()
         s.DCSUM = torch.where(inds, 0.0, s.DCSUM).detach()
         s.HC = torch.where(inds, p.HCINIT.detach(), s.HC).detach()
@@ -239,6 +239,7 @@ class Grape_ColdHardiness_TensorBatch(BatchTensorModel):
         s.LTE50 = torch.where(inds, p.HCINIT.detach(), s.LTE50).detach()
         s.CSUM = torch.where(inds, 0.0, s.CSUM).detach()
         s.LTE10 = torch.where(inds, LTE10.detach(), s.LTE10).detach()
+
         s.LTE90 = torch.where(inds, LTE90.detach(), s.LTE90).detach()
 
         self._HC_YESTERDAY = torch.where(inds, p.HCINIT.detach(), self._HC_YESTERDAY).detach()

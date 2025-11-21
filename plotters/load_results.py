@@ -15,7 +15,7 @@ import numpy as np
 from model_engine.util import CROP_NAMES
 
 
-def load_named_pickles(folder_paths: list[str], target_name: str, args:Namespace):
+def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespace):
     """
     Load all pickle files matching a given name in all subdirectories.
     """
@@ -27,7 +27,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args:Namespace
             try:
                 # Get relative subdirectory name
                 subdir = "/".join(pkl_file.parent.parts[-4:])
-                if "All" in pkl_file.parent.parts and args.stl: #subdir
+                if "All" in pkl_file.parent.parts and args.stl:  # subdir
                     continue
                 print(subdir)
                 if args.station and ("All" in pkl_file.parent.parts[-3] or "All" not in pkl_file.parent.parts[-2]):
@@ -41,7 +41,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args:Namespace
     return results
 
 
-def compute_str_ndim5(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
+def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     """
     Make print string for when we are printing MTL result over regions
     """
@@ -74,13 +74,13 @@ def compute_str_ndim5(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
                     all_str += "\n"
                 all_str += "      "
                 for i in range(mean.shape[4]):
-                    all_str += f"{cult_mean[j,k,l,i]} +/- {cult_std[j,k,l,i]}, "    
+                    all_str += f"{cult_mean[j,k,l,i]} +/- {cult_std[j,k,l,i]}, "
                 all_str += "\n"
                 all_str += "\n"
             all_str += "    "
             for i in range(mean.shape[4]):
-                all_str += f"{site_mean[j,k,i]} +/- {site_std[j,k,i]}, " 
-            all_str += "\n"   
+                all_str += f"{site_mean[j,k,i]} +/- {site_std[j,k,i]}, "
+            all_str += "\n"
             all_str += "\n"
         all_str += "  "
         for i in range(mean.shape[4]):
@@ -93,18 +93,20 @@ def compute_str_ndim5(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
 
     return all_str
 
-def compute_str_ndim6(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
+
+def compute_str_ndim6(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     all_str = ""
     for i in range(mtl_arr.shape[0]):
         all_str += compute_str_ndim5(mtl_arr[i], mean[i], std[i])
         all_str += "\n"
-    all_mean = np.round(np.nanmean(mtl_arr, axis=(-7,  -6, -5, -4, -3, -1)), decimals=2).squeeze()
+    all_mean = np.round(np.nanmean(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
     all_std = np.round(np.nanstd(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
     for i in range(all_mean.shape[0]):
         all_str += f"{all_mean[i]} +/- {all_std[i]}, "
     return all_str
 
-def compute_str_stl_ndim3(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
+
+def compute_str_stl_ndim3(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     """Compute print string for when loading cultivar level STL models"""
     all_str = ""
     for i in range(mean.shape[0]):
@@ -123,9 +125,10 @@ def compute_str_stl_ndim3(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
             all_str += f"{all_mean[i,j]} +/- {all_std[i,j]}, "
         all_str += "\n"
 
-    return all-str
+    return all - str
 
-def compute_str_stl_ndim2(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
+
+def compute_str_stl_ndim2(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     """Compute print string for when loading single STL model"""
     all_str = ""
     for i in range(mean.shape[0]):
@@ -139,18 +142,20 @@ def compute_str_stl_ndim2(mtl_arr:np.ndarray, mean:np.ndarray, std:np.ndarray):
     for i in range(all_mean.shape[0]):
         all_str += f"{all_mean[i]} +/- {all_std[i]}, "
     return all_str
-        
-def compute_all_mean(mtl_arr:np.ndarray, start: int, end: int):
+
+
+def compute_all_mean(mtl_arr: np.ndarray, start: int, end: int):
     """
     Compute all mean of array with start and ends to split stations
     """
     all_str = ""
-    all_mean = np.round(np.nanmean(mtl_arr[start:end],axis=(0,1,-1)), decimals=2).squeeze()
-    all_std = np.round(np.nanstd(mtl_arr[start:end],axis=(0,1,-1)), decimals=2).squeeze()
+    all_mean = np.round(np.nanmean(mtl_arr[start:end], axis=(0, 1, -1)), decimals=2).squeeze()
+    all_std = np.round(np.nanstd(mtl_arr[start:end], axis=(0, 1, -1)), decimals=2).squeeze()
     all_str += "\n"
     for i in range(all_mean.shape[0]):
         all_str += f"{all_mean[i]} +/- {all_std[i]}, "
     return all_str
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -192,7 +197,7 @@ def main():
             all_str = ""
             for i in range(mean.shape[0]):
                 for j in range(mean.shape[1]):
-                    if (np.isnan(mean[i,j])).all():
+                    if (np.isnan(mean[i, j])).all():
                         continue
                     for k in range(mean.shape[2]):
                         all_str += f"{mean[i,j,k]} +/- {std[i,j,k]}, "
@@ -201,7 +206,7 @@ def main():
             all_str += compute_all_mean(mtl_arr, 0, mtl_arr.shape[0])
             all_str += compute_all_mean(mtl_arr, 0, 4)
             all_str += compute_all_mean(mtl_arr, 4, 9)
-            
+
         else:
             if mean.ndim == 6:
                 all_str = compute_str_ndim6(mtl_arr, mean, std)

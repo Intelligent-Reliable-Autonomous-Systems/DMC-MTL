@@ -14,7 +14,7 @@ cultivars=("Aligote" "Alvarinho" "Auxerrois" "Barbera" "Cabernet_Franc"
 
 for cultivar in "${cultivars[@]}"; do
     echo "$cultivar"
-    python3 -m _data.gen_synth_data --crop_variety "$cultivar" --config pheno_synth_config
+    python3 -m _data.gen_synth_data --crop_variety "$cultivar" --config pheno_synth_config --model pheno
 done
 
 echo "Submitted jobs with varying inputs: ${cultivars[*]}"

@@ -158,7 +158,7 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     Loads data from a OmegaConf configuration file
     """
 
-    def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = ""):
+    def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = None):
         """
         Recursively find all pickle files in root_dir and subdirectories
         that match a given prefix and contain a specified substring.
@@ -174,21 +174,26 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         pickle_paths = []
         for dirpath, dirnames, filenames in os.walk(root_dir):
             for filename in filenames:
-                if (
-                    filename.endswith(".pkl")
-                    and filename.startswith(prefix)
-                    and contains in filename
-                    and exclude not in filename
-                ):
-                    full_path = os.path.join(dirpath, filename)
-                    pickle_paths.append(full_path)
+                if exclude is not None:
+                    if (
+                        filename.endswith(".pkl")
+                        and filename.startswith(prefix)
+                        and contains in filename
+                        and exclude not in filename
+                    ):
+                        full_path = os.path.join(dirpath, filename)
+                        pickle_paths.append(full_path)
+                else:
+                    if filename.endswith(".pkl") and filename.startswith(prefix) and contains in filename:
+                        full_path = os.path.join(dirpath, filename)
+                        pickle_paths.append(full_path)
         return pickle_paths
 
     dtype = config.dtype.rsplit("_", 1)[0]
 
     PREFIX = f"{config.data_fpath}{dtype}/"
     if config.synth_data is not None:
-        paths = find_pickle_files(f"{PREFIX}synth/", prefix=f"{config.synth_data}_{dtype}_")
+        paths = find_pickle_files(f"{PREFIX}{config.synth_data}/", prefix=f"synth_")
     else:
         if config.region == "All":
             paths = find_pickle_files(
@@ -218,18 +223,19 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
 
     for p in paths:
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "")
-        region = p.split("/")[3]
-        station = p.split("/")[4]
-        site = p.split("/")[5]
         if cultivar not in CROP_NAMES[config.dtype]:
             continue
         with open(p, "rb") as f:
             cult_data = pickle.load(f)
         for cult in cult_data:
             cult["CULTIVAR"] = np.where(CROP_NAMES[config.dtype] == cultivar)[0][0]
-            cult["REGION"] = np.where(REGIONS == region)[0][0]
-            cult["STATION"] = np.where(STATIONS == station)[0][0]
-            cult["SITE"] = np.where(SITES == site)[0][0]
+            if config.synth_data is None:
+                region = p.split("/")[3]
+                station = p.split("/")[4]
+                site = p.split("/")[5]
+                cult["REGION"] = np.where(REGIONS == region)[0][0]
+                cult["STATION"] = np.where(STATIONS == station)[0][0]
+                cult["SITE"] = np.where(SITES == site)[0][0]
             data.append(cult)
     for d in data:
         d.rename(columns={"DATE": "DAY"}, inplace=True)

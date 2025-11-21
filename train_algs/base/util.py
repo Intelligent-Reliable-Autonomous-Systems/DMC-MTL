@@ -43,6 +43,7 @@ def set_embedding_op(model: nn.Module, embed_op: str) -> int:
     elif embed_op == "concat_stat":
 
         def concat(embed1, embed2, embed3, input):
+
             return torch.concatenate((embed1, embed2, embed3, input), dim=-1)
 
         model.embed_op = concat

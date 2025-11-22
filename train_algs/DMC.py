@@ -295,6 +295,7 @@ class ParamRNN(BaseRNN):
 
         # Run through entirety of time series predicting params
         for i in range(dlen):
+            print(i)
             params_predict, hn_cn = self.nn(
                 torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn=hn_cn,
@@ -305,7 +306,7 @@ class ParamRNN(BaseRNN):
             )
 
             params_predict = self.param_cast(params_predict, prev_params=batch_params)
-            batch_params = params_predict.detach()
+            batch_params = params_predict
             self.model.set_model_params(params_predict, self.params)
             output = self.model.run(dates=dates[:, i], cultivars=cultivars)
 

@@ -152,6 +152,7 @@ class BaseModel(nn.Module):
             params_predict = 0 + params_predict * (self.params_range[:, 1] - self.params_range[:, 0]) / 2
             params_predict = params_predict * self.config.param_scale
             params_predict = prev_params + params_predict
+            params_predict = torch.clamp(params_predict, self.params_range[:,0], self.params_range[:,1])
         else:
             params_predict = torch.tanh(params) + 1
             params_predict = (

@@ -45,18 +45,6 @@ class BaseModule(nn.Module):
 
         return self.h0.repeat(1, batch_size, 1)
 
-    def reinit_weights(self, m):
-        """
-        Reinitilize weights for transformer layers"""
-        if isinstance(m, nn.Linear):
-            nn.init.xavier_uniform_(m.weight)
-            if m.bias is not None:
-                nn.init.zeros_(m.bias)
-        elif isinstance(m, nn.LayerNorm):
-            nn.init.ones_(m.weight)
-            if m.bias is not None:
-                nn.init.zeros_(m.bias)
-
 
 class FCGRU(BaseModule):
     """

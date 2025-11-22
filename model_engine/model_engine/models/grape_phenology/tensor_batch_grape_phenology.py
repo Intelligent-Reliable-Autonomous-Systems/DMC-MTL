@@ -89,9 +89,10 @@ class Grape_Phenology_TensorBatch(BatchTensorModel):
             DVS=0.0,
             CSUM=0.0,
             PHENOLOGY=self._STAGE_VAL["ecodorm"],
+            device=self.device,
         )
 
-        self.rates = self.RateVariables(num_models=self.num_models)
+        self.rates = self.RateVariables(num_models=self.num_models, device=self.device)
         self.min_tensor = torch.tensor([0.0]).to(self.device)
 
     def calc_rates(self, day: datetime.date, drv: DFTensorWeatherDataContainer) -> None:
@@ -112,9 +113,9 @@ class Grape_Phenology_TensorBatch(BatchTensorModel):
                 : self.num_models
             ]
 
-        r.DTSUME = torch.zeros(size=(self.num_models,))
-        r.DTSUM = torch.zeros(size=(self.num_models,))
-        r.DVR = torch.zeros(size=(self.num_models,))
+        r.DTSUME = torch.zeros(size=(self.num_models,)).to(self.device)
+        r.DTSUM = torch.zeros(size=(self.num_models,)).to(self.device)
+        r.DVR = torch.zeros(size=(self.num_models,)).to(self.device)
 
         stage_tensor = torch.tensor([self._STAGE_VAL[s] for s in self._STAGE], device=self.device)
         stage_masks = torch.stack([stage_tensor == i for i in range(self.num_stages)])

@@ -69,6 +69,7 @@ class DConfig:
     """Window size for RNN"""
     window_size: Optional[int] = None
 
+
 @dataclass
 class RTMCConfig:
     """Finetuner Type"""

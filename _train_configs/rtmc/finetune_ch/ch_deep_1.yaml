@@ -9,8 +9,8 @@ PConfig:
     input_vars: [DAY, DAYL, TEMP, TMIN, TMAX, RAIN, IRRAD, ET0, E0, ES0]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/RTMC/ColdHardiness/DeepMTL1/
-synth_data: synth_rtmc_train
+log_path: /_runs/RTMC/FineTuneColdHardiness/DeepMTL1/
+synth_data: synth_rtmc_test
 dtype: grape_coldhardiness_ferg
 run_name: deep_mtl
 seed: 0
@@ -22,7 +22,7 @@ data_cap: 1
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]
 DConfig: 
-    type: Deep
+    type: Param
     arch: EmbedFCGRU
     hidden_dim: 2048
     embed_op: concat
@@ -32,7 +32,7 @@ DConfig:
     batch_size: 12
     epochs: 400
 RTMCConfig:
-  arch: GatedEmbedFCGRU
+  arch: EmbedFCGRU
   hidden_dim: 1024
   loss_func: MSELoss
   learning_rate: 0.0002

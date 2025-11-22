@@ -31,14 +31,13 @@ from model_engine.util import per_task_param_loader
 from train_algs.DMC import BaseRNN
 from train_algs.base.base import BaseModel
 from train_algs.base.FineTuner_Base import (
-    CausalTransformerFCTuner,
     ErrorFCTuner,
     EmbedErrorFCTuner,
 )
 from train_algs.base.util import load_config, load_model_fpath
 
 
-class BaseParamFineTuner(BaseModel):
+class BaseFineTuner(BaseModel):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
         """
@@ -46,13 +45,12 @@ class BaseParamFineTuner(BaseModel):
         """
         super().__init__(config, data)
 
-        self.finetuner = BaseParamFineTuner.make_finetuner(self, config).to(self.device)
+        self.finetuner = BaseFineTuner.make_finetuner(self, config).to(self.device)
 
         if rnn_fpath is not None:
             try:
                 self.nn = BaseRNN.make_rnn(self, load_config(rnn_fpath)).to(self.device)
                 self.load_rnn_model(f"{load_model_fpath(rnn_fpath, name="rnn_model_best.pt")}")
-                print("Loaded RNN model")
             except:
                 self.nn = BaseRNN.make_rnn(self, config).to(self.device)
                 print("Failure in model loading. Loading untrained model...")
@@ -91,8 +89,6 @@ class BaseParamFineTuner(BaseModel):
             finetuner = ErrorFCTuner(config, model)
         elif config.RTMCConfig.arch == "EmbedFCGRU":
             finetuner = EmbedErrorFCTuner(config, model)
-        elif config.RTMCConfig.arch == "CausalTransformerFinetuner":
-            finetuner = CausalTransformerFCTuner(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.RTMCConfig.arch}`")
         return finetuner
@@ -127,12 +123,10 @@ class BaseParamFineTuner(BaseModel):
 
     def optimize(self) -> None:
 
-        writer, run_name = setup_logging(self.config)
+        writer, run_name, log_path = setup_logging(self.config)
+        os.makedirs(log_path, exist_ok=True)
 
-        fpath = f"{os.getcwd()}{self.config.log_path}/{self.config.cultivar}/{run_name}"
-        os.makedirs(fpath, exist_ok=True)
-
-        with open(f"{fpath}/config.yaml", "w", encoding="utf-8") as fp:
+        with open(f"{log_path}/config.yaml", "w", encoding="utf-8") as fp:
             OmegaConf.save(config=self.config, f=fp.name)
         fp.close()
 
@@ -151,10 +145,6 @@ class BaseParamFineTuner(BaseModel):
         train_name = "val" if self.config.val_set else "train"
         test_name = "test"
         for epoch in range(self.epochs):
-
-            threshold = (
-                1 + np.floor(epoch / (self.epochs / 4)) if self.config.RTMCConfig.iterative_error is not None else None
-            )
 
             train_loss = 0
             grad = 0
@@ -183,9 +173,7 @@ class BaseParamFineTuner(BaseModel):
                 )
                 target = val_shuffled[i : i + self.batch_size]
 
-                output, _, _ = self.forward(
-                    batch_data, batch_dates, batch_cultivars, target, threshold=threshold, days=days
-                )
+                output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, target, days=days)
 
                 loss = self.loss_func(output, target.nan_to_num(nan=0.0))
                 mask = ~torch.isnan(target)
@@ -208,47 +196,62 @@ class BaseParamFineTuner(BaseModel):
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
 
             # Evaluation
-            if epoch % self.config.check_freq == 0:
-                test_loss = 0
-                test_avg = torch.zeros(size=(4,)).to(self.device)
+            test_loss = 0
+            test_avg = torch.zeros(size=(4,)).to(self.device)
 
-                for j in range(0, len(self.data[test_name]), self.batch_size):
-                    self.optimizer.zero_grad()
-                    batch_data = self.data[test_name][j : j + self.batch_size]
-                    batch_dates = self.dates[test_name][j : j + self.batch_size]
-                    batch_cultivars = (
-                        self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
-                    )
-                    test_target = self.val[test_name][j : j + self.batch_size]
-                    test_output, _, _ = self.forward(
-                        batch_data, batch_dates, batch_cultivars, test_target, threshold=threshold
-                    )
-
-                    test_loss = self.loss_func(test_output, test_target.nan_to_num(nan=0.0))
-                    test_mask = ~torch.isnan(test_target)
-                    test_loss = (test_loss * test_mask).sum() / test_mask.sum()
-                    test_loss += test_loss.item()
-
-                    avg_ = cumulative_error(test_target, test_output, test_mask, device=self.device)
-                    test_avg[:3] += avg_[1:-1]
-                    test_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-
-                log_training(
-                    self,
-                    writer,
-                    fpath,
-                    epoch,
-                    train_loss,
-                    test_loss,
-                    train_avg,
-                    test_avg,
-                    grad,
+            for j in range(0, len(self.data[test_name]), self.batch_size):
+                self.optimizer.zero_grad()
+                batch_data = self.data[test_name][j : j + self.batch_size]
+                batch_dates = self.dates[test_name][j : j + self.batch_size]
+                batch_cultivars = (
+                    self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                 )
+                test_target = self.val[test_name][j : j + self.batch_size]
+                test_output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, test_target)
+
+                test_loss = self.loss_func(test_output, test_target.nan_to_num(nan=0.0))
+                test_mask = ~torch.isnan(test_target)
+                test_loss = (test_loss * test_mask).sum() / test_mask.sum()
+                test_loss += test_loss.item()
+
+                avg_ = cumulative_error(test_target, test_output, test_mask, device=self.device)
+                test_avg[:3] += avg_[1:-1]
+                test_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
+
+            log_training(
+                self,
+                writer,
+                log_path,
+                epoch,
+                train_loss,
+                test_loss,
+                train_avg,
+                test_avg,
+                grad,
+            )
 
             self.scheduler.step(float(train_loss))
 
+    def compute_error(
+        self, i: int, b_size: int, output: torch.Tensor, val_data: torch.Tensor, days: int | torch.Tensor = None
+    ) -> torch.Tensor:
+        """
+        Compute the error
+        """
+        if days is not None:
+            error = torch.nan_to_num(output - val_data, nan=0.0).detach()
+            if isinstance(days, int):
+                if i >= days:
+                    error = torch.zeros((b_size, len(self.output_vars))).to(self.device)
+            else:
+                error = torch.where(i >= days[:b_size], 0, error)
 
-class FineTuner(BaseParamFineTuner):
+        else:
+            error = torch.nan_to_num(output - val_data, nan=0.0).detach()
+        return error
+
+
+class FineTuner(BaseFineTuner):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
 
@@ -264,7 +267,7 @@ class FineTuner(BaseParamFineTuner):
             inputprovider=self.input_data,
             device=self.device,
         )
-        self.task_params = per_task_param_loader(config.PConfig, self.params, cultivar=config.cultivar).to(self.device)
+        self.task_params = per_task_param_loader(config, self.params).to(self.device)
 
     def forward(
         self,
@@ -272,7 +275,6 @@ class FineTuner(BaseParamFineTuner):
         dates: np.ndarray,
         cultivars: torch.Tensor = None,
         val_data: torch.Tensor = None,
-        threshold: int = None,
         days: int = None,
         **kwargs,
     ) -> tuple[
@@ -285,8 +287,10 @@ class FineTuner(BaseParamFineTuner):
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
 
-        output_tens, param_tens, error_tens, err_mask = self.setup_storage(b_size, dlen)
+        output_tens, param_tens, _ = self.setup_storage(b_size, dlen)
         param_tens_err = torch.empty(size=(b_size, dlen, 2, len(self.params))).to(self.device)
+        self.store_error = torch.zeros(size=(b_size, 1)).to(self.device)
+        error_tens = torch.zeros(size=(b_size, dlen, len(self.output_vars))).to(self.device)
 
         self.nn.zero_grad()
         self.finetuner.zero_grad()
@@ -306,12 +310,9 @@ class FineTuner(BaseParamFineTuner):
                 cultivars=cultivars,
             )
             params_predict_ft, hn_cn_ft = self.finetuner(
-                input=torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 error=error_tens[:, i - 1].clone().detach(),
-                err_mask=err_mask,
                 hn=hn_cn_ft,
                 cultivars=cultivars,
-                error_vec=self.error_vec[:, i - 1].clone().detach(),
                 delta_t=torch.ones(size=(b_size, 1), device=self.device),
             )
             params_predict = self.param_cast(params_predict_orig + params_predict_ft)
@@ -319,42 +320,25 @@ class FineTuner(BaseParamFineTuner):
             self.model.set_model_params(params_predict, self.params)
             output = self.model.run(dates=dates[:, i], cultivars=cultivars)
 
-            error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], threshold=threshold, days=days)
+            error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], days=days)
 
             output_tens[:, i] = output
             param_tens[:, i] = params_predict.detach()
             param_tens_err[:, i, 0] = params_predict_orig.detach()
             param_tens_err[:, i, 1] = params_predict_ft.detach()
-            err_mask = (
-                (
-                    (output_tens[:, i].clone().detach() != output_tens[:, i - 1].clone().detach())
-                    | (val_data[:, i] != val_data[:, i - 1])
-                )
-                & (val_data[:, i] == output_tens[:, i].clone().detach())
-                & (i != 0)
-            ).flatten()
 
         return output_tens, param_tens, param_tens_err
 
 
-class FineTunerTransformer(BaseParamFineTuner):
+class DeepFineTuner(BaseFineTuner):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
 
         assert (
-            rnn_fpath is not None or config.DConfig.arch is not None
+            rnn_fpath is not None and config.DConfig.arch is not None
         ), "`rnn_fpath` must be a valid relative path to a model configuration"
 
-        super(FineTunerTransformer, self).__init__(config, data, rnn_fpath=rnn_fpath)
-
-        self.model = get_engine(self.config)(
-            num_models=self.batch_size,
-            config=config.PConfig,
-            inputprovider=self.input_data,
-            device=self.device,
-        )
-
-        self.task_params = per_task_param_loader(config.PConfig, self.params, cultivar=config.cultivar).to(self.device)
+        super(DeepFineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)
 
     def forward(
         self,
@@ -362,7 +346,6 @@ class FineTunerTransformer(BaseParamFineTuner):
         dates: np.ndarray,
         cultivars: torch.Tensor = None,
         val_data: torch.Tensor = None,
-        threshold: int = None,
         days: int = None,
         **kwargs,
     ) -> tuple[
@@ -374,57 +357,34 @@ class FineTunerTransformer(BaseParamFineTuner):
     ]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
-        output_tens, param_tens, error_tens, err_mask = self.setup_storage(b_size, dlen)
 
-        param_pred_arr_err = torch.empty(size=(b_size, dlen, 2, len(self.params))).to(self.device)
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+        self.store_error = torch.zeros(size=(b_size, 1)).to(self.device)
+        error_tens = torch.zeros(size=(b_size, dlen, len(self.output_vars))).to(self.device)
 
         self.nn.zero_grad()
         self.finetuner.zero_grad()
 
         hn_cn = self.nn.get_init_state(batch_size=b_size)
-        batch_params = self.task_params[cultivars.to(torch.long).squeeze()]
-        self.model.set_model_params(batch_params, self.params)
-        output = self.model.reset(b_size)
-
-        hn_cn_arr = torch.empty(size=(b_size, dlen, hn_cn.shape[-1])).to(self.device)
-        output_pred_arr = torch.empty(size=(b_size, dlen, len(self.output_vars))).to(self.device)
+        hn_cn_ft = self.finetuner.get_init_state(batch_size=b_size)
 
         # Run through entirety of time series predicting parameters for physical model at each step
         for i in range(dlen):
-
-            params_predict_orig, hn_cn = self.nn(
-                torch.cat((output.view(output.shape[0], -1), data[:, i]), dim=-1),
-                hn_cn,
-                cultivars,
+            output_predict, hn_cn = self.nn(
+                input=data[:, i],
+                hn=hn_cn,
+                cultivars=cultivars,
             )
+            output_predict_ft, hn_cn_ft = self.finetuner(
+                error=error_tens[:, i - 1].clone().detach(),
+                hn=hn_cn_ft,
+                cultivars=cultivars,
+                delta_t=torch.ones(size=(b_size, 1), device=self.device),
+            )
+            output = output_predict + output_predict_ft
 
-            params_predict = self.param_cast(params_predict_orig)
-            self.model.set_model_params(params_predict, self.params)
-            output = self.model.run(dates=dates[:, i], cultivars=cultivars)
+            error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], days=days)
 
-            hn_cn_arr[:, i] = hn_cn.detach()
-            output_pred_arr[:, i] = output.detach()
-            error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], threshold=threshold, days=days)
-            param_pred_arr_err[:, i, 0] = params_predict_orig.detach()
+            output_tens[:, i] = output
 
-        params_predict_ft = self.finetuner(
-            error=error_tens, hn=hn_cn_arr, error_vec=self.error_vec, cultivars=cultivars
-        )
-
-        err_flag = ((error_tens != 0).cumsum(dim=1) > 0).float()
-        params_predict_ft = err_flag * params_predict_ft
-
-        param_pred_arr_err[:, :, 1] = params_predict_ft
-        params_predict = self.param_cast(params_predict_ft + param_pred_arr_err[:, :, 0])
-        param_tens = params_predict
-
-        self.model.set_model_params(batch_params, self.params)
-        output = self.model.reset(b_size)
-
-        for j in range(dlen):
-            self.model.set_model_params(params_predict[:, j], self.params)
-            output = self.model.run(dates=dates[:, j], cultivars=cultivars)
-
-            output_tens[:, j] = output
-
-        return output_tens, param_tens, param_pred_arr_err
+        return output_tens, None, None

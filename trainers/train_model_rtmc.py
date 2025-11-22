@@ -10,6 +10,7 @@ import argparse
 import utils
 from train_algs import FineTuner
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=None, type=str, help="Path to Config")
@@ -24,7 +25,12 @@ def main():
 
     config, data = utils.load_config_data(args)
 
-    calibrator = FineTuner.FineTuner(config, data, rnn_fpath=args.rnn_fpath)
+    if config.DConfig.type == "Deep":  # Note that this is actually the wrong config to be making decisions off of
+        calibrator = FineTuner.DeepFineTuner(config, data, rnn_fpath=args.rnn_fpath)
+    elif config.DConfig.type == "Param":
+        calibrator = FineTuner.FineTuner(config, data, rnn_fpath=args.rnn_fpath)
+    else:
+        raise Exception(f"Unrecognized Model Type `{config.DConfig.type}`")
 
     calibrator.optimize()
 

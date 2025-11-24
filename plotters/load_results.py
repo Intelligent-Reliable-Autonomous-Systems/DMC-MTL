@@ -29,11 +29,12 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                 subdir = "/".join(pkl_file.parent.parts[-4:])
                 if "All" in pkl_file.parent.parts and args.stl:  # subdir
                     continue
-                print(subdir)
+                #print(subdir)
                 if args.station and ("All" in pkl_file.parent.parts[-3] or "All" not in pkl_file.parent.parts[-2]):
                     continue
                 if args.site and ("All" in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-2]):
                     continue
+                print(pkl_file)
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
             except Exception as e:
@@ -164,6 +165,7 @@ def main():
     parser.add_argument("--stl", action="store_true", help="If to toggle printing for STL variant")
     parser.add_argument("--station", action="store_true", help="If to toggle MTL printing variant by station")
     parser.add_argument("--site", action="store_true", help="If to toggle MTL printint variant by site")
+    parser.add_argument("--cult2", action="store_true", help="If to toggle MTL printint variant by cult")
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
     parser.add_argument("--cult", action="store_true", help="If to print per cultivar results")
     args = parser.parse_args()

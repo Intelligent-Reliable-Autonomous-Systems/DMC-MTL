@@ -35,7 +35,6 @@ C_SHAPES = ["o", "^", "s", "x", "d"]
 def compute_RMSE_STAGE(true_output: np.ndarray, model_output: np.ndarray, stage: int) -> np.ndarray:
 
     curr_stage = (stage) % len(PHENOLOGY_INT)
-
     true_stage_args = np.argwhere(true_output == curr_stage).flatten()
     model_stage_args = np.argwhere(model_output == curr_stage).flatten()
 
@@ -65,8 +64,8 @@ def compute_rmse_plot(
 
     for s in range(n_stages):
         for i in range(len(true)):
-            true[i] = np.round(true[i])
-            model[i] = np.round(model[i])
+            true[i] = np.floor(true[i])
+            model[i] = np.floor(model[i])
             if s not in true[i] and s not in model[i]:
                 continue
             avgs[s, i] = compute_RMSE_STAGE(true[i], model[i], s)
@@ -376,61 +375,6 @@ def plot_output_phenology(
                         np.array(weather[k]),
                         name=name,
                     )
-    return inds
-
-
-def plot_output_phenology_2(
-    config: DictConfig,
-    fpath: str,
-    i: np.ndarray,
-    output: torch.Tensor,
-    params: torch.Tensor,
-    val_data: torch.Tensor,
-    weather: np.ndarray = None,
-    name: str = "Train",
-    save: bool = True,
-) -> torch.Tensor:
-    """
-    Plot the phenenology and the parameters for each time series in the passed batch
-    """
-    inds = ~torch.isnan(val_data.cpu().squeeze())
-    val_data = val_data.cpu().numpy()
-
-    if output.shape[-1] == len(PHENOLOGY_INT):  # Handle categorical classification
-        output = torch.tensor(output)
-        probs = F.softmax(output, dim=-1)
-        output = torch.argmax(probs, dim=-1)
-
-    # Handles case when batch size of 1 is passed
-    if len(inds.shape) != 2:
-        inds = inds[np.newaxis, :]
-        if len(output.shape) != 2:
-            output = output[np.newaxis, :]
-            params = params[np.newaxis, :] if params is not None else None
-
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
-    if save:
-        tick_size = 12
-        for k in range(inds.shape[0]):
-            x = np.arange(len(output[k][inds[k]]))
-            fig, ax = plt.subplots(1, figsize=(6, 3))
-            target = config.PConfig.output_vars
-            ax.plot(output[k][inds[k]], label=f"DMC-MTL Prediction")
-            ax.plot(val_data[k][inds[k]], label=f"Observed")
-            ax.legend(fontsize=12)
-            ax.tick_params(axis="both", labelsize=tick_size)
-            ax.set_title(f"Predicted vs Observed Phenology")
-            ax.set_xlim([0, len(x)])
-            ax.set_ylabel(f"{target}", fontsize=tick_size)
-            ax.set_yticks([0, 1, 2, 3, 4], ["Ecodormancy", "Budbreak", "Bloom", "Veraison", "Ripe"], fontsize=tick_size)
-            ax.set_ylim([0, 5])
-
-            plt.savefig(
-                f"{fpath}/Model2_{name}_{i[k]}_{config.cultivar}.png",
-                bbox_inches="tight",
-            )
-            plt.close()
-
     return inds
 
 

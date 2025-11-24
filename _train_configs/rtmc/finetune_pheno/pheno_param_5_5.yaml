@@ -1,0 +1,43 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: Grape_Phenology_TensorBatch
+    model_parameters: grape_phenology:1 
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, DAYL, TEMP, TMIN, TMAX, RAIN, IRRAD, ET0, E0, ES0]
+    output_vars: [DVS]
+# Log configuration
+log_path: /_runs/RTMC/FineTunePhenology/ParamMTL5_5/
+synth_data: synth_rtmc_test
+dtype: grape_phenology_
+run_name: deep_mtl
+seed: 0
+# Data use
+cultivar: All
+data_fpath: _data/processed_data/
+data_cap: 5
+# Parameters
+params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
+params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]
+DConfig: 
+    type: Param
+    arch: EmbedFCGRU
+    hidden_dim: 2048
+    embed_op: concat
+    loss_func: MSELoss
+    learning_rate: .0001
+    lr_factor: 0.95
+    batch_size: 12
+    epochs: 400
+RTMCConfig:
+  arch: EmbedFCGRU
+  hidden_dim: 1024
+  loss_func: MSELoss
+  learning_rate: 0.0002
+  lr_factor: 0.95
+  batch_size: 12
+  epochs: 300
+  bias: False
+  day_masking: True

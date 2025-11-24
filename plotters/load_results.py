@@ -189,6 +189,8 @@ def main():
     else:
         mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
         std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
+
+    print(mean.shape)
     if args.cult:
         if args.stl:
             if mean.ndim == 3:
@@ -224,6 +226,7 @@ def main():
                 all_str = compute_str_stl_ndim2(mtl_arr, mean, std)
 
     else:  # For when we are not loading individual cultivar data
+        all_str = ""
         if mean.ndim == 4:  # For when we have region/station/site
             for j in range(mean.shape[0]):
                 for k in range(mean.shape[1]):

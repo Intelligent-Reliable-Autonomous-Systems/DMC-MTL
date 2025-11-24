@@ -7,7 +7,6 @@ Written by Will Solow, 2025
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import Transformer
 from omegaconf import DictConfig
 
 
@@ -45,7 +44,7 @@ class EmbedErrorFCTuner(BaseFTModule):
         if self.bias:
             self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
         else:
-            self.h0 = torch.zeros(1, self.hidden_dim)
+            self.h0 = torch.zeros(1, self.hidden_dim).to(model.device)
 
     def forward(
         self, error: torch.Tensor = None, hn: torch.Tensor = None, cultivars: torch.Tensor = None, **kwargs
@@ -82,7 +81,7 @@ class ErrorFCTuner(BaseFTModule):
         if self.bias:
             self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
         else:
-            self.h0 = torch.zeros(1, self.hidden_dim)
+            self.h0 = torch.zeros(1, self.hidden_dim).to(model.device)
 
     def forward(
         self, error: torch.Tensor = None, hn: torch.Tensor = None, **kwargs

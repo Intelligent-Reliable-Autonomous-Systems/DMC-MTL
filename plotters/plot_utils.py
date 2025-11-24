@@ -19,7 +19,6 @@ from plotters.plotting_functions import (
     plot_output_phenology,
     plot_output_coldhardiness,
     plot_output_wofost,
-    plot_output_phenology_2,
 )
 from train_algs.base.process_data import unnormalize
 
@@ -178,16 +177,6 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-            plot_output_phenology_2(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
-                output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
-            )
         elif "grape_coldhardiness" in config.dtype:
             inds = plot_output_coldhardiness(
                 config,
@@ -221,16 +210,16 @@ def gen_all_data_and_plot(
         [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
         [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
 
-        cm = calibrator.nn.cult_mapping
-        rm = calibrator.nn.reg_mapping
-        sm = calibrator.nn.stat_mapping
-        sim = calibrator.nn.site_mapping
+        cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
+        rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
+        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0] 
+        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0] 
 
         for k in range(len(true)):
-            ck = int(cultivars[k].item())
-            rk = int(regions[k].item())
-            sk = int(stations[k].item())
-            sik = int(sites[k].item())
+            ck = int(cultivars[k].item()) if cultivars is not None else 0
+            rk = int(regions[k].item()) if regions is not None else 0
+            sk = int(stations[k].item()) if stations is not None else 0
+            sik = int(sites[k].item()) if sites is not None else 0
 
             true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
             output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])

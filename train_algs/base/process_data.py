@@ -155,10 +155,10 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         torch.tensor(site_data).to(torch.float32).to(model.device).unsqueeze(1) if site_data is not None else None
     )
 
-    model.num_cultivars = len(torch.unique(cultivar_data)) if cultivar_data is not None else None
-    model.num_regions = len(torch.unique(region_data)) if region_data is not None else None
-    model.num_stations = len(torch.unique(station_data)) if station_data is not None else None
-    model.num_sites = len(torch.unique(site_data)) if site_data is not None else None
+    model.num_cultivars = len(torch.unique(cultivar_data)) if cultivar_data is not None else 1
+    model.num_regions = len(torch.unique(region_data)) if region_data is not None else 1
+    model.num_stations = len(torch.unique(station_data)) if station_data is not None else 1
+    model.num_sites = len(torch.unique(site_data)) if site_data is not None else 1
 
     model.cultivars = {
         "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
@@ -311,25 +311,6 @@ def process_error(model: nn.Module, fpath: str) -> None:
         "train": torch.tensor(err["train"]).to(model.device),
         "test": torch.tensor(err["test"]).to(model.device),
     }
-
-
-def copy_data(orig: nn.Module, targ: nn.Module) -> None:
-    """
-    Copy all data from original model to target model
-    """
-
-    targ.output_vars = copy.deepcopy(orig.output_vars)
-    targ.input_vars = copy.deepcopy(orig.input_vars)
-    targ.params = copy.deepcopy(orig.params)
-    targ.params_range = copy.deepcopy(orig.params_range)
-    targ.drange = copy.deepcopy(orig.drange)
-    targ.input_data = copy.deepcopy(orig.input_data)
-    targ.output_range = copy.deepcopy(orig.output_range)
-    targ.data = copy.deepcopy(orig.data)
-    targ.val = copy.deepcopy(orig.val)
-    targ.dates = copy.deepcopy(orig.dates)
-    targ.num_cultivars = copy.deepcopy(orig.num_cultivars)
-    targ.cultivars = copy.deepcopy(orig.cultivars)
 
 
 def make_tensor_inputs(config: DictConfig, dfs: list[pd.DataFrame]) -> WeatherDataProvider:

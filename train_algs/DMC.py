@@ -295,7 +295,6 @@ class ParamRNN(BaseRNN):
 
         # Run through entirety of time series predicting params
         for i in range(dlen):
-            print(i)
             params_predict, hn_cn = self.nn(
                 torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn=hn_cn,

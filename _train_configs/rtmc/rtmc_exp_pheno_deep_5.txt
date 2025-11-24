@@ -1,0 +1,24 @@
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_1_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763862257
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_1_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763866231
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_1_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763870196
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_1_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763874169
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_1_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763878125
+
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_2_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763862257
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_2_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763866231
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_2_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763870196
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_2_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763874169
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_2_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763878125
+
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763862257
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763866231
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763870196
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763874169
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763878125
+
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_10_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763862257
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_10_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763866231
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_10_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763870196
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_10_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763874169
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno_deep/pheno_deep_10_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/DeepReg5/None/None/None/All/deep_mtl__1763878125
+

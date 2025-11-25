@@ -24,6 +24,7 @@ from train_algs.base.DMC_Base import (
     FFTempResponse,
     ParamModel,
     EmbeddingFCFF,
+    DeepEmbeddingGRU
 )
 from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader
@@ -59,6 +60,8 @@ class BaseRNN(BaseModel):
             nn = FCGRU(config, model)
         elif config.DConfig.arch == "EmbedFCGRU":
             nn = EmbeddingFCGRU(config, model)
+        elif config.DConfig.arch == "DeepEmbedGRU":
+            nn = DeepEmbeddingGRU(config, model)
         elif config.DConfig.arch == "GHCNDeepEmbedFCGRU":
             nn = GHCNDeepEmbeddingGRU(config, model)
         elif config.DConfig.arch == "OneHotEmbedFCGRU":

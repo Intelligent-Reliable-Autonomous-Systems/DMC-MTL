@@ -21,6 +21,9 @@ def integrated_gradients(
     input: torch.Tensor,
     dates: np.ndarray,
     cultivars: torch.Tensor,
+    regions: torch.Tensor,
+    stations: torch.Tensor,
+    sites: torch.Tensor,
     baseline: torch.Tensor = None,
     target_idx: int = 0,
     steps: int = 50,
@@ -47,9 +50,19 @@ def integrated_gradients(
 
     scaled_dates = np.repeat(dates, repeats=(steps + 1), axis=0)
     scaled_cultivars = torch.tile(cultivars, (steps + 1, 1)).to(input.device)
+    scaled_regions = torch.tile(regions, (steps + 1, 1)).to(input.device)
+    scaled_stations = torch.tile(stations, (steps + 1, 1)).to(input.device)
+    scaled_sites = torch.tile(sites, (steps + 1, 1)).to(input.device)
 
     scaled_inputs.requires_grad_()
-    outputs, params = model.ig_forward(scaled_inputs, scaled_dates, scaled_cultivars)
+    outputs, params,_ = model.forward(
+        scaled_inputs,
+        scaled_dates,
+        cultivars=scaled_cultivars,
+        regions=scaled_regions,
+        stations=scaled_stations,
+        sites=scaled_sites,
+    )
     attributions = torch.empty(batch_size, len(target_idx), dlen, n_features).to(input.device)
 
     for i, idx in enumerate(target_idx):
@@ -127,11 +140,17 @@ def main():
             data = calibrator.data[dset][i].unsqueeze(0)
             dates = calibrator.dates[dset][i][np.newaxis, :]
             cultivars = calibrator.cultivars[dset][i].unsqueeze(0)
+            regions = calibrator.regions[dset][i].unsqueeze(0)
+            stations = calibrator.stations[dset][i].unsqueeze(0)
+            sites = calibrator.sites[dset][i].unsqueeze(0)
             attrs[i, :] = integrated_gradients(
                 calibrator,
                 data,
                 dates,
                 cultivars,
+                regions,
+                stations,
+                sites,
                 baseline=baseline,
                 target_idx=params_d[param],
                 t=t,
@@ -143,11 +162,17 @@ def main():
         data = calibrator.data[dset][sample].unsqueeze(0)
         dates = calibrator.dates[dset][sample][np.newaxis, :]
         cultivars = calibrator.cultivars[dset][sample].unsqueeze(0)
+        regions = calibrator.regions[dset][sample].unsqueeze(0)
+        stations = calibrator.stations[dset][sample].unsqueeze(0)
+        sites = calibrator.sites[dset][sample].unsqueeze(0)
         attrs = integrated_gradients(
             calibrator,
             data,
             dates,
             cultivars,
+            regions,
+            stations,
+            sites,
             baseline=baseline,
             target_idx=params_d[param],
             t=t,

@@ -212,8 +212,8 @@ def gen_all_data_and_plot(
 
         cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
         rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0] 
-        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0] 
+        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
+        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
 
         for k in range(len(true)):
             ck = int(cultivars[k].item()) if cultivars is not None else 0

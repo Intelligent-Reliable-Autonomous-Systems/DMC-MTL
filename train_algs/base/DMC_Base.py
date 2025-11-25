@@ -166,7 +166,57 @@ class EmbeddingFCGRU(BaseModule):
 
         return params, hn
 
+class DeepEmbeddingGRU(BaseModule):
+    """
+    DeepRNN Embedding GRU
+    Takes one hot embedding of cultivar and passes through RNN
+    to create a regression prediction of the output
+    """
 
+    def __init__(self, c: DictConfig, model: nn.Module) -> None:
+
+        super(DeepEmbeddingGRU, self).__init__(c, model)
+
+
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
+        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
+        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
+        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+
+
+        self.init_state = self.h0
+
+    def forward(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+
+        embed = self.embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        gru_input = self.embed_op(embed, input)
+
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x.unsqueeze(1), hn)
+
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out).squeeze(1)
+
+        return output, hn
+
+        
 class EmbeddingFCFF(BaseModule):
     """
     Multi Task FF

@@ -29,12 +29,16 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                 subdir = "/".join(pkl_file.parent.parts[-4:])
                 if "All" in pkl_file.parent.parts and args.stl:  # subdir
                     continue
-                #print(subdir)
+                # print(subdir)
                 if args.station and ("All" not in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-4]):
                     continue
                 if args.site and ("All" in pkl_file.parent.parts[-3] or "All" not in pkl_file.parent.parts[-2]):
                     continue
-                if args.cult and ("All" in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-2] or "All" in pkl_file.parent.parts[-4]):
+                if args.cult and (
+                    "All" in pkl_file.parent.parts[-3]
+                    or "All" in pkl_file.parent.parts[-2]
+                    or "All" in pkl_file.parent.parts[-4]
+                ):
                     continue
                 print(pkl_file)
                 with open(pkl_file, "rb") as f:

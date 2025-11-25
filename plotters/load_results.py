@@ -30,9 +30,11 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                 if "All" in pkl_file.parent.parts and args.stl:  # subdir
                     continue
                 #print(subdir)
-                if args.station and ("All" in pkl_file.parent.parts[-3] or "All" not in pkl_file.parent.parts[-2]):
+                if args.station and ("All" not in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-4]):
                     continue
-                if args.site and ("All" in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-2]):
+                if args.site and ("All" in pkl_file.parent.parts[-3] or "All" not in pkl_file.parent.parts[-2]):
+                    continue
+                if args.cult and ("All" in pkl_file.parent.parts[-3] or "All" in pkl_file.parent.parts[-2] or "All" in pkl_file.parent.parts[-4]):
                     continue
                 print(pkl_file)
                 with open(pkl_file, "rb") as f:
@@ -165,9 +167,9 @@ def main():
     parser.add_argument("--stl", action="store_true", help="If to toggle printing for STL variant")
     parser.add_argument("--station", action="store_true", help="If to toggle MTL printing variant by station")
     parser.add_argument("--site", action="store_true", help="If to toggle MTL printint variant by site")
-    parser.add_argument("--cult2", action="store_true", help="If to toggle MTL printint variant by cult")
+    parser.add_argument("--cult", action="store_true", help="If to toggle MTL printint variant by cult")
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
-    parser.add_argument("--cult", action="store_true", help="If to print per cultivar results")
+    parser.add_argument("--per_cult", action="store_true", help="If to print per cultivar results")
     args = parser.parse_args()
 
     fpath = args.prefix + "results_agg_cultivars.pkl"
@@ -178,9 +180,8 @@ def main():
     mtl_arr = np.array(list(mtl_models.values()))[sorted_keys]
     mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr)  # Replace 0.0s with nan
     # Take average over runs and cultivars
-    print(mtl_arr.shape)
     if args.per:
-        if args.cult:
+        if args.per_cult:
             mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
             std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
         else:
@@ -191,26 +192,14 @@ def main():
         std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
 
     print(mean.shape)
-    if args.cult:
+    if args.per_cult:
         if args.stl:
             if mean.ndim == 3:
                 all_str = compute_str_stl_ndim3(mtl_arr, mean, std)
             else:  # For when we are printing a single task cultivar model
                 all_str = compute_str_stl_ndim2(mtl_arr, mean, std)
         elif args.site:
-            all_str = ""
-            for i in range(mean.shape[0]):
-                for j in range(mean.shape[1]):
-                    if (np.isnan(mean[i, j])).all():
-                        continue
-                    for k in range(mean.shape[2]):
-                        all_str += f"{mean[i,j,k]} +/- {std[i,j,k]}, "
-                    all_str += "\n"
-                all_str += "\n"
-            all_str += compute_all_mean(mtl_arr, 0, mtl_arr.shape[0])
-            all_str += compute_all_mean(mtl_arr, 0, 4)
-            all_str += compute_all_mean(mtl_arr, 4, 9)
-
+            all_str = compute_str_ndim6(mtl_arr, mean, std)
         else:
             if mean.ndim == 6:
                 all_str = compute_str_ndim6(mtl_arr, mean, std)

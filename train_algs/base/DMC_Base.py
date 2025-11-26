@@ -166,6 +166,7 @@ class EmbeddingFCGRU(BaseModule):
 
         return params, hn
 
+
 class DeepEmbeddingGRU(BaseModule):
     """
     DeepRNN Embedding GRU
@@ -177,7 +178,6 @@ class DeepEmbeddingGRU(BaseModule):
 
         super(DeepEmbeddingGRU, self).__init__(c, model)
 
-
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -186,7 +186,6 @@ class DeepEmbeddingGRU(BaseModule):
         self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
 
         self.init_state = self.h0
 
@@ -216,7 +215,7 @@ class DeepEmbeddingGRU(BaseModule):
 
         return output, hn
 
-        
+
 class EmbeddingFCFF(BaseModule):
     """
     Multi Task FF

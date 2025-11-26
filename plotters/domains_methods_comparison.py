@@ -59,7 +59,7 @@ def gen_results(calibrators: list[torch.nn.Module], yr: int = -1, split: str = "
             cultivars=cultivars,
             regions=regions,
             stations=stations,
-            sites=sites
+            sites=sites,
         )
         model_true.append(true)
         model_pred.append(output)

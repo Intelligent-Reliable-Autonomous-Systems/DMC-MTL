@@ -24,7 +24,7 @@ from train_algs.base.DMC_Base import (
     FFTempResponse,
     ParamModel,
     EmbeddingFCFF,
-    DeepEmbeddingGRU
+    DeepEmbeddingGRU,
 )
 from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader

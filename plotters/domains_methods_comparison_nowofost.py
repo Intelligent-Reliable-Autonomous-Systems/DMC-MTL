@@ -60,7 +60,7 @@ def gen_results(calibrators: list[torch.nn.Module], yr: int = -1, split: str = "
             cultivars=cultivars,
             regions=regions,
             stations=stations,
-            sites=sites
+            sites=sites,
         )
         model_true.append(true)
         model_pred.append(output)
@@ -105,7 +105,6 @@ def main():
         # "_runs/PaperExperiments/ColdHardiness/PINNMTL/All/pinn_mtl__1746895757"
     ]
 
-
     pheno_model_names = ["DMC-MTL", "Deep-MTL"]
     ch_model_names = ["DMC-MTL", "Deep-MTL"]
 
@@ -141,8 +140,6 @@ def main():
         "Apr",
         "May",
     ]
-
-
 
     plot_results(ax, pheno_true, pheno_pred, pheno_model_names, i=0)
     plot_results(ax, ch_true, ch_pred, ch_model_names, i=1)
@@ -182,7 +179,6 @@ def main():
         handlelength=handle_length,
         fontsize=fontsize,
     )
-
 
     ax[0].text(0.05, 0.2, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1)
     ax[1].text(0.05, 0.2, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1)

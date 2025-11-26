@@ -54,19 +54,19 @@ def main():
     true_data = [[], [], []]
     output_data = [[], [], []]
     true_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
+        [
+            [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+            for _ in range(calibrator.num_stations)
         ]
+        for _ in range(calibrator.num_regions)
+    ]
     output_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
+        [
+            [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+            for _ in range(calibrator.num_stations)
         ]
+        for _ in range(calibrator.num_regions)
+    ]
 
     if args.mode == "default":
         plot_func = gen_all_data_and_plot

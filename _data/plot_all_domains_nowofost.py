@@ -37,12 +37,16 @@ def main():
     ch_yr = []
     wf_yr = []
     for c in args.pheno_cultivars:
-        with open(f"_data/processed_data/grape_phenology/WA/Roza2/Prosser/WA_Prosser_grape_phenology_{c}.pkl", "rb") as f:
+        with open(
+            f"_data/processed_data/grape_phenology/WA/Roza2/Prosser/WA_Prosser_grape_phenology_{c}.pkl", "rb"
+        ) as f:
             data = pkl.load(f)[-args.yr]
             pheno_yr.append(data)
         f.close()
     for c in args.ch_cultivars:
-        with open(f"_data/processed_data/grape_coldhardiness/WA/Roza2/Prosser/WA_Prosser_grape_coldhardiness_{c}.pkl", "rb") as f:
+        with open(
+            f"_data/processed_data/grape_coldhardiness/WA/Roza2/Prosser/WA_Prosser_grape_coldhardiness_{c}.pkl", "rb"
+        ) as f:
             data = pkl.load(f)[-args.yr]
             ch_yr.append(data)
         f.close()
@@ -135,7 +139,6 @@ def main():
         handlelength=handle_length,
         fontsize=fontsize,
     )
-
 
     ax[0].text(0.99, 0.91, f"(a)", ha="right", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1)
     ax[1].text(0.99, 0.91, f"(b)", ha="right", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1)

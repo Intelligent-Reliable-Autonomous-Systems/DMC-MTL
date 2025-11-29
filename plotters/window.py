@@ -42,29 +42,38 @@ def main():
 
     pheno_models = load_named_pickles(["PhenologyWindow"], "results_per_cultivars.pkl")
     ch_models = load_named_pickles(["ColdHardinessWindow"], "results_per_cultivars.pkl")
+    ff_pheno_models = load_named_pickles(["Phenology/ParamFFMTL"], "results_per_cultivars.pkl")
+    ff_ch_models = load_named_pickles(["ColdHardiness/ParamFFMTL"], "results_per_cultivars.pkl")
 
     pheno_sorted_keys = np.argsort(list(pheno_models.keys()))
     pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys][np.array([0, 3, 1, 2, 4, 5])]
-
+    pheno_ff_array = np.array(list(ff_pheno_models.values())).squeeze()
     ch_sorted_keys = np.argsort(list(ch_models.keys()))
     ch_array = np.array(list(ch_models.values()))[ch_sorted_keys][np.array([0, 3, 1, 2, 4, 5])]
-
+    ch_ff_array = np.array(list(ff_ch_models.values()))
+    
+    ch_ff_array[ch_ff_array==0] = np.nan
     pheno_mean = np.mean(pheno_array, axis=(-3, -1))[:, -1]
+    pheno_ff_mean = np.mean(pheno_ff_array, axis=(-3, -1))[-1]
     pheno_std = np.std(pheno_array, axis=(-3, -1))[:, -1]
     ch_mean = np.mean(ch_array, axis=(-3, -1))[:, -1]
+    ch_ff_mean = np.nanmean(ch_ff_array, axis=(0,1,2,3,4,6))[-1]
     ch_std = np.std(ch_array, axis=(-3, -1))[:, -1]
+
+    pheno_mean = np.append(pheno_ff_mean, pheno_mean)
+    ch_mean = np.append(ch_ff_mean, ch_mean)
 
     fig, ax = plt.subplots(figsize=(5, 3))
     ax1_color = "tab:blue"
-    ax.plot(np.arange(6), pheno_mean, color=ax1_color, label="Phenology")
+    ax.plot(np.arange(7), pheno_mean, color=ax1_color, label="Phenology")
     ax.set_xlabel("Window Size")
-    ax.set_xticks(np.arange(6), labels=[1, 5, 10, 20, 50, "All"])
+    ax.set_xticks(np.arange(7), labels=["FF", 1, 5, 10, 20, 50, "All"])
     ax.set_ylabel("RMSE in Days (Phenology)", color=ax1_color)
     ax.tick_params(axis="y", labelcolor=ax1_color)
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
-    ax2.plot(np.arange(6), ch_mean, color=ax2_color, label="Cold-Hardiness")
+    ax2.plot(np.arange(7), ch_mean, color=ax2_color, label="Cold-Hardiness")
     ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)", color=ax2_color)
     ax2.tick_params(axis="y", labelcolor=ax2_color)
     ax.set_title("Weather Window Size Effect on Error")

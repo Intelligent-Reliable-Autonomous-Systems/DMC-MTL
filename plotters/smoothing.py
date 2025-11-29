@@ -73,7 +73,7 @@ def main():
     handles1, labels1 = ax.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
 
-    ax.legend(handles1 + handles2, labels1 + labels2, loc="lower left")
+    ax.legend(handles1 + handles2, labels1 + labels2, loc="upper left")
 
     plt.savefig("plotters/figs/smoothing.png", bbox_inches="tight")
     plt.close()

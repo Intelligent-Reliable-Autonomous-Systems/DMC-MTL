@@ -101,13 +101,14 @@ def gen_batch_data(
     regions: torch.Tensor,
     stations: torch.Tensor,
     sites: torch.Tensor,
+    days: int = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Generates model output from a single batch
     """
     with torch.no_grad():
         (output, params, _) = calibrator.forward(
-            input_data, dates, cultivars=cultivars, val_data=val_data, regions=regions, stations=stations, sites=sites
+            input_data, dates, cultivars=cultivars, val_data=val_data, regions=regions, stations=stations, sites=sites, days=days
         )
 
     true_data = val_data.cpu().squeeze().numpy()
@@ -131,6 +132,9 @@ def gen_all_data_and_plot(
     true_cultivar_data: list[np.ndarray],
     output_cultivar_data: list[np.ndarray],
     name: str = "train",
+    days: int = None,
+    all_inds: list[np.ndarray] = None,
+    cult_inds: list[np.ndarray] = None,
 ) -> None:
     """
     Generates data for train and testing data and plots accordingly for RNNs
@@ -162,6 +166,7 @@ def gen_all_data_and_plot(
             regions,
             stations,
             sites,
+            days=days
         )
         true_arr.append(true)
         output_arr.append(output)
@@ -209,6 +214,7 @@ def gen_all_data_and_plot(
 
         [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
         [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
+        [all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) for k in range(len(inds))] if all_inds is not None else None
 
         cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
         rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
@@ -223,6 +229,7 @@ def gen_all_data_and_plot(
 
             true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
             output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
+            cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) if cult_inds is not None else None
 
         if args.break_early:
             break

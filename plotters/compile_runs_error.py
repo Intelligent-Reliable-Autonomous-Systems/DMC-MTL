@@ -52,7 +52,7 @@ def main():
     all_avg_ch = np.zeros((3 * (num_days + 1), num_days, args.num_runs))
     all_avg_wf = np.zeros((3, num_days, args.num_runs))
     all_cultivar_avg_pheno = np.zeros(
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, args.num_runs)
+        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
     )
     all_cultivar_avg_ch = np.zeros(
         (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_coldhardiness_ferg"]), 3 * (num_days + 1), num_days, args.num_runs)
@@ -215,28 +215,28 @@ def main():
                             if "grape_phenology" in config.dtype:
                                 cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                     config,
-                                    true_cultivar_data[k][0],
-                                    output_cultivar_data[k][0],
+                                    true_cultivar_data[r][s][si][k][0],
+                                    output_cultivar_data[r][s][si][k][0],
                                     fpath,
                                     save=False,
                                 )
                                 cultivar_val_avg_pheno, _ = compute_rmse_plot(
                                     config,
-                                    true_cultivar_data[k][1],
-                                    output_cultivar_data[k][1],
+                                    true_cultivar_data[r][s][si][k][1],
+                                    output_cultivar_data[r][s][si][k][1],
                                     fpath,
                                     name="val",
                                     save=False,
                                 )
                                 cultivar_test_avg_pheno, _ = compute_rmse_plot(
                                     config,
-                                    true_cultivar_data[k][2],
-                                    output_cultivar_data[k][2],
+                                    true_cultivar_data[r][s][si][k][2],
+                                    output_cultivar_data[r][s][si][k][2],
                                     fpath,
                                     name="test",
                                     save=False,
                                 )
-                                all_cultivar_avg_pheno[k, :, j, i] = np.concatenate(
+                                all_cultivar_avg_pheno[r, s, si, k, :, j, i] = np.concatenate(
                                     (
                                         cultivar_train_avg_pheno[1:-1],
                                         [np.sum(cultivar_train_avg_pheno[1:-1])],

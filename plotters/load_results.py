@@ -101,10 +101,44 @@ def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     return all_str
 
 
+def compute_str_ndim5_rtmc(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
+    """
+    Make print string for when we are printing MTL result over regions
+    """
+    all_str = ""
+    for j in range(mean.shape[0]):
+        if (np.isnan(mean[j])).all():
+            continue
+        for k in range(mean.shape[1]):
+            if (np.isnan(mean[j, k])).all():
+                continue
+            for l in range(mean.shape[2]):
+                if (np.isnan(mean[j, k, l])).all():
+                    continue
+                for m in range(mean.shape[4]):
+                    if (np.isnan(mean[j, k, l, :, m])).all():
+                        continue
+                    for i in range(mean.shape[3]):
+                        all_str += f"{mean[j,k,l,i,m]} +/- {std[j,k,l,i,m]}, "
+                    all_str += "\n"
+    return all_str
+
+
 def compute_str_ndim6(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     all_str = ""
     for i in range(mtl_arr.shape[0]):
         all_str += compute_str_ndim5(mtl_arr[i], mean[i], std[i])
+        all_str += "\n"
+    all_mean = np.round(np.nanmean(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
+    all_std = np.round(np.nanstd(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
+    for i in range(all_mean.shape[0]):
+        all_str += f"{all_mean[i]} +/- {all_std[i]}, "
+    return all_str
+
+def compute_str_ndim6_rtmc(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
+    all_str = ""
+    for i in range(mtl_arr.shape[0]):
+        all_str += compute_str_ndim5_rtmc(mtl_arr[i], mean[i], std[i])
         all_str += "\n"
     all_mean = np.round(np.nanmean(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
     all_std = np.round(np.nanstd(mtl_arr, axis=(-7, -6, -5, -4, -3, -1)), decimals=2).squeeze()
@@ -174,6 +208,7 @@ def main():
     parser.add_argument("--cult", action="store_true", help="If to toggle MTL printint variant by cult")
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
     parser.add_argument("--per_cult", action="store_true", help="If to print per cultivar results")
+    parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
     args = parser.parse_args()
 
     fpath = args.prefix + "results_agg_cultivars.pkl"
@@ -188,14 +223,15 @@ def main():
         if args.per_cult:
             mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
             std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
+        elif args.rtmc:
+            mean = np.round(np.nanmean(mtl_arr, axis=(-4, -1)), decimals=2).squeeze()
+            std = np.round(np.nanstd(mtl_arr, axis=(-4, -1)), decimals=2).squeeze()
         else:
             mean = np.round(np.nanmean(mtl_arr, axis=(-3, -1)), decimals=2).squeeze()
             std = np.round(np.nanstd(mtl_arr, axis=(-3, -1)), decimals=2).squeeze()
     else:
         mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
         std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
-
-    print(mean.shape)
     if args.per_cult:
         if args.stl:
             if mean.ndim == 3:
@@ -204,6 +240,8 @@ def main():
                 all_str = compute_str_stl_ndim2(mtl_arr, mean, std)
         elif args.site:
             all_str = compute_str_ndim6(mtl_arr, mean, std)
+        elif args.rtmc:
+            all_str = compute_str_ndim6_rtmc(mtl_arr, mean, std)
         else:
             if mean.ndim == 6:
                 all_str = compute_str_ndim6(mtl_arr, mean, std)
@@ -220,7 +258,9 @@ def main():
 
     else:  # For when we are not loading individual cultivar data
         all_str = ""
-        if mean.ndim == 4:  # For when we have region/station/site
+        if mean.ndim == 5 and args.rtmc:
+            all_str = compute_str_ndim5_rtmc(mtl_arr, mean, std)
+        elif mean.ndim == 4:  # For when we have region/station/site
             for j in range(mean.shape[0]):
                 for k in range(mean.shape[1]):
                     for l in range(mean.shape[2]):

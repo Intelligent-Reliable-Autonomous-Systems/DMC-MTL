@@ -19,7 +19,7 @@ from torch import nn
 from omegaconf import OmegaConf, DictConfig
 from model_engine.util import CROP_NAMES, REGION_NAMES, REGIONS, STATIONS, SITES
 
-from train_algs import DMC
+from train_algs import DMC, FineTuner
 
 
 @dataclass
@@ -282,7 +282,12 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
             or config.DConfig.arch == "FCLSTM"
             or config.DConfig.arch == "FCGRU"
         ), "Must use a Multi Architecture"
-    if config.DConfig.type == "Param":
+    if config.RTMCConfig.arch is not None:
+        if config.DConfig.type == "Param":
+            calibrator = FineTuner.FineTuner(config, data)
+        elif config.DConfig.type == "Deep":
+            calibrator = FineTuner.DeepFineTuner(config, data)
+    elif config.DConfig.type == "Param":
         calibrator = DMC.ParamRNN(config, data)
     elif config.DConfig.type == "NoObsParam":
         calibrator = DMC.NoObsParamRNN(config, data)

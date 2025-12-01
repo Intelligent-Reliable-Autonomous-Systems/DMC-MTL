@@ -255,10 +255,6 @@ class FineTuner(BaseFineTuner):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
 
-        assert (
-            rnn_fpath is not None and config.DConfig.arch is not None
-        ), "`rnn_fpath` must be a valid relative path to a model configuration"
-
         super(FineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)
 
         self.model = get_engine(self.config)(
@@ -333,10 +329,6 @@ class FineTuner(BaseFineTuner):
 class DeepFineTuner(BaseFineTuner):
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
-
-        assert (
-            rnn_fpath is not None and config.DConfig.arch is not None
-        ), "`rnn_fpath` must be a valid relative path to a model configuration"
 
         super(DeepFineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)
 

@@ -171,7 +171,7 @@ def gen_all_data_and_plot(
         true_arr.append(true)
         output_arr.append(output)
 
-        if "grape_phenology" in config.dtype:
+        if "grape_phenology" in config.DataConfig.dtype:
             inds = plot_output_phenology(
                 config,
                 fpath,
@@ -182,7 +182,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif "grape_coldhardiness" in config.dtype:
+        elif "grape_coldhardiness" in config.DataConfig.dtype:
             inds = plot_output_coldhardiness(
                 config,
                 fpath,
@@ -193,7 +193,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif "wofost" in config.dtype:
+        elif "wofost" in config.DataConfig.dtype:
             inds = plot_output_wofost(
                 config,
                 fpath,

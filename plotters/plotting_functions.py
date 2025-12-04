@@ -81,7 +81,7 @@ def compute_rmse_plot(
         plt.figure()
         plt.bar(x, avg, label="Training Error")
 
-        title = f"{config.cultivar} RMSE {name}"
+        title = f"{config.DataConfig.cultivar} RMSE {name}"
         method = "RMSE"
 
         plt.title(title)
@@ -92,7 +92,7 @@ def compute_rmse_plot(
             rotation=0,
         )
         plt.ylabel("Average Error in Days")
-        plt.savefig(f"{path}/PHENOLOGY_{method}_{name}_{config.cultivar}.png")
+        plt.savefig(f"{path}/PHENOLOGY_{method}_{name}_{config.DataConfig.cultivar}.png")
         plt.close()
 
     return avg, std
@@ -118,7 +118,7 @@ def plot_loss(fpath: str, config: DictConfig, tag1: str = "train_loss", tag2: st
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
     plt.legend()
-    plt.savefig(f"{fpath}/Loss_{config.cultivar}.png", bbox_inches="tight")
+    plt.savefig(f"{fpath}/Loss_{config.DataConfig.cultivar}.png", bbox_inches="tight")
 
 
 def plot_stats(
@@ -144,7 +144,7 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Gradient Norm")
         plt.legend()
-        plt.savefig(f"{fpath}/GradNorm_{config.cultivar}.png", bbox_inches="tight")
+        plt.savefig(f"{fpath}/GradNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight")
 
     if tag2 is not None:
         tag2_events = event_acc.Scalars(tag2)
@@ -155,7 +155,7 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Learning Rate")
         plt.legend()
-        plt.savefig(f"{fpath}/LearningRate_{config.cultivar}.png", bbox_inches="tight")
+        plt.savefig(f"{fpath}/LearningRate_{config.DataConfig.cultivar}.png", bbox_inches="tight")
 
     if tag3 is not None:
         tag3_events = event_acc.Scalars(tag3)
@@ -166,7 +166,7 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Weight Norm of Parameters")
         plt.legend()
-        plt.savefig(f"{fpath}/WeightNorm_{config.cultivar}.png", bbox_inches="tight")
+        plt.savefig(f"{fpath}/WeightNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight")
 
 
 def plot_params(fpath: str, config: DictConfig, params: np.ndarray, k: int, name: str = "Train") -> None:
@@ -179,16 +179,16 @@ def plot_params(fpath: str, config: DictConfig, params: np.ndarray, k: int, name
             ax.plot(params[:, i], label=f"{p} Predicted")
             ax.set_ylabel(f"{p}")
             ax.set_xlim(0, params.shape[0])
-            ax.set_title(f"Parameters {name} {k} {config.cultivar}")
+            ax.set_title(f"Parameters {name} {k} {config.DataConfig.cultivar}")
             ax.set_xlabel("Days")
         else:
             ax[i].plot(params[:, i], label=f"{p} Predicted")
             ax[i].set_ylabel(f"{p}")
             ax[i].set_xlim(0, params.shape[0])
-            ax[0].set_title(f"Parameters {name} {k} {config.cultivar}")
+            ax[0].set_title(f"Parameters {name} {k} {config.DataConfig.cultivar}")
             ax[-1].set_xlabel("Days")
     plt.tight_layout()
-    plt.savefig(f"{fpath}/Parameters_{name}_{k}_{config.cultivar}.png", bbox_inches="tight")
+    plt.savefig(f"{fpath}/Parameters_{name}_{k}_{config.DataConfig.cultivar}.png", bbox_inches="tight")
     plt.close()
 
 
@@ -296,7 +296,7 @@ def plot_params_weather(
     ax[6, 1].set_xticks(xticks, xlabels, rotation=45)
 
     plt.tight_layout()
-    plt.savefig(f"{fpath}/Weather_Params_{name}_{k}_{config.cultivar}.png", bbox_inches="tight")
+    plt.savefig(f"{fpath}/Weather_Params_{name}_{k}_{config.DataConfig.cultivar}.png", bbox_inches="tight")
     plt.close()
 
 
@@ -351,7 +351,7 @@ def plot_output_phenology(
             # Plot predicted TBASEM vs True
             if params is not None:
                 ax[1].plot(np.array(params[k])[:, 0][inds[k]], label="TBASEM Predicted")
-                if config.cultivar is None or config.cultivar == "synth" or config.cultivar == "None":
+                if config.DataConfig.cultivar is None or config.DataConfig.cultivar == "synth" or config.DataConfig.cultivar == "None":
                     ax[1].plot(x, np.tile(8.19, len(x)), label="True TBASEM")
                 ax[1].set_title("TBASEM Parameter Prediction")
                 ax[1].legend()
@@ -360,7 +360,7 @@ def plot_output_phenology(
                 ax[1].set_xlabel("Days")
 
             plt.savefig(
-                f"{fpath}/Model_{name}_{i[k]}_{config.cultivar}.png",
+                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
                 bbox_inches="tight",
             )
             plt.close()
@@ -436,7 +436,7 @@ def plot_output_coldhardiness(
                 ax[1].set_xlabel("Days")
 
             plt.savefig(
-                f"{fpath}/Model_{name}_{i[k]}_{config.cultivar}.png",
+                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
                 bbox_inches="tight",
             )
             plt.close()
@@ -502,7 +502,7 @@ def plot_output_wofost(
                 ax[1].set_xlabel("Days")
 
             plt.savefig(
-                f"{fpath}/Model_{name}_{i[k]}_{config.cultivar}.png",
+                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
                 bbox_inches="tight",
             )
             plt.close()
@@ -577,7 +577,7 @@ def plot_output_phenology_progress(
                 ax[1].set_xticks(xticks, xlabels)
 
             plt.savefig(
-                f"{fpath}/Progress_{name}_{i[k]}_{config.cultivar}.png",
+                f"{fpath}/Progress_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
                 bbox_inches="tight",
             )
             plt.close()

@@ -13,7 +13,7 @@ import pandas as pd
 import torch
 from torch import nn
 from torch.nn.utils.rnn import pad_sequence
-from omegaconf import DictConfig
+from omegaconf import DictConfig, ListConfig
 import copy
 import os
 import pickle as pkl
@@ -24,6 +24,32 @@ from model_engine.inputs.input_providers import (
     WeatherDataProvider,
 )
 
+def withold_checker(model: nn.Module, withold_dict: dict, c: int, si: int, s: int, r: int) -> bool:
+    """Check whether or not to include data in training """
+
+    for key in withold_dict.keys():
+        assert key in ["Region", "Station", "Site", "Cultivar"], f"Key `{key}` not allowed in keys."
+    for val in withold_dict.values():
+        assert isinstance(val, ListConfig), f"Value `{val}` is not a ListConfig."
+    
+    for k, v in withold_dict.items():
+        if k == "Region":
+            for reg in v:
+                if REGIONS[r] == reg:
+                    return True
+        elif k == "Station":
+            for stat in v:
+                if STATIONS[s] == stat:
+                    return True
+        elif k == "Site":
+            for site in v:
+                if SITES[si] == site:
+                    return True
+        elif k == "Cultivar":
+            for cult in v:
+                if CROP_NAMES[model.config.DataConfig.dtype][c] == cult:
+                    return True
+    return False
 
 def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
@@ -73,17 +99,17 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     site_data = np.array([d.loc[0, "SITE"] for d in data]) if "SITE" in data[0].columns else None
 
     c_counts = []
-    for c in range(len(CROP_NAMES[model.config.dtype])):
+    for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
         c_counts.append(len(np.argwhere(c == cultivar_data).flatten()))
 
     c_inds = (
-        np.argsort(c_counts)[::-1][: model.config.prim_cultivars :] if model.config.prim_cultivars else np.array([])
+        np.argsort(c_counts)[::-1][: model.config.DataConfig.prim_cultivars :] if model.config.DataConfig.prim_cultivars else np.array([])
     )
-    if model.config.synth_data is None:
+    if model.config.DataConfig.synth_data is None:
         for r in range(len(REGIONS)):
             for s in range(len(STATIONS)):
                 for si in range(len(SITES)):
-                    for c in range(len(CROP_NAMES[model.config.dtype])):
+                    for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
                         cultivar_inds = np.argwhere(
                             (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
                         ).flatten()
@@ -93,30 +119,34 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
                         np.random.shuffle(cultivar_inds)
                         test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
-                        if model.config.data_cap is None or c in c_inds:
+                        if model.config.DataConfig.withold is not None:
+                            if withold_checker(model, model.config.DataConfig.withold, c, si, s, r):
+                                print(f"Witholding: {REGIONS[r]}, {STATIONS[s]}, {SITES[si]}, {CROP_NAMES[model.config.DataConfig.dtype][c]}")
+                                continue
+
+                        if model.config.DataConfig.data_cap is None or c in c_inds:
                             train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-                        elif len(cultivar_inds[x:]) <= model.config.data_cap:
+                        elif len(cultivar_inds[x:]) <= model.config.DataConfig.data_cap:
                             train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
                         else:
                             train_inds = np.concatenate(
-                                (train_inds, cultivar_inds[x:][: model.config.data_cap])
+                                (train_inds, cultivar_inds[x:][: model.config.DataConfig.data_cap])
                             ).astype(np.int32)
     else:
-        for c in range(len(CROP_NAMES[model.config.dtype])):
+        for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
             cultivar_inds = np.argwhere(c == cultivar_data).flatten()
             if len(cultivar_inds) < 3:
                 continue
             np.random.shuffle(cultivar_inds)
             test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
-            if model.config.data_cap is None or c in c_inds:
+            if model.config.DataConfig.data_cap is None or c in c_inds:
                 train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
-            elif len(cultivar_inds[x:]) <= model.config.data_cap:
+            elif len(cultivar_inds[x:]) <= model.config.DataConfig.data_cap:
                 train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
             else:
-                train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.data_cap])).astype(np.int32)
+                train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.DataConfig.data_cap])).astype(np.int32)
 
-    # train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds)))
     np.random.shuffle(train_inds)
     np.random.shuffle(test_inds)
     model.data = {
@@ -135,6 +165,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
             else torch.tensor([])
         ),
     }
+
     model.dates = {
         "train": np.array([dates[i] for i in train_inds]),
         "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
@@ -236,11 +267,11 @@ def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
     x = 2
     v = 1
-    for c in range(len(CROP_NAMES[model.config.dtype])):
+    for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
         if len(cultivar_inds) < 4:
             continue
         else:
-            print(f"Insufficient Data: {CROP_NAMES[model.config.dtype][c]}: {len(cultivar_inds)}")
+            print(f"Insufficient Data: {CROP_NAMES[model.config.DataConfig.dtype][c]}: {len(cultivar_inds)}")
         cultivar_inds = np.argwhere(c == cultivar_data).flatten()
         np.random.shuffle(cultivar_inds)
         test_inds = np.concatenate((test_inds, cultivar_inds[:x]))

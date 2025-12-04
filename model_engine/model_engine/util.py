@@ -234,19 +234,19 @@ def per_task_param_loader(config: dict, params: list) -> torch.Tensor:
     Load the available configurations of a model from dictionary and put them on tensor
     """
 
-    dtype = config.dtype.rsplit("_", 1)[0]
+    dtype = config.DataConfig.dtype.rsplit("_", 1)[0]
     fname = f"{os.getcwd()}/{config.PConfig.config_fpath}{dtype}.yaml"
     try:
         model = yaml.safe_load(open(fname))
     except:
         raise Exception(f"Unable to load file: {fname}. Check that file exists")
     init_params = []
-    for n in CROP_NAMES[config.dtype]:
+    for n in CROP_NAMES[config.DataConfig.dtype]:
         try:
             cv = model["ModelParameters"]["Sets"][n]
         except:
             raise Exception(
-                f"Incorrectly specified parameter file {fname}. Ensure that `{config.dtype}` contains parameter set `{n}`"
+                f"Incorrectly specified parameter file {fname}. Ensure that `{config.DataConfig.dtype}` contains parameter set `{n}`"
             )
         task_params = []
         for c in params:

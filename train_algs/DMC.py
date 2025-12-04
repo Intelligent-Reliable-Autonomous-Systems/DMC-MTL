@@ -95,7 +95,7 @@ class BaseRNN(BaseModel):
         self.nn.train()
 
         train_name = "train"
-        test_name = "val" if self.config.val_set else "test"
+        test_name = "val" if self.config.DataConfig.val_set else "test"
         for epoch in range(self.epochs):
 
             train_loss = 0
@@ -251,7 +251,7 @@ class BaseRNN(BaseModel):
                 grad,
             )
 
-        self.scheduler.step(float(eval_loss if self.config.val_set else train_loss))
+        self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))
 
 
 class ParamRNN(BaseRNN):

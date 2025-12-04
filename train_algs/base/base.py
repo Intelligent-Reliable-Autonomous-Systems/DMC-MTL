@@ -33,7 +33,7 @@ class BaseModel(nn.Module):
         self.config = config
         self.target_mask = np.nan
 
-        process_data_valset(self, data) if config.val_set else process_data_novalset(self, data)
+        process_data_valset(self, data) if config.DataConfig.val_set else process_data_novalset(self, data)
 
     def make_optimizer(self, model: nn.Module) -> None:
 

@@ -22,7 +22,7 @@ class BaseModule(nn.Module):
         self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
 
         self.embed_op_str = c.DConfig.embed_op
-        self.synth_data = c.synth_data
+        self.synth_data = c.DataConfig.synth_data
 
         cult_orig = torch.unique(torch.concatenate(list(model.cultivars.values()), axis=0)).to(torch.int)
         self.cult_mapping = torch.zeros((int(cult_orig.max()) + 1,)).to(torch.int).to(model.device)
@@ -63,7 +63,7 @@ class FCGRU(BaseModule):
             self.param_heads = nn.ModuleList([nn.Linear(self.dim2, self.output_dim) for _ in range(1)])
         else:
             self.param_heads = nn.ModuleList(
-                [nn.Linear(self.dim2, self.output_dim) for _ in range(len(CROP_NAMES[c.dtype]))]
+                [nn.Linear(self.dim2, self.output_dim) for _ in range(len(CROP_NAMES[c.DataConfig.dtype]))]
             )
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
@@ -100,7 +100,7 @@ class EmbeddingFCGRU(BaseModule):
 
         super(EmbeddingFCGRU, self).__init__(c, model)
 
-        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
         self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
         self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
@@ -178,7 +178,7 @@ class DeepEmbeddingGRU(BaseModule):
 
         super(DeepEmbeddingGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
@@ -225,7 +225,7 @@ class EmbeddingFCFF(BaseModule):
 
         super(EmbeddingFCFF, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.Sequential(
@@ -308,7 +308,7 @@ class GHCNDeepEmbeddingGRU(BaseModule):
 
         super(GHCNDeepEmbeddingGRU, self).__init__(c, model)
 
-        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.dtype]), self.input_dim)
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)

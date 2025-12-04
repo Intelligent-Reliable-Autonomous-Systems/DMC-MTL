@@ -94,24 +94,10 @@ class RTMCConfig:
     """Random day masking flag"""
     day_masking: Optional[bool] = None
 
-
 @dataclass
-class Args:
-    """Model configuration"""
-
-    PConfig: object = PConfig
-    """Deep Model Args"""
-    DConfig: object = DConfig
-    """RTMC Config"""
-    RTMCConfig: object = RTMCConfig
+class DataConfig: 
     """If using a validation set or not"""
     val_set: Optional[bool] = None
-    """Path to save model"""
-    log_path: Optional[str] = None
-    """Run name for experiment"""
-    run_name: Optional[str] = None
-    """Seed"""
-    seed: Optional[int] = None
     """Amount of years to cap train set per cultivar"""
     data_cap: Optional[int] = None
     """How many cultivars of 'most data' to use"""
@@ -130,6 +116,27 @@ class Args:
     cultivar: Optional[str] = None
     """If using synthetic data"""
     synth_data: Optional[str] = None
+    """Withold cultivar/site/station/region"""
+    withold: Optional[dict] = None
+
+@dataclass
+class Args:
+    """Model configuration"""
+
+    PConfig: object = PConfig
+    """Deep Model Args"""
+    DConfig: object = DConfig
+    """RTMC Config"""
+    RTMCConfig: object = RTMCConfig
+    """Data Args"""
+    DataConfig: object = DataConfig
+    
+    """Path to save model"""
+    log_path: Optional[str] = None
+    """Run name for experiment"""
+    run_name: Optional[str] = None
+    """Seed"""
+    seed: Optional[int] = None
     """Parameters to predict"""
     params: Optional[list] = None
     """Ranges for each parameter to predict"""
@@ -149,13 +156,13 @@ def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
     config.seed = int(args.seed)
 
     if hasattr(args, "cultivar"):
-        config.cultivar = args.cultivar if args.cultivar is not None else config.cultivar
+        config.DataConfig.cultivar = args.cultivar if args.cultivar is not None else config.DataConfig.cultivar
     if hasattr(args, "region"):
-        config.region = args.region if args.region is not None else config.region
+        config.DataConfig.region = args.region if args.region is not None else config.DataConfig.region
     if hasattr(args, "station"):
-        config.station = args.station if args.station is not None else config.station
+        config.DataConfig.station = args.station if args.station is not None else config.DataConfig.station
     if hasattr(args, "site"):
-        config.site = args.site if args.site is not None else config.site
+        config.DataConfig.site = args.site if args.site is not None else config.DataConfig.site
 
     return config, load_data_from_config(config)
 
@@ -175,7 +182,7 @@ def load_config_data_fpath(
 
     if hasattr(args, "synth_test"):
         if args.synth_test is not None:
-            config.synth_data = args.synth_test
+            config.DataConfig.synth_data = args.synth_test
 
     return config, load_data_from_config(config), fpath
 
@@ -216,47 +223,47 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
                         pickle_paths.append(full_path)
         return pickle_paths
 
-    dtype = config.dtype.rsplit("_", 1)[0]
+    dtype = config.DataConfig.dtype.rsplit("_", 1)[0]
 
-    PREFIX = f"{config.data_fpath}{dtype}/"
-    if config.synth_data is not None:
-        paths = find_pickle_files(f"{PREFIX}{config.synth_data}/", prefix=f"synth_")
+    PREFIX = f"{config.DataConfig.data_fpath}{dtype}/"
+    if config.DataConfig.synth_data is not None:
+        paths = find_pickle_files(f"{PREFIX}{config.DataConfig.synth_data}/", prefix=f"synth_")
     else:
-        if config.region == "All":
+        if config.DataConfig.region == "All":
             paths = find_pickle_files(
-                f"{PREFIX}", contains="" if config.cultivar == "All" else config.cultivar, exclude="synth"
+                f"{PREFIX}", contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar, exclude="synth"
             )
         else:
-            if config.station == "All":
+            if config.DataConfig.station == "All":
                 paths = find_pickle_files(
-                    f"{PREFIX}{config.region}/",
-                    contains="" if config.cultivar == "All" else config.cultivar,
+                    f"{PREFIX}{config.DataConfig.region}/",
+                    contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar,
                     exclude="synth",
                 )
             else:
-                if config.site == "All":
+                if config.DataConfig.site == "All":
                     paths = find_pickle_files(
-                        f"{PREFIX}{config.region}/{config.station}/",
-                        contains="" if config.cultivar == "All" else config.cultivar,
+                        f"{PREFIX}{config.DataConfig.region}/{config.DataConfig.station}/",
+                        contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar,
                         exclude="synth",
                     )
                 else:
                     paths = find_pickle_files(
-                        f"{PREFIX}{config.region}/{config.station}/{config.site}/",
-                        contains="" if config.cultivar == "All" else config.cultivar,
+                        f"{PREFIX}{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/",
+                        contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar,
                         exclude="synth",
                     )
     data = []
 
     for p in paths:
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "")
-        if cultivar not in CROP_NAMES[config.dtype]:
+        if cultivar not in CROP_NAMES[config.DataConfig.dtype]:
             continue
         with open(p, "rb") as f:
             cult_data = pickle.load(f)
         for cult in cult_data:
-            cult["CULTIVAR"] = np.where(CROP_NAMES[config.dtype] == cultivar)[0][0]
-            if config.synth_data is None:
+            cult["CULTIVAR"] = np.where(CROP_NAMES[config.DataConfig.dtype] == cultivar)[0][0]
+            if config.DataConfig.synth_data is None:
                 region = p.split("/")[3]
                 station = p.split("/")[4]
                 site = p.split("/")[5]
@@ -275,7 +282,7 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
     Load the model to train using the configuration and pass
     it args and data
     """
-    if config.cultivar == "All":
+    if config.DataConfig.cultivar == "All":
         assert not (
             config.DConfig.arch == "FCGRU"
             or config.DConfig.arch == "BaseGRU"

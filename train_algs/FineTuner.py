@@ -142,7 +142,7 @@ class BaseFineTuner(BaseModel):
 
         self.nn.eval()
         self.finetuner.train()
-        train_name = "val" if self.config.val_set else "train"
+        train_name = "val" if self.config.DataConfig.val_set else "train"
         test_name = "test"
         for epoch in range(self.epochs):
 

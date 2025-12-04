@@ -75,7 +75,7 @@ def main():
 
         config, data, fpath = utils.load_config_data_fpath(args)
         config.DConfig.batch_size = 128
-        args.cultivar = config.cultivar
+        args.cultivar = config.DataConfig.cultivar
 
         calibrator = utils.load_model_from_config(config, data)
         calibrator.load_model(f"{fpath}", name="rnn_model_best.pt")
@@ -140,7 +140,7 @@ def main():
                 all_inds = all_inds,
                 cult_inds=cult_inds
             )
-            if config.val_set:
+            if config.DataConfig.val_set:
                 gen_all_data_and_plot(
                     config,
                     fpath,
@@ -157,7 +157,7 @@ def main():
                 )
 
             # Store data for averaging
-            if "grape_phenology" in config.dtype:
+            if "grape_phenology" in config.DataConfig.dtype:
                 train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
                 test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
                 val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -171,7 +171,7 @@ def main():
                         [np.sum(test_avg[1:-1])],
                     )
                 )
-            elif "grape_coldhardiness" in config.dtype:
+            elif "grape_coldhardiness" in config.DataConfig.dtype:
                 day_rmse = np.array(
                     [
                         compute_day_RMSE(true_data[0], output_data[0], all_inds[0], days=k * days_step)
@@ -196,7 +196,7 @@ def main():
                 all_avg_ch[:, j, i] = np.concatenate(
                     [day_rmse, [total_rmse], val_day_rmse, [val_total_rmse], test_day_rmse, [test_total_rmse]]
                 )
-            elif "wofost" in config.dtype:
+            elif "wofost" in config.DataConfig.dtype:
                 total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
                 val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
                 test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
@@ -208,11 +208,11 @@ def main():
                         for k in range(calibrator.num_cultivars):
                             if len(true_cultivar_data[r][s][si][k][0]) == 0:
                                 continue
-                            if len(true_cultivar_data[r][s][si][k][1]) == 0 and config.val_set:
+                            if len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set:
                                 continue
                             if len(true_cultivar_data[r][s][si][k][2]) == 0:
                                 continue
-                            if "grape_phenology" in config.dtype:
+                            if "grape_phenology" in config.DataConfig.dtype:
                                 cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                     config,
                                     true_cultivar_data[r][s][si][k][0],
@@ -246,7 +246,7 @@ def main():
                                         [np.sum(cultivar_test_avg_pheno[1:-1])],
                                     )
                                 )
-                            elif "grape_coldhardiness" in config.dtype:
+                            elif "grape_coldhardiness" in config.DataConfig.dtype:
                                 cult_day_rmse = np.array(
                                     [
                                         compute_day_RMSE(
@@ -298,7 +298,7 @@ def main():
                                         ]
                                     )
                                 )
-                            elif "wofost" in config.dtype:
+                            elif "wofost" in config.DataConfig.dtype:
                                 cultivar_train_rmse, _ = compute_total_RMSE(
                                     true_cultivar_data[k][0], output_cultivar_data[k][0]
                                 )

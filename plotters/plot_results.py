@@ -95,7 +95,7 @@ def main():
         output_cultivar_data,
         name="test",
     )
-    if config.val_set:
+    if config.DataConfig.val_set:
         plot_func(
             config,
             fpath,

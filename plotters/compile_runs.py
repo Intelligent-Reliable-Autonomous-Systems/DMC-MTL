@@ -69,7 +69,7 @@ def main():
         fpath = f"{os.getcwd()}/{args.config}"
 
         config, data, fpath = utils.load_config_data_fpath(args)
-        args.cultivar = config.cultivar
+        args.cultivar = config.DataConfig.cultivar
         config.DConfig.batch_size = 128
         calibrator = utils.load_model_from_config(config, data)
 
@@ -109,7 +109,7 @@ def main():
             for n in ["train", "test"]
         ]
 
-        if config.val_set:
+        if config.DataConfig.val_set:
             gen_all_data_and_plot(
                 config,
                 fpath,
@@ -123,7 +123,7 @@ def main():
             )
 
         # Store data for averaging
-        if "grape_phenology" in config.dtype:
+        if "grape_phenology" in config.DataConfig.dtype:
             train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
             test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
             val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -137,12 +137,12 @@ def main():
                     [np.sum(test_avg[1:-1])],
                 )
             )
-        elif "grape_coldhardiness" in config.dtype:
+        elif "grape_coldhardiness" in config.DataConfig.dtype:
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
             test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
             all_avg_ch[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
-        elif "wofost" in config.dtype:
+        elif "wofost" in config.DataConfig.dtype:
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
             test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
@@ -154,11 +154,11 @@ def main():
                     for k in range(calibrator.num_cultivars):
                         if len(true_cultivar_data[r][s][si][k][0]) == 0:
                             continue
-                        if len(true_cultivar_data[r][s][si][k][1]) == 0 and config.val_set:
+                        if len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set:
                             continue
                         if len(true_cultivar_data[r][s][si][k][2]) == 0:
                             continue
-                        if "grape_phenology" in config.dtype:
+                        if "grape_phenology" in config.DataConfig.dtype:
                             cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                 config,
                                 true_cultivar_data[r][s][si][k][0],
@@ -192,7 +192,7 @@ def main():
                                     [np.sum(cultivar_test_avg_pheno[1:-1])],
                                 )
                             )
-                        elif "grape_coldhardiness" in config.dtype:
+                        elif "grape_coldhardiness" in config.DataConfig.dtype:
                             cultivar_train_rmse, _ = compute_total_RMSE(
                                 true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
                             )
@@ -205,7 +205,7 @@ def main():
                             all_cultivar_avg_ch[r, s, si, k, :, i] = np.array(
                                 [cultivar_train_rmse, cultivar_val_rmse, cultivar_test_rmse]
                             )
-                        elif "wofost" in config.dtype:
+                        elif "wofost" in config.DataConfig.dtype:
                             cultivar_train_rmse, _ = compute_total_RMSE(
                                 true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
                             )
@@ -220,21 +220,21 @@ def main():
                             )
     # Save Data
     prefix = args.synth_test + "_" if args.synth_test is not None else ""
-    if "grape_phenology" in config.dtype:
+    if "grape_phenology" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_pheno, f)
         f.close()
         with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
             pkl.dump(all_cultivar_avg_pheno, f)
         f.close()
-    elif "grape_coldhardiness" in config.dtype:
+    elif "grape_coldhardiness" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_ch, f)
         f.close()
         with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
             pkl.dump(all_cultivar_avg_ch, f)
         f.close()
-    elif "wofost" in config.dtype:
+    elif "wofost" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_wf, f)
         f.close()

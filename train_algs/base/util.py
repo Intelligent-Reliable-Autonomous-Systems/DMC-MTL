@@ -157,7 +157,7 @@ def setup_logging(config: Namespace) -> tuple[SummaryWriter, str]:
 
     run_name = f"{config.run_name}__{int(time.time())}"
     log_path = (
-        f"{os.getcwd()}{config.log_path}/{config.region}/{config.station}/{config.site}/{config.cultivar}/{run_name}"
+        f"{os.getcwd()}{config.log_path}/{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/{config.DataConfig.cultivar}/{run_name}"
     )
     writer = SummaryWriter(log_path)
     writer.add_text(
@@ -184,7 +184,7 @@ def log_training(
     """
 
     # RMSE
-    eval_len = len(calibrator.data["val"]) if calibrator.config.val_set else len(calibrator.data["test"])
+    eval_len = len(calibrator.data["val"]) if calibrator.config.DataConfig.val_set else len(calibrator.data["test"])
     train_avg[:3] = torch.sqrt(train_avg[:3] / len(calibrator.data["train"]))
     eval_avg[:3] = torch.sqrt(eval_avg[:3] / eval_len)
     train_avg[-1] = torch.sum(train_avg[:3])
@@ -204,7 +204,7 @@ def log_training(
     writer.add_scalar("learning_rate", calibrator.optimizer.param_groups[0]["lr"], epoch)
     writer.add_scalar("weight_norm", weight_norm, epoch)
 
-    if "grape_phenology" in calibrator.config.dtype:
+    if "grape_phenology" in calibrator.config.DataConfig.dtype:
         if calibrator.config.DConfig.loss_func == "BudbreakMSELoss":
             best_avg = eval_avg[0]
         elif calibrator.config.DConfig.loss_func == "BloomMSELoss":
@@ -218,11 +218,11 @@ def log_training(
             calibrator.best_cum_rmse = best_avg
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
             calibrator.best_rmse = eval_avg
-    elif "grape_coldhardiness" in calibrator.config.dtype:
+    elif "grape_coldhardiness" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
-    elif "wofost" in calibrator.config.dtype:
+    elif "wofost" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
@@ -233,7 +233,7 @@ def log_training(
     p_str += f"Train loss: {train_loss}\n"
     p_str += f"Val loss: {eval_loss}\n"
     p_str += f"Model Grad Norm: {grad/len(calibrator.data['train'])}\n"
-    if "grape_phenology" in calibrator.config.dtype:
+    if "grape_phenology" in calibrator.config.DataConfig.dtype:
         p_str += f"Train RMSE: {np.round(train_avg.cpu().numpy(),decimals=2)}\n"
         p_str += f"Val RMSE: {np.round(eval_avg.cpu().numpy(),decimals=2)}\n"
         p_str += f"Best Val RMSE: {np.round(calibrator.best_rmse.cpu().numpy(),decimals=2)}\n"

@@ -13,12 +13,13 @@ log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLSite/
 run_name: deep_mtl
 seed: 0
 #
-data_fpath: _data/processed_data/
-dtype: grape_coldhardiness_reg
-region: All
-station: All
-site: All
-cultivar: All
+DataConfig: 
+    data_fpath: _data/processed_data/
+    dtype: grape_coldhardiness_reg
+    region: All
+    station: All
+    site: All
+    cultivar: All
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]

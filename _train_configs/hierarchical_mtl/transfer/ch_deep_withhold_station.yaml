@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLSite/
+log_path: /_runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStat/
 run_name: deep_mtl
 seed: 0
 #
@@ -28,7 +28,7 @@ DConfig:
     type: Deep
     arch: EmbedFCGRU
     hidden_dim: 2048
-    embed_op: concat_site
+    embed_op: concat_stat
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95

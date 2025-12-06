@@ -51,13 +51,13 @@ def main():
     ch_sorted_keys = np.argsort(list(ch_models.keys()))
     ch_array = np.array(list(ch_models.values()))[ch_sorted_keys][np.array([0, 3, 1, 2, 4, 5])]
     ch_ff_array = np.array(list(ff_ch_models.values()))
-    
-    ch_ff_array[ch_ff_array==0] = np.nan
+
+    ch_ff_array[ch_ff_array == 0] = np.nan
     pheno_mean = np.mean(pheno_array, axis=(-3, -1))[:, -1]
     pheno_ff_mean = np.mean(pheno_ff_array, axis=(-3, -1))[-1]
     pheno_std = np.std(pheno_array, axis=(-3, -1))[:, -1]
     ch_mean = np.mean(ch_array, axis=(-3, -1))[:, -1]
-    ch_ff_mean = np.nanmean(ch_ff_array, axis=(0,1,2,3,4,6))[-1]
+    ch_ff_mean = np.nanmean(ch_ff_array, axis=(0, 1, 2, 3, 4, 6))[-1]
     ch_std = np.std(ch_array, axis=(-3, -1))[:, -1]
 
     pheno_mean = np.append(pheno_ff_mean, pheno_mean)

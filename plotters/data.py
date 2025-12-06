@@ -68,8 +68,8 @@ def main():
 
     ch_deep_mean = np.nanmean(ch_deep_array, axis=(-3, -1))[:, -1]
     ch_deep_std = np.nanstd(ch_deep_array, axis=(-3, -1))[:, -1]
-    ch_param_mean  = np.nanmean(ch_param_array,axis=(1,2,3,4, -1))[:,-1]
-    ch_param_std  = np.nanstd(ch_param_array,axis=(1,2,3,4, -1))[:,-1]
+    ch_param_mean = np.nanmean(ch_param_array, axis=(1, 2, 3, 4, -1))[:, -1]
+    ch_param_std = np.nanstd(ch_param_array, axis=(1, 2, 3, 4, -1))[:, -1]
 
     fig, ax = plt.subplots(figsize=(5, 3))
 
@@ -86,7 +86,6 @@ def main():
     ax.set_ylabel("RMSE in Days (Phenology)", color=ax1_color)
     ax.tick_params(axis="y", labelcolor=ax1_color)
 
-    
     ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)", color=ax2_color)
     ax2.tick_params(axis="y", labelcolor=ax2_color)
     ax.set_title("Effect of Per Cultivar Data Availability")

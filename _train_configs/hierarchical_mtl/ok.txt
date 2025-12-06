@@ -1,17 +1,15 @@
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_station --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_station --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_station --seed 4
 
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_site --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_site --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_site --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_site --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_site --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold --seed 4
 
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_station --seed 0
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_station --seed 1
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_station --seed 2
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_station --seed 3
-python3 -m trainers.train_model --config hierarchical_mtl/ch_deep_withhold_station --seed 4
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_site --seed 0
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_site --seed 1
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_site --seed 2
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_site --seed 3
+python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withhold_site --seed 4

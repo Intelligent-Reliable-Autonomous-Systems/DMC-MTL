@@ -47,8 +47,8 @@ def main():
     pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys]
     print(np.array(list(pheno_models.keys()))[pheno_sorted_keys])
     pheno_array[pheno_array == 0] = np.nan
-    pheno_mean = np.nanmean(pheno_array, axis=(1, 2, 3, 4, -1))[:,-1, -1]
-    pheno_std = np.nanstd(pheno_array, axis=(1, 2, 3, 4, -1))[:,-1, -1]
+    pheno_mean = np.nanmean(pheno_array, axis=(1, 2, 3, 4, -1))[:, -1, -1]
+    pheno_std = np.nanstd(pheno_array, axis=(1, 2, 3, 4, -1))[:, -1, -1]
 
     ones = np.array([4, 8, 12, 0])
     twos = ones + 2
@@ -57,12 +57,12 @@ def main():
 
     data = [pheno_mean[ones], pheno_mean[twos], pheno_mean[fives], pheno_mean[tens]]
 
-    spacing = 2 
-    pos= 0
+    spacing = 2
+    pos = 0
     fig, ax = plt.subplots(figsize=(5, 3))
     colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
     for group in data:
-        for i,box in enumerate(group):
+        for i, box in enumerate(group):
             ax.bar(pos, height=box, width=1, color=colors[i])
             pos += 1
         pos += spacing  # add group spacing
@@ -79,12 +79,9 @@ def main():
 
     ax.legend(handles=legend_patches)
     ax.set_title("Cold-Hardiness RTMC with Additional Data")
-    
+
     plt.savefig("plotters/figs/rtmc.png", bbox_inches="tight")
     plt.close()
-
-
-
 
 
 if __name__ == "__main__":

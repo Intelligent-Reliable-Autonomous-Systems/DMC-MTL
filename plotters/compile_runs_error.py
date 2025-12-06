@@ -55,7 +55,15 @@ def main():
         (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
     )
     all_cultivar_avg_ch = np.zeros(
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_coldhardiness_ferg"]), 3 * (num_days + 1), num_days, args.num_runs)
+        (
+            len(REGIONS),
+            len(STATIONS),
+            len(SITES),
+            len(CROP_NAMES["grape_coldhardiness_ferg"]),
+            3 * (num_days + 1),
+            num_days,
+            args.num_runs,
+        )
     )
 
     all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost_"]), 3, args.num_runs))
@@ -123,8 +131,8 @@ def main():
                 output_cultivar_data,
                 name="train",
                 days=days,
-                all_inds = all_inds,
-                cult_inds=cult_inds
+                all_inds=all_inds,
+                cult_inds=cult_inds,
             )
             gen_all_data_and_plot(
                 config,
@@ -137,8 +145,8 @@ def main():
                 output_cultivar_data,
                 name="test",
                 days=days,
-                all_inds = all_inds,
-                cult_inds=cult_inds
+                all_inds=all_inds,
+                cult_inds=cult_inds,
             )
             if config.DataConfig.val_set:
                 gen_all_data_and_plot(
@@ -152,8 +160,8 @@ def main():
                     output_cultivar_data,
                     name="val",
                     days=days,
-                    all_inds = all_inds,
-                    cult_inds=cult_inds
+                    all_inds=all_inds,
+                    cult_inds=cult_inds,
                 )
 
             # Store data for averaging
@@ -284,8 +292,12 @@ def main():
                                 cultivar_train_rmse, _ = compute_total_RMSE(
                                     true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
                                 )
-                                cultivar_val_rmse, _ = compute_total_RMSE(true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1])
-                                cultivar_test_rmse, _ = compute_total_RMSE(true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2])
+                                cultivar_val_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
+                                )
+                                cultivar_test_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
+                                )
                                 all_cultivar_avg_ch[r, s, si, k, :, j, i] = np.array(
                                     np.concatenate(
                                         [
@@ -302,8 +314,12 @@ def main():
                                 cultivar_train_rmse, _ = compute_total_RMSE(
                                     true_cultivar_data[k][0], output_cultivar_data[k][0]
                                 )
-                                cultivar_val_rmse, _ = compute_total_RMSE(true_cultivar_data[k][1], output_cultivar_data[k][1])
-                                cultivar_test_rmse, _ = compute_total_RMSE(true_cultivar_data[k][2], output_cultivar_data[k][2])
+                                cultivar_val_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[k][1], output_cultivar_data[k][1]
+                                )
+                                cultivar_test_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[k][2], output_cultivar_data[k][2]
+                                )
                                 all_cultivar_avg_wf[k, :, j, i] = np.array(
                                     [cultivar_train_rmse, cultivar_val_rmse, cultivar_test_rmse]
                                 )

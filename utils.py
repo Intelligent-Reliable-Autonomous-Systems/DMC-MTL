@@ -94,9 +94,11 @@ class RTMCConfig:
     """Random day masking flag"""
     day_masking: Optional[bool] = None
 
+
 @dataclass
-class DataConfig: 
+class DataConfig:
     """If using a validation set or not"""
+
     val_set: Optional[bool] = None
     """Amount of years to cap train set per cultivar"""
     data_cap: Optional[int] = None
@@ -119,6 +121,7 @@ class DataConfig:
     """Withold cultivar/site/station/region"""
     withold: Optional[dict] = None
 
+
 @dataclass
 class Args:
     """Model configuration"""
@@ -130,7 +133,7 @@ class Args:
     RTMCConfig: object = RTMCConfig
     """Data Args"""
     DataConfig: object = DataConfig
-    
+
     """Path to save model"""
     log_path: Optional[str] = None
     """Run name for experiment"""
@@ -231,7 +234,9 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
     else:
         if config.DataConfig.region == "All":
             paths = find_pickle_files(
-                f"{PREFIX}", contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar, exclude="synth"
+                f"{PREFIX}",
+                contains="" if config.DataConfig.cultivar == "All" else config.DataConfig.cultivar,
+                exclude="synth",
             )
         else:
             if config.DataConfig.station == "All":

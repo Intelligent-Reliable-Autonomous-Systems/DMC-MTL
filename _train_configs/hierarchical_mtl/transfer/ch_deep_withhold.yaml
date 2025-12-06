@@ -17,10 +17,10 @@ DataConfig:
   data_fpath: _data/processed_data/
   dtype: grape_coldhardiness_reg
   region: BCOV
-  station: All
+  station: Osoyoos_CS
   site: All
   cultivar: All
-  withold: {"Site": ["OsoyoosSoutheast"]}
+  withold: {"Site": ["OsoyoosSoutheast"], "Cultivar": ["Cabernet_Sauvignon", "Syrah"]}
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]

@@ -152,11 +152,11 @@ def main():
             for s in range(calibrator.num_stations):
                 for si in range(calibrator.num_sites):
                     for k in range(calibrator.num_cultivars):
-                        if len(true_cultivar_data[r][s][si][k][0]) == 0:
-                            continue
-                        if len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set:
-                            continue
-                        if len(true_cultivar_data[r][s][si][k][2]) == 0:
+                        if (
+                            len(true_cultivar_data[r][s][si][k][0]) == 0
+                            and len(true_cultivar_data[r][s][si][k][2]) == 0
+                            and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
+                        ):
                             continue
                         if "grape_phenology" in config.DataConfig.dtype:
                             cultivar_train_avg_pheno, _ = compute_rmse_plot(

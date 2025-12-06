@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStat/
+log_path: /_runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLSite/
 run_name: deep_mtl
 seed: 0
 #
@@ -17,10 +17,10 @@ DataConfig:
   data_fpath: _data/processed_data/
   dtype: grape_coldhardiness_reg
   region: BCOV
-  station: All
+  station: Osoyoos_CS
   site: All
   cultivar: All
-  withold: {"Site": ["OsoyoosSoutheast"]}
+  withold: {"Site": ["OsoyoosSoutheast"], "Cultivar": ["Cabernet_Sauvignon", "Syrah"]}
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]
@@ -28,7 +28,7 @@ DConfig:
     type: Deep
     arch: EmbedFCGRU
     hidden_dim: 2048
-    embed_op: concat_station
+    embed_op: concat_site
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95

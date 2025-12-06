@@ -351,7 +351,11 @@ def plot_output_phenology(
             # Plot predicted TBASEM vs True
             if params is not None:
                 ax[1].plot(np.array(params[k])[:, 0][inds[k]], label="TBASEM Predicted")
-                if config.DataConfig.cultivar is None or config.DataConfig.cultivar == "synth" or config.DataConfig.cultivar == "None":
+                if (
+                    config.DataConfig.cultivar is None
+                    or config.DataConfig.cultivar == "synth"
+                    or config.DataConfig.cultivar == "None"
+                ):
                     ax[1].plot(x, np.tile(8.19, len(x)), label="True TBASEM")
                 ax[1].set_title("TBASEM Parameter Prediction")
                 ax[1].legend()

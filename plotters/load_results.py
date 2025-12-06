@@ -135,6 +135,7 @@ def compute_str_ndim6(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
         all_str += f"{all_mean[i]} +/- {all_std[i]}, "
     return all_str
 
+
 def compute_str_ndim6_rtmc(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
     all_str = ""
     for i in range(mtl_arr.shape[0]):
@@ -232,6 +233,7 @@ def main():
     else:
         mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
         std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
+
     if args.per_cult:
         if args.stl:
             if mean.ndim == 3:

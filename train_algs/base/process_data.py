@@ -24,32 +24,96 @@ from model_engine.inputs.input_providers import (
     WeatherDataProvider,
 )
 
-def withold_checker(model: nn.Module, withold_dict: dict, c: int, si: int, s: int, r: int) -> bool:
-    """Check whether or not to include data in training """
 
-    for key in withold_dict.keys():
+def withold_checker(model: nn.Module, wd: dict, c: int, si: int, s: int, r: int) -> bool:
+    """Check whether or not to include data in training"""
+    wd_keys = wd.keys()
+
+    for key in wd_keys:
         assert key in ["Region", "Station", "Site", "Cultivar"], f"Key `{key}` not allowed in keys."
-    for val in withold_dict.values():
+    for val in wd.values():
         assert isinstance(val, ListConfig), f"Value `{val}` is not a ListConfig."
-    
-    for k, v in withold_dict.items():
-        if k == "Region":
-            for reg in v:
-                if REGIONS[r] == reg:
-                    return True
-        elif k == "Station":
-            for stat in v:
-                if STATIONS[s] == stat:
-                    return True
-        elif k == "Site":
-            for site in v:
-                if SITES[si] == site:
-                    return True
-        elif k == "Cultivar":
-            for cult in v:
-                if CROP_NAMES[model.config.DataConfig.dtype][c] == cult:
-                    return True
+
+    if "Region" in wd_keys:
+        if "Station" in wd_keys:
+            if "Site" in wd_keys:
+                if "Cultivar" in wd_keys:
+                    if (
+                        CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"]
+                        and SITES[si] in wd["Site"]
+                        and STATIONS[s] in wd["Station"]
+                        and REGIONS[r] in wd["Region"]
+                    ):
+                        return True
+                else:
+                    if SITES[si] in wd["Site"] and STATIONS[s] in wd["Station"] and REGIONS[r] in wd["Region"]:
+                        return True
+            else:
+                if "Cultivar" in wd_keys:
+                    if (
+                        CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"]
+                        and STATIONS[s] in wd["Station"]
+                        and REGIONS[r] in wd["Region"]
+                    ):
+                        return True
+                else:
+                    if STATIONS[s] in wd["Station"] and REGIONS[r] in wd["Region"]:
+                        return True
+        else:
+            if "Site" in wd_keys:
+                if "Cultivar" in wd_keys:
+                    if (
+                        CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"]
+                        and SITES[si] in wd["Site"]
+                        and REGIONS[r] in wd["Region"]
+                    ):
+                        return True
+                else:
+                    if SITES[si] in wd["Site"] and REGIONS[r] in wd["Region"]:
+                        return True
+            else:
+                if "Cultivar" in wd_keys:
+                    if CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"] and REGIONS[r] in wd["Region"]:
+                        return True
+                else:
+                    if REGIONS[r] in wd["Region"]:
+                        return True
+    else:
+        if "Station" in wd_keys:
+            if "Site" in wd_keys:
+                if "Cultivar" in wd_keys:
+                    if (
+                        CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"]
+                        and SITES[si] in wd["Site"]
+                        and STATIONS[s] in wd["Station"]
+                    ):
+                        return True
+                else:
+                    if SITES[si] in wd["Site"] and STATIONS[s] in wd["Station"]:
+                        return True
+            else:
+                if "Cultivar" in wd_keys:
+                    if CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"] and STATIONS[s] in wd["Station"]:
+                        return True
+                else:
+                    if STATIONS[s] in wd["Station"]:
+                        return True
+        else:
+            if "Site" in wd_keys:
+                if "Cultivar" in wd_keys:
+                    if CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"] and SITES[si] in wd["Site"]:
+                        return True
+                else:
+                    if SITES[si] in wd["Site"]:
+                        return True
+            else:
+                if "Cultivar" in wd_keys:
+                    if CROP_NAMES[model.config.DataConfig.dtype][c] in wd["Cultivar"]:
+                        return True
+                else:
+                    return False
     return False
+
 
 def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
@@ -103,7 +167,9 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         c_counts.append(len(np.argwhere(c == cultivar_data).flatten()))
 
     c_inds = (
-        np.argsort(c_counts)[::-1][: model.config.DataConfig.prim_cultivars :] if model.config.DataConfig.prim_cultivars else np.array([])
+        np.argsort(c_counts)[::-1][: model.config.DataConfig.prim_cultivars :]
+        if model.config.DataConfig.prim_cultivars
+        else np.array([])
     )
     if model.config.DataConfig.synth_data is None:
         for r in range(len(REGIONS)):
@@ -121,7 +187,9 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
 
                         if model.config.DataConfig.withold is not None:
                             if withold_checker(model, model.config.DataConfig.withold, c, si, s, r):
-                                print(f"Witholding: {REGIONS[r]}, {STATIONS[s]}, {SITES[si]}, {CROP_NAMES[model.config.DataConfig.dtype][c]}")
+                                print(
+                                    f"Witholding: {REGIONS[r]}, {STATIONS[s]}, {SITES[si]}, {CROP_NAMES[model.config.DataConfig.dtype][c]}"
+                                )
                                 continue
 
                         if model.config.DataConfig.data_cap is None or c in c_inds:
@@ -145,7 +213,9 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
             elif len(cultivar_inds[x:]) <= model.config.DataConfig.data_cap:
                 train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)
             else:
-                train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.DataConfig.data_cap])).astype(np.int32)
+                train_inds = np.concatenate((train_inds, cultivar_inds[x:][: model.config.DataConfig.data_cap])).astype(
+                    np.int32
+                )
 
     np.random.shuffle(train_inds)
     np.random.shuffle(test_inds)

@@ -13,7 +13,7 @@ run_name: synth_data
 seed: 0
 cultivar: Winter_Wheat_101
 data_fpath: _data/processed_data/
-val_set: True
+
 params: ["TBASEM"]
 params_range: [[0,15]]
 # DConfig Parameters

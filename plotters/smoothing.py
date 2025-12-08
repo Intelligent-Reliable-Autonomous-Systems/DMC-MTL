@@ -60,7 +60,7 @@ def main():
     ax1_color = "tab:blue"
     ax.plot(np.arange(4), pheno_mean, color=ax1_color, label="Phenology")
     ax.set_xlabel("Smoothing")
-    ax.set_xticks(np.arange(4), labels=[0.001, 0.01, 0.1, 0.2])
+    ax.set_xticks(np.arange(4), labels=[1e-5, 1e-4, 0.001, 0.01])
     ax.set_ylabel("RMSE in Days (Phenology)", color=ax1_color)
     ax.tick_params(axis="y", labelcolor=ax1_color)
 
@@ -73,7 +73,7 @@ def main():
     handles1, labels1 = ax.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
 
-    ax.legend(handles1 + handles2, labels1 + labels2, loc="upper left")
+    ax.legend(handles1 + handles2, labels1 + labels2, loc="upper right")
 
     plt.savefig("plotters/figs/smoothing.png", bbox_inches="tight")
     plt.close()

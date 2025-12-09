@@ -340,3 +340,11 @@ def load_dfs(path: str) -> list[pd.DataFrame]:
         else:
             df_list.append(df.loc[inds[i - 1] : inds[i] - 1])
     return df_list
+
+def find_config_yaml_dirs(start_dir="."):
+    config_dirs = []
+    for root, dirs, files in os.walk(start_dir):
+        if "config.yaml" in files:
+            relative_path = os.path.relpath(root, start_dir)
+            config_dirs.append(relative_path)
+    return config_dirs

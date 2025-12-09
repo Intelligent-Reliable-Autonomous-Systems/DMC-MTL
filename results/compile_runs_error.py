@@ -19,14 +19,6 @@ from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compu
 from plotters.plotting_functions import compute_rmse_plot
 
 
-def find_config_yaml_dirs(start_dir="."):
-    config_dirs = []
-    for root, dirs, files in os.walk(start_dir):
-        if "config.yaml" in files:
-            relative_path = os.path.relpath(root, start_dir)
-            config_dirs.append(relative_path)
-    return config_dirs
-
 
 def main():
 
@@ -68,7 +60,7 @@ def main():
 
     all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost_"]), 3, args.num_runs))
 
-    config_dirs = find_config_yaml_dirs(args.start_dir)
+    config_dirs = utils.find_config_yaml_dirs(args.start_dir)
 
     for i, config in enumerate(config_dirs):
         if i > args.num_runs:

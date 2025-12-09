@@ -248,3 +248,4 @@ def gen_all_data_and_plot(
 
         if args.break_early:
             break
+

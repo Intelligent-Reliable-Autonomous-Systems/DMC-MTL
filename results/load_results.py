@@ -208,7 +208,7 @@ def main():
     parser.add_argument("--site", action="store_true", help="If to toggle MTL printint variant by site")
     parser.add_argument("--cult", action="store_true", help="If to toggle MTL printint variant by cult")
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
-    parser.add_argument("--per_cult", action="store_true", help="If to print per cultivar results")
+    parser.add_argument("--per_cult", action="store_false", help="If to print per cultivar results")
     parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
     args = parser.parse_args()
 

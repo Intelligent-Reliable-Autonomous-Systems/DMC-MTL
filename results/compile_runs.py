@@ -18,16 +18,6 @@ from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compute_obs_RMSE
 from plotters.plotting_functions import compute_rmse_plot
 
-
-def find_config_yaml_dirs(start_dir="."):
-    config_dirs = []
-    for root, dirs, files in os.walk(start_dir):
-        if "config.yaml" in files:
-            relative_path = os.path.relpath(root, start_dir)
-            config_dirs.append(relative_path)
-    return config_dirs
-
-
 def main():
 
     argparser = argparse.ArgumentParser(description="Plotting script for model")
@@ -35,17 +25,14 @@ def main():
     argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
     argparser.add_argument("--save", action="store_true", help="If to save the plots")
     argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
-    argparser.add_argument("--cultivar", type=str, default="", help="To be filled in at runtime")
     argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")
-    argparser.add_argument("--std", action="store_false", help="If to compute mean or std")
-    argparser.add_argument("--print", action="store_true", help="If to print with mean and std")
     argparser.add_argument("--num_runs", type=int, default=5)
     argparser.add_argument("--data_fname", type=str, default="rmse.txt")
     argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
-    config_dirs = find_config_yaml_dirs(args.start_dir)
+    config_dirs = utils.find_config_yaml_dirs(args.start_dir)
 
     # Setup total storage
     all_avg_pheno = np.zeros((12, args.num_runs))

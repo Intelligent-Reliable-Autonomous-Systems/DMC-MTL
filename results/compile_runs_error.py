@@ -19,7 +19,6 @@ from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compu
 from plotters.plotting_functions import compute_rmse_plot
 
 
-
 def main():
 
     argparser = argparse.ArgumentParser(description="Plotting script for model")

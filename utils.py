@@ -342,6 +342,7 @@ def load_dfs(path: str) -> list[pd.DataFrame]:
             df_list.append(df.loc[inds[i - 1] : inds[i] - 1])
     return df_list
 
+
 def find_config_yaml_dirs(start_dir="."):
     config_dirs = []
     for root, dirs, files in os.walk(start_dir):
@@ -350,7 +351,8 @@ def find_config_yaml_dirs(start_dir="."):
             config_dirs.append(relative_path)
     return config_dirs
 
-def load_named_pickles(folder_paths: list[str], target_name: str, include: str = None, exclude_multi:bool=False):
+
+def load_named_pickles(folder_paths: list[str], target_name: str, include: str = None, exclude_multi: bool = False):
     """
     Load all pickle files matching a given name in all subdirectories.
     """

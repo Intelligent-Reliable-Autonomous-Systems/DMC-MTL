@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import utils
 
+
 def main():
 
     pheno_models = utils.load_named_pickles(["PhenologySmoothing"], "results_per_cultivars.pkl")

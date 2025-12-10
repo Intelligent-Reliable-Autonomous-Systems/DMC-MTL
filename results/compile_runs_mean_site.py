@@ -20,9 +20,11 @@ from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compu
 from plotters.plotting_functions import compute_rmse_plot, plot_output_coldhardiness
 from plotters.plot_utils import gen_batch_data
 
+
 def cartesian_product(*tensors):
-    mesh = torch.meshgrid(*tensors, indexing='ij')
+    mesh = torch.meshgrid(*tensors, indexing="ij")
     return torch.stack(mesh, dim=-1).reshape(-1, len(tensors))
+
 
 def main():
 
@@ -101,7 +103,7 @@ def main():
                     si = np.argwhere(SITES == si).flatten()
                     si_inds = torch.argwhere(calibrator.sites["train"].flatten() == si[0]) if len(si) != 0 else si
                     si_inds_test = torch.argwhere(calibrator.sites["test"].flatten() == si[0]) if len(si) != 0 else si
-                    
+
                     test_regions = torch.unique(calibrator.regions["train"].flatten()[si_inds])
                     test_stations = torch.unique(calibrator.stations["train"].flatten()[si_inds])
                     test_sites = torch.unique(calibrator.sites["train"].flatten()[si_inds])
@@ -109,24 +111,44 @@ def main():
 
                     for c in cultivars:
                         c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
-                        c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c 
+                        c_inds_test = (
+                            torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
+                        )
                         a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)].to(torch.float32)
-                        cart = cartesian_product(a_inds, test_regions, test_stations, test_sites, test_cults).to(torch.int32).cpu()
-                        true, output, params = gen_batch_data(calibrator, calibrator.data[n][cart[:,0]], calibrator.dates[n][cart[:,0]], calibrator.val[n][cart[:,0]], cart[:,4], cart[:,1], cart[:,2], cart[:,3])
+                        cart = (
+                            cartesian_product(a_inds, test_regions, test_stations, test_sites, test_cults)
+                            .to(torch.int32)
+                            .cpu()
+                        )
+                        true, output, params = gen_batch_data(
+                            calibrator,
+                            calibrator.data[n][cart[:, 0]],
+                            calibrator.dates[n][cart[:, 0]],
+                            calibrator.val[n][cart[:, 0]],
+                            cart[:, 4],
+                            cart[:, 1],
+                            cart[:, 2],
+                            cart[:, 3],
+                        )
 
                         true = true[np.arange(0, len(true), a_inds.shape[0])]
-                        output = np.stack([np.mean(output[i*a_inds.shape[0]:(i+1)*a_inds.shape[0]],axis=0) for i in range(int(output.shape[0] / a_inds.shape[0]))])
+                        output = np.stack(
+                            [
+                                np.mean(output[i * a_inds.shape[0] : (i + 1) * a_inds.shape[0]], axis=0)
+                                for i in range(int(output.shape[0] / a_inds.shape[0]))
+                            ]
+                        )
                         inds = plot_output_coldhardiness(
-                                config,
-                                fpath,
-                                np.arange(start=i, stop=i + calibrator.batch_size),
-                                output,
-                                params,
-                                calibrator.val[n][a_inds.to(torch.int32)],
-                                name=n,
-                                save=args.save,
-                            )
-                        
+                            config,
+                            fpath,
+                            np.arange(start=i, stop=i + calibrator.batch_size),
+                            output,
+                            params,
+                            calibrator.val[n][a_inds.to(torch.int32)],
+                            name=n,
+                            save=args.save,
+                        )
+
                         if len(true.shape) == 1:
                             true = true[np.newaxis, :]
                             output = output[np.newaxis, :]
@@ -135,16 +157,32 @@ def main():
                             output = output[:, :, 0]
                         [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
                         [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
-  
+
                         cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
                         rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
                         sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
                         sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
                         for k in range(len(true)):
-                            ck = int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item()) if cultivars is not None else 0
-                            rk = int(calibrator.regions[n][a_inds[k].to(torch.int32)].item()) if calibrator.regions is not None else 0
-                            sk = int(calibrator.stations[n][a_inds[k].to(torch.int32)].item()) if calibrator.stations is not None else 0
-                            sik = int(calibrator.sites[n][a_inds[k].to(torch.int32)].item()) if calibrator.sites is not None else 0
+                            ck = (
+                                int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
+                                if cultivars is not None
+                                else 0
+                            )
+                            rk = (
+                                int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
+                                if calibrator.regions is not None
+                                else 0
+                            )
+                            sk = (
+                                int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
+                                if calibrator.stations is not None
+                                else 0
+                            )
+                            sik = (
+                                int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
+                                if calibrator.sites is not None
+                                else 0
+                            )
 
                             true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
                             output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])

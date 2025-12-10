@@ -14,9 +14,9 @@ import utils
 def main():
 
     pheno_models = utils.load_named_pickles(["PhenologyWindow"], "results_per_cultivars.pkl")
-    ch_models =  utils.load_named_pickles(["ColdHardinessWindow"], "results_per_cultivars.pkl")
-    ff_pheno_models =  utils.load_named_pickles(["Phenology/ParamFFMTL"], "results_per_cultivars.pkl")
-    ff_ch_models =  utils.load_named_pickles(["ColdHardiness/ParamFFMTL"], "results_per_cultivars.pkl")
+    ch_models = utils.load_named_pickles(["ColdHardinessWindow"], "results_per_cultivars.pkl")
+    ff_pheno_models = utils.load_named_pickles(["Phenology/ParamFFMTL"], "results_per_cultivars.pkl")
+    ff_ch_models = utils.load_named_pickles(["ColdHardiness/ParamFFMTL"], "results_per_cultivars.pkl")
 
     pheno_sorted_keys = np.argsort(list(pheno_models.keys()))
     pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys][np.array([0, 3, 1, 2, 4, 5])]

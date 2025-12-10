@@ -13,7 +13,9 @@ import utils
 
 def main():
     # This is slightly wrong. Need to exclude true and "DeepMTL" in subdir
-    pheno_models = utils.load_named_pickles(["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", exclude_multi=True) 
+    pheno_models = utils.load_named_pickles(
+        ["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", exclude_multi=True
+    )
 
     pheno_sorted_keys = np.argsort(list(pheno_models.keys()))
     pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys]

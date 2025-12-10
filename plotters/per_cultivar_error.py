@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import utils
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -25,7 +26,9 @@ def main():
     agg_cultivar_models = ["ParamMTL"]
     per_cultivar_models = ["STL"]
     mtl_model = utils.load_named_pickles(args.biomodel, agg_cultivar_models, "results_per_cultivars.pkl")
-    stl_model = utils.load_named_pickles(args.biomodel, per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
+    stl_model = utils.load_named_pickles(
+        args.biomodel, per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True
+    )
     sorted_keys = np.argsort(list(mtl_model.keys()))
     mtl_array = np.array(list(mtl_model.values()))
     sorted_keys = np.argsort(list(stl_model.keys()))

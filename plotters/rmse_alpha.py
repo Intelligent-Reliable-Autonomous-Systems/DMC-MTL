@@ -11,9 +11,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from model_engine.util import CROP_NAMES
 from plotters.plotting_functions import C_AGG, C_PER
-import utils 
+import utils
 from pathlib import Path
 import pickle
+
 
 def load_named_pickles(folder_paths: list[str], target_name: str, exclude_multi: bool = False):
     """
@@ -35,6 +36,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, exclude_multi:
                 pass
 
     return results
+
 
 def main():
 

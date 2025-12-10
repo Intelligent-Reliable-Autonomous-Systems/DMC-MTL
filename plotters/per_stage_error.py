@@ -32,7 +32,9 @@ def main():
     per_cultivar_models = ["StationaryModel"]
     max_pheno_models = ["ParamMTL"]
     mtl_model = utils.load_named_pickles("Phenology", agg_cultivar_models, "results_per_cultivars.pkl")
-    bio_models = utils.load_named_pickles("Phenology", per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
+    bio_models = utils.load_named_pickles(
+        "Phenology", per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True
+    )
     mtl_array = np.array(list(mtl_model.values()))
 
     bio_array = np.array(list(bio_models.values())).reshape(len(agg_cultivar_models), num_cultivars, 8, 5)

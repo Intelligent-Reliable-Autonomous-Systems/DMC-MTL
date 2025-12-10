@@ -14,7 +14,7 @@ import argparse
 
 import utils
 
-from plotters.plot_utils import gen_all_data_and_plot
+from plotters.plot_utils import gen_all_data_and_plot, gen_all_data_and_plot_error
 from plotters.plotting_functions import plot_loss, plot_stats
 
 
@@ -29,7 +29,7 @@ def main():
     argparser.add_argument(
         "--mode",
         default="default",
-        choices=["default"],
+        choices=["default", "error"],
         help="Plot mode: default, rollout, error",
     )
     np.set_printoptions(precision=2)
@@ -70,6 +70,8 @@ def main():
 
     if args.mode == "default":
         plot_func = gen_all_data_and_plot
+    elif args.mode == "error":
+        plot_func = gen_all_data_and_plot_error
 
     # Generate all data
     plot_func(

@@ -587,3 +587,73 @@ def plot_output_phenology_progress(
             plt.close()
 
     return inds
+
+
+def plot_output_coldhardiness_error(
+    config: DictConfig,
+    fpath: str,
+    i: np.ndarray,
+    output: torch.Tensor,
+    params: torch.Tensor,
+    val_data: torch.Tensor,
+    name: str = "Train",
+    save: bool = True,
+) -> torch.Tensor:
+    """
+    Plot the cold haridness and the parameters for each time series in the passed batch
+    """
+    ind_val_data = val_data.cpu().squeeze()
+    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    val_data = val_data.cpu().numpy()
+    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
+    output = output[:, :, 0] if output.shape[-1] == 3 else output
+
+    print(output.shape)
+    print(params.shape)
+    # Handle when a batch size of 1 is passed
+    if len(inds.shape) != 2:
+        inds = inds[np.newaxis, :]
+        if len(output.shape) != 2:
+            output = output[np.newaxis, :]
+            params = params[np.newaxis, :] if params is not None else None
+
+    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    if save:
+        for k in range(inds.shape[0]):
+            x = np.arange(len(output[k][inds[k]]))
+            fig, ax = plt.subplots(2)
+            target = config.PConfig.output_vars
+            prop_cycle = plt.rcParams["axes.prop_cycle"]
+            colors = prop_cycle.by_key()["color"]
+            ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
+            ax[0].scatter(
+                np.where(inds[k]),
+                val_data[k][inds[k]],
+                label=f"True {target}",
+                s=10,
+                marker="x",
+                color=colors[1],
+            )
+            ax[0].legend()
+            ax[0].set_title(f"{target} (Predicted)")
+            ax[0].set_xticks([], [])
+            ax[0].set_xlim([0, len(inds[k])])
+            ax[0].set_ylabel(f"{target}")
+
+            if params is not None:
+                ax[1].plot(np.array(params[k])[:, 0], label="TENDO Predicted")
+                ax[1].set_title("TENDO Parameter Prediction")
+                ax[1].legend()
+                ax[1].set_xlim([0, len(inds[k])])
+                ax[1].set_ylabel("TENDO Value")
+                ax[1].set_xlabel("Days")
+
+            plt.savefig(
+                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
+                bbox_inches="tight",
+            )
+            plt.close()
+            if params is not None:
+                plot_params(fpath, config, np.array(params[k]), i[k], name=name)
+
+    return inds

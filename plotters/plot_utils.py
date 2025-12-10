@@ -19,6 +19,7 @@ from plotters.plotting_functions import (
     plot_output_phenology,
     plot_output_coldhardiness,
     plot_output_wofost,
+    plot_output_coldhardiness_error
 )
 from train_algs.base.process_data import unnormalize
 
@@ -244,6 +245,103 @@ def gen_all_data_and_plot(
                 cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
                 if cult_inds is not None
                 else None
+            )
+
+        if args.break_early:
+            break
+
+
+
+def gen_all_data_and_plot_error(
+    config: DictConfig,
+    fpath: str,
+    args: Namespace,
+    calibrator: nn.Module,
+    true_data: list[np.ndarray],
+    output_data: list[np.ndarray],
+    true_cultivar_data: list[np.ndarray],
+    output_cultivar_data: list[np.ndarray],
+    name: str = "train",
+    days: int = None,
+    all_inds: list[np.ndarray] = None,
+    cult_inds: list[np.ndarray] = None,
+) -> None:
+    """
+    Generates data for train and testing data and plots accordingly for RNNs
+    """
+    if name == "train":
+        n = 0
+    elif name == "val":
+        n = 1
+    else:  # test
+        n = 2
+
+    true_arr = []
+    output_arr = []
+    params_arr = []
+    for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
+        cultivars = (
+            calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
+        )
+        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
+        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
+        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
+
+        p = []
+        o = []
+        t = []
+        for j in np.arange(0, 270, 30):
+            true, output, params = gen_batch_data(
+                calibrator,
+                calibrator.data[name][i : i + calibrator.batch_size],
+                calibrator.dates[name][i : i + calibrator.batch_size],
+                calibrator.val[name][i : i + calibrator.batch_size],
+                cultivars,
+                regions,
+                stations,
+                sites,
+                days=torch.tensor(np.tile(j,calibrator.batch_size)).unsqueeze(1).to(calibrator.device),
+            )
+            p.append(params)
+            o.append(output)
+            t.append(true)
+
+        true_arr.append(t)
+        output_arr.append(o)
+        params_arr.append(p)
+
+        if "grape_phenology" in config.DataConfig.dtype:
+            plot_output_phenology(
+                config,
+                fpath,
+                np.arange(start=i, stop=i + calibrator.batch_size),
+                output,
+                params,
+                calibrator.val[name][i : i + calibrator.batch_size],
+                name=name,
+                save=args.save,
+            )
+        elif "grape_coldhardiness" in config.DataConfig.dtype:
+            plot_output_coldhardiness_error(
+                config,
+                fpath,
+                np.arange(start=i, stop=i + calibrator.batch_size),
+                np.array(o),
+                np.array(p),
+                calibrator.val[name][i : i + calibrator.batch_size],
+                name=name,
+                save=args.save,
+            )
+        elif "wofost" in config.DataConfig.dtype:
+            plot_output_wofost(
+                config,
+                fpath,
+                np.arange(start=i, stop=i + calibrator.batch_size),
+                output,
+                params,
+                calibrator.val[name][i : i + calibrator.batch_size],
+                name=name,
+                save=args.save,
             )
 
         if args.break_early:

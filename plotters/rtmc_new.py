@@ -16,12 +16,13 @@ def main():
 
     ch_models_rtmc = utils.load_named_pickles(["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", include="Param")
     ch_models_dmc = utils.load_named_pickles(["RTMC/ColdHardiness"], "results_per_cultivars.pkl", include="Param")
-
+    
     param_keys_rtmc =  np.char.find(np.asarray(list(ch_models_rtmc.keys())), "Param") >= 0
     param_keys_rtmc = np.sort(np.asarray(list(ch_models_rtmc.keys()))[param_keys_rtmc])
+
+    #ch_array_rtmc = np.array([ch_models_rtmc[k] for k in param_keys_rtmc if ch_models_rtmc[k].shape[4] == 30])
     ch_array_rtmc = np.array([ch_models_rtmc[k] for k in param_keys_rtmc])
 
-    print(param_keys_rtmc)
     param_keys_dmc =  np.char.find(np.asarray(list(ch_models_dmc.keys())), "Param") >= 0
     param_keys_dmc = np.sort(np.asarray(list(ch_models_dmc.keys()))[param_keys_dmc])
     ch_array_dmc = np.array([ch_models_dmc[k] for k in param_keys_dmc])
@@ -37,20 +38,14 @@ def main():
     ch_mean_dmc = np.nanmean(ch_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
     ch_std_dmc = np.nanstd(ch_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
     
-    
     print(ch_mean_dmc.shape)
     print(ch_mean_rtmc.shape)
-    ones = np.array([4, 8, 12, 0])
-    twos = ones + 2
-    fives = ones + 3
-    tens = ones + 1
-
-    data = [ch_mean_rtmc[ones], ch_mean_rtmc[twos], ch_mean_rtmc[fives], ch_mean_rtmc[tens]]
 
     fig, ax = plt.subplots(figsize=(5, 3))
 
     ax.plot(ch_mean_dmc[[0,2,3,1]], label="Base DMC-MTL",marker='o')
     ax.plot(ch_mean_rtmc[[4, 7, -1, 1]], label="In-Season Adapation",marker='o')
+    #ax.plot(ch_mean_rtmc[[0,2,3,1]], label="In-Season Adapation",marker='o')
 
     ax.set_xticks(np.arange(4), labels=[1,2,5,10])
     ax.set_xlabel("Years of Per-Cultivar Data")

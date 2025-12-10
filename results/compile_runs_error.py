@@ -39,11 +39,13 @@ def main():
     # Setup total storage
     num_days = 9
     days_step = 30
-    all_avg_pheno = np.zeros((12, num_days, args.num_runs))
+    #all_avg_pheno = np.zeros((12, num_days, args.num_runs))
     all_avg_ch = np.zeros((3 * (num_days + 1), num_days, args.num_runs))
+    all_avg_pheno = np.zeros((3 * (num_days + 1), num_days, args.num_runs))
     all_avg_wf = np.zeros((3, num_days, args.num_runs))
     all_cultivar_avg_pheno = np.zeros(
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
+        #(len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
+        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 3 * (num_days + 1), num_days, args.num_runs)
     )
     all_cultivar_avg_ch = np.zeros(
         (
@@ -156,7 +158,7 @@ def main():
                 )
 
             # Store data for averaging
-            if "grape_phenology" in config.DataConfig.dtype:
+            '''if "grape_phenology" in config.DataConfig.dtype:
                 train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
                 test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
                 val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -169,6 +171,31 @@ def main():
                         test_avg[1:-1],
                         [np.sum(test_avg[1:-1])],
                     )
+                )'''
+            if "grape_phenology" in config.DataConfig.dtype:
+                day_rmse = np.array(
+                    [
+                        compute_day_RMSE(true_data[0], output_data[0], all_inds[0], days=k * days_step)
+                        for k in range(num_days)
+                    ]
+                )
+                val_day_rmse = np.array(
+                    [
+                        compute_day_RMSE(true_data[1], output_data[1], all_inds[1], days=k * days_step)
+                        for k in range(num_days)
+                    ]
+                )
+                test_day_rmse = np.array(
+                    [
+                        compute_day_RMSE(true_data[2], output_data[2], all_inds[2], days=k * days_step)
+                        for k in range(num_days)
+                    ]
+                )
+                total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
+                val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
+                test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
+                all_avg_pheno[:, j, i] = np.concatenate(
+                    [day_rmse, [total_rmse], val_day_rmse, [val_total_rmse], test_day_rmse, [test_total_rmse]]
                 )
             elif "grape_coldhardiness" in config.DataConfig.dtype:
                 day_rmse = np.array(
@@ -211,7 +238,7 @@ def main():
                                 continue
                             if len(true_cultivar_data[r][s][si][k][2]) == 0:
                                 continue
-                            if "grape_phenology" in config.DataConfig.dtype:
+                            '''if "grape_phenology" in config.DataConfig.dtype:
                                 cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                     config,
                                     true_cultivar_data[r][s][si][k][0],
@@ -243,6 +270,62 @@ def main():
                                         [np.sum(cultivar_val_avg_pheno[1:-1])],
                                         cultivar_test_avg_pheno[1:-1],
                                         [np.sum(cultivar_test_avg_pheno[1:-1])],
+                                    )
+                                )'''
+                            if "grape_phenology" in config.DataConfig.dtype:
+                                cult_day_rmse = np.array(
+                                    [
+                                        compute_day_RMSE(
+                                            true_cultivar_data[r][s][si][k][0],
+                                            output_cultivar_data[r][s][si][k][0],
+                                            cult_inds[r][s][si][k][0],
+                                            days=l * days_step,
+                                        )
+                                        for l in range(num_days)
+                                    ]
+                                )
+                                cult_val_day_rmse = np.array(
+                                    [
+                                        compute_day_RMSE(
+                                            true_cultivar_data[r][s][si][k][1],
+                                            output_cultivar_data[r][s][si][k][1],
+                                            cult_inds[r][s][si][k][1],
+                                            days=l * days_step,
+                                        )
+                                        for l in range(num_days)
+                                    ]
+                                )
+                                cult_test_day_rmse = np.array(
+                                    [
+                                        compute_day_RMSE(
+                                            true_cultivar_data[r][s][si][k][2],
+                                            output_cultivar_data[r][s][si][k][2],
+                                            cult_inds[r][s][si][k][2],
+                                            days=l * days_step,
+                                        )
+                                        for l in range(num_days)
+                                    ]
+                                )
+
+                                cultivar_train_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
+                                )
+                                cultivar_val_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
+                                )
+                                cultivar_test_rmse, _ = compute_total_RMSE(
+                                    true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
+                                )
+                                all_cultivar_avg_pheno[r, s, si, k, :, j, i] = np.array(
+                                    np.concatenate(
+                                        [
+                                            cult_day_rmse,
+                                            [cultivar_train_rmse],
+                                            cult_val_day_rmse,
+                                            [cultivar_val_rmse],
+                                            cult_test_day_rmse,
+                                            [cultivar_test_rmse],
+                                        ]
                                     )
                                 )
                             elif "grape_coldhardiness" in config.DataConfig.dtype:

@@ -359,12 +359,13 @@ def load_named_pickles(folder_paths: list[str], target_name: str, include: str =
     results = {}
 
     for root in folder_paths:
-        root = Path(f"./_runs/PaperExperiments/{root}")
+        root = Path(f"./_runs/{root}")
+        
         for pkl_file in root.rglob(target_name):
             try:
                 # Get relative subdirectory name
                 subdir = "/".join(pkl_file.parent.parts[-6:])
-                if not (include in subdir):
+                if include is not None and not (include in subdir):
                     continue
                 if "All" in subdir and exclude_multi:
                     continue

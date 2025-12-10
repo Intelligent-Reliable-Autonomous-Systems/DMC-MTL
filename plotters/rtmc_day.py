@@ -6,42 +6,14 @@ Plot the impact of weather window on performance
 Written by Will Solow, 2025
 """
 
-import argparse
-import pickle
-from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from model_engine.util import CROP_NAMES
-from plotters.plotting_functions import C_AGG, C_PER
-from matplotlib.patches import Patch
-
-
-def load_named_pickles(folder_paths: list[str], target_name: str, exclude: bool = False):
-    """
-    Load all pickle files matching a given name in all subdirectories.
-    """
-    results = {}
-
-    for root in folder_paths:
-        root = Path(f"./_runs/{root}")
-        for pkl_file in root.rglob(target_name):
-            try:
-                # Get relative subdirectory name
-                subdir = "/".join(pkl_file.parent.parts[-6:])
-                if "DeepMTL" in subdir and exclude:
-                    continue
-                with open(pkl_file, "rb") as f:
-                    results[subdir] = pickle.load(f)
-            except Exception as e:
-                pass
-
-    return results
+import utils
 
 
 def main():
-
-    pheno_models = load_named_pickles(["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", exclude=True)
+    # This is slightly wrong. Need to exclude true and "DeepMTL" in subdir
+    pheno_models = utils.load_named_pickles(["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", exclude_multi=True) 
 
     pheno_sorted_keys = np.argsort(list(pheno_models.keys()))
     pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys]

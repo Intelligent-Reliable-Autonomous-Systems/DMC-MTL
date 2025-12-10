@@ -12,6 +12,7 @@ import pickle
 from typing import Optional
 from dataclasses import dataclass
 from argparse import Namespace
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -348,3 +349,26 @@ def find_config_yaml_dirs(start_dir="."):
             relative_path = os.path.relpath(root, start_dir)
             config_dirs.append(relative_path)
     return config_dirs
+
+def load_named_pickles(folder_paths: list[str], target_name: str, include: str = None, exclude_multi:bool=False):
+    """
+    Load all pickle files matching a given name in all subdirectories.
+    """
+    results = {}
+
+    for root in folder_paths:
+        root = Path(f"./_runs/PaperExperiments/{root}")
+        for pkl_file in root.rglob(target_name):
+            try:
+                # Get relative subdirectory name
+                subdir = "/".join(pkl_file.parent.parts[-6:])
+                if not (include in subdir):
+                    continue
+                if "All" in subdir and exclude_multi:
+                    continue
+                with open(pkl_file, "rb") as f:
+                    results[subdir] = pickle.load(f)
+            except Exception as e:
+                pass
+
+    return results

@@ -8,35 +8,8 @@ Written by, Will Solow 2025
 """
 
 import argparse
-import pickle
-from pathlib import Path
 import numpy as np
-import matplotlib.pyplot as plt
-from model_engine.util import CROP_NAMES
-import sys
-
-
-def load_named_pickles(biomodel: str, folder_paths: list[str], target_name: str, exclude_multi: bool = False):
-    """
-    Load all pickle files matching a given name in all subdirectories.
-    """
-    results = {}
-
-    for root in folder_paths:
-        root = Path(f"./_runs/PaperExperiments/{biomodel}/{root}")
-        for pkl_file in root.rglob(target_name):
-            try:
-                # Get relative subdirectory name
-                subdir = "/".join(pkl_file.parent.parts[-2:])
-                if "All" in subdir and exclude_multi:
-                    continue
-                with open(pkl_file, "rb") as f:
-                    results[subdir] = pickle.load(f)
-            except Exception as e:
-                pass
-
-    return results
-
+import utils
 
 def main():
     parser = argparse.ArgumentParser()
@@ -51,8 +24,8 @@ def main():
     # Load Models
     agg_cultivar_models = ["ParamMTL"]
     per_cultivar_models = ["STL"]
-    mtl_model = load_named_pickles(args.biomodel, agg_cultivar_models, "results_per_cultivars.pkl")
-    stl_model = load_named_pickles(args.biomodel, per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
+    mtl_model = utils.load_named_pickles(args.biomodel, agg_cultivar_models, "results_per_cultivars.pkl")
+    stl_model = utils.load_named_pickles(args.biomodel, per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
     sorted_keys = np.argsort(list(mtl_model.keys()))
     mtl_array = np.array(list(mtl_model.values()))
     sorted_keys = np.argsort(list(stl_model.keys()))

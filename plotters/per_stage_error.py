@@ -8,35 +8,11 @@ Written by, Will Solow 2025
 """
 
 import argparse
-import pickle
-from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 from model_engine.util import CROP_NAMES
 from plotters.plotting_functions import C_AGG, C_PER
-
-
-def load_named_pickles(biomodel: str, folder_paths: list[str], target_name: str, exclude_multi: bool = False):
-    """
-    Load all pickle files matching a given name in all subdirectories.
-    """
-    results = {}
-
-    for root in folder_paths:
-        root = Path(f"./_runs/PaperExperiments/{biomodel}/{root}")
-        for pkl_file in root.rglob(target_name):
-            try:
-                # Get relative subdirectory name
-                subdir = "/".join(pkl_file.parent.parts[-2:])
-                if "All" in subdir and exclude_multi:
-                    continue
-                with open(pkl_file, "rb") as f:
-                    results[subdir] = pickle.load(f)
-            except Exception as e:
-                pass
-
-    return results
+import utils
 
 
 def main():
@@ -55,8 +31,8 @@ def main():
     agg_cultivar_models = ["ParamMTL"]
     per_cultivar_models = ["StationaryModel"]
     max_pheno_models = ["ParamMTL"]
-    mtl_model = load_named_pickles("Phenology", agg_cultivar_models, "results_per_cultivars.pkl")
-    bio_models = load_named_pickles("Phenology", per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
+    mtl_model = utils.load_named_pickles("Phenology", agg_cultivar_models, "results_per_cultivars.pkl")
+    bio_models = utils.load_named_pickles("Phenology", per_cultivar_models, "results_agg_cultivars.pkl", exclude_multi=True)
     mtl_array = np.array(list(mtl_model.values()))
 
     bio_array = np.array(list(bio_models.values())).reshape(len(agg_cultivar_models), num_cultivars, 8, 5)

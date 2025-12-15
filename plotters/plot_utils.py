@@ -19,7 +19,7 @@ from plotters.plotting_functions import (
     plot_output_phenology,
     plot_output_coldhardiness,
     plot_output_wofost,
-    plot_output_coldhardiness_error
+    plot_output_coldhardiness_error,
 )
 from train_algs.base.process_data import unnormalize
 
@@ -251,7 +251,6 @@ def gen_all_data_and_plot(
             break
 
 
-
 def gen_all_data_and_plot_error(
     config: DictConfig,
     fpath: str,
@@ -300,7 +299,7 @@ def gen_all_data_and_plot_error(
                 regions,
                 stations,
                 sites,
-                days=torch.tensor(np.tile(j,calibrator.batch_size)).unsqueeze(1).to(calibrator.device),
+                days=torch.tensor(np.tile(j, calibrator.batch_size)).unsqueeze(1).to(calibrator.device),
             )
             p.append(params)
             o.append(output)

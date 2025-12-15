@@ -9,8 +9,8 @@ PConfig:
     input_vars: [TEMP]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/PaperExperiments/ColdHardinessLimited/Hybrid_1/
-run_name: ff_stl
+log_path: /_runs/PaperExperiments/ColdHardinessLimited/GD_10/
+run_name: gd_stl
 seed: 0
 # Data use
 DataConfig: 
@@ -20,7 +20,7 @@ DataConfig:
     region: WA
     station: Roza2
     site: Prosser
-    data_cap: 1
+    data_cap: 10
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]] 

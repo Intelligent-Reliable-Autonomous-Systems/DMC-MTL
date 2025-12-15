@@ -32,6 +32,26 @@ C_PER = [
 C_SHAPES = ["o", "^", "s", "x", "d"]
 
 
+def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Computes total RMSE across entire dataset
+    """
+
+    avgs = 0
+    samples = 0
+    if isinstance(true, np.ndarray):
+        true = [true]
+        model = [model]
+
+    for i in range(len(true)):
+        avgs += np.sum((true[i] - model[i]) ** 2)
+        samples += len(true[i])
+    if samples == 0:
+        return 0, None
+    else:
+        return np.sqrt(avgs / samples), None
+
+
 def compute_RMSE_STAGE(true_output: np.ndarray, model_output: np.ndarray, stage: int) -> np.ndarray:
 
     curr_stage = (stage) % len(PHENOLOGY_INT)
@@ -608,8 +628,6 @@ def plot_output_coldhardiness_error(
     val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
 
-    print(output.shape)
-    print(params.shape)
     # Handle when a batch size of 1 is passed
     if len(inds.shape) != 2:
         inds = inds[np.newaxis, :]
@@ -620,40 +638,59 @@ def plot_output_coldhardiness_error(
     assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
     if save:
         for k in range(inds.shape[0]):
-            x = np.arange(len(output[k][inds[k]]))
-            fig, ax = plt.subplots(2)
+            x = np.arange(len(output[0, k][inds[k]]))
+            fig, ax = plt.subplots(3, figsize=(6, 6))
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
-            ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
+            for j in range(output.shape[0]):
+                if j % 3 != 0:
+                    continue
+                ax[0].plot(output[j, k], label=f"Observations {0}-{30*(j+1)}", color=colors[j])
+
             ax[0].scatter(
                 np.where(inds[k]),
                 val_data[k][inds[k]],
-                label=f"True {target}",
+                label=f"True",
                 s=10,
                 marker="x",
-                color=colors[1],
+                color=colors[-1],
             )
-            ax[0].legend()
-            ax[0].set_title(f"{target} (Predicted)")
+            ax[0].legend(loc="upper left")
+            ax[0].set_title(f"Cold-Hardiness Predictions with Additional In-Season Data")
             ax[0].set_xticks([], [])
             ax[0].set_xlim([0, len(inds[k])])
             ax[0].set_ylabel(f"{target}")
 
             if params is not None:
-                ax[1].plot(np.array(params[k])[:, 0], label="TENDO Predicted")
-                ax[1].set_title("TENDO Parameter Prediction")
-                ax[1].legend()
-                ax[1].set_xlim([0, len(inds[k])])
-                ax[1].set_ylabel("TENDO Value")
-                ax[1].set_xlabel("Days")
+                for j in range(params.shape[0]):
+                    if j % 3 != 0:
+                        continue
+                    ax[1].plot(np.array(params[j, k])[:, 0], label=f"Observations {0}-{30*(j+1)}", color=colors[j])
+                    ax[1].set_title("TENDO Parameter Prediction with Additional In-Season Data")
+                    ax[1].legend(loc="upper left")
+                    ax[1].set_xlim([0, len(inds[k])])
+                    ax[1].set_ylabel("TENDO Value")
+                    ax[1].set_xticks([], [])
+                    # ax[1].set_xlabel("Days")
+            arr = np.zeros(shape=(output.shape[0]))
+            for j in range(output.shape[0]):
+                mean, _ = compute_total_RMSE(val_data[k, :, 0][inds[k]], output[j, k][inds[k]])
+                arr[j] = mean
+            ax[2].plot(arr, marker="o")
+            ax[2].set_ylabel("RMSE")
+            ax[2].set_xlabel("Days")
+            ax[2].set_xlim([0, 8])
+            # ax[2].set_xticks(np.arange(output.shape[0]), labels=["0-30", "0-60", "0-90", "0-120","0-150", "0-180", "0-210", "0-240", "0-270"])
+            ax[2].set_xticks(np.arange(output.shape[0]), labels=[30, 60, 90, 120, 150, 180, 210, 240, 270])
+            ax[2].set_title("Prediction Error with Additional In-Season Observations")
 
             plt.savefig(
                 f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
                 bbox_inches="tight",
             )
             plt.close()
-            if params is not None:
-                plot_params(fpath, config, np.array(params[k]), i[k], name=name)
+            # if params is not None:
+            #    plot_params(fpath, config, np.array(params[k]), i[k], name=name)
 
     return inds

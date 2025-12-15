@@ -489,7 +489,14 @@ class PINNRNN(BaseRNN):
         self.task_params = per_task_param_loader(config, self.params).to(self.device)
 
     def forward(
-        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
@@ -511,6 +518,9 @@ class PINNRNN(BaseRNN):
                 torch.cat((model_output.view(model_output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn_cn,
                 cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites,
             )
             model_output = self.model.run(dates=dates[:, i], cultivars=cultivars)
 

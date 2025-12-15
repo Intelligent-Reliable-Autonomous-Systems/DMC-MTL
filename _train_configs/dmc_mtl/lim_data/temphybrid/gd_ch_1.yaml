@@ -9,8 +9,8 @@ PConfig:
     input_vars: [TEMP]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/PaperExperiments/ColdHardinessLimited/Hybrid_1/
-run_name: ff_stl
+log_path: /_runs/PaperExperiments/ColdHardinessLimited/GD_1/
+run_name: gd_stl
 seed: 0
 # Data use
 DataConfig: 

@@ -39,13 +39,21 @@ def main():
     # Setup total storage
     num_days = 9
     days_step = 30
-    #all_avg_pheno = np.zeros((12, num_days, args.num_runs))
+    # all_avg_pheno = np.zeros((12, num_days, args.num_runs))
     all_avg_ch = np.zeros((3 * (num_days + 1), num_days, args.num_runs))
     all_avg_pheno = np.zeros((3 * (num_days + 1), num_days, args.num_runs))
     all_avg_wf = np.zeros((3, num_days, args.num_runs))
     all_cultivar_avg_pheno = np.zeros(
-        #(len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 3 * (num_days + 1), num_days, args.num_runs)
+        # (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, num_days, args.num_runs)
+        (
+            len(REGIONS),
+            len(STATIONS),
+            len(SITES),
+            len(CROP_NAMES["grape_phenology_"]),
+            3 * (num_days + 1),
+            num_days,
+            args.num_runs,
+        )
     )
     all_cultivar_avg_ch = np.zeros(
         (
@@ -158,7 +166,7 @@ def main():
                 )
 
             # Store data for averaging
-            '''if "grape_phenology" in config.DataConfig.dtype:
+            """if "grape_phenology" in config.DataConfig.dtype:
                 train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
                 test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
                 val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -171,7 +179,7 @@ def main():
                         test_avg[1:-1],
                         [np.sum(test_avg[1:-1])],
                     )
-                )'''
+                )"""
             if "grape_phenology" in config.DataConfig.dtype:
                 day_rmse = np.array(
                     [
@@ -238,7 +246,7 @@ def main():
                                 continue
                             if len(true_cultivar_data[r][s][si][k][2]) == 0:
                                 continue
-                            '''if "grape_phenology" in config.DataConfig.dtype:
+                            """if "grape_phenology" in config.DataConfig.dtype:
                                 cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                     config,
                                     true_cultivar_data[r][s][si][k][0],
@@ -271,7 +279,7 @@ def main():
                                         cultivar_test_avg_pheno[1:-1],
                                         [np.sum(cultivar_test_avg_pheno[1:-1])],
                                     )
-                                )'''
+                                )"""
                             if "grape_phenology" in config.DataConfig.dtype:
                                 cult_day_rmse = np.array(
                                     [

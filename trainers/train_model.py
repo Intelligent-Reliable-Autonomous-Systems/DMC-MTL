@@ -18,6 +18,7 @@ def main():
     parser.add_argument("--station", default=None, type=str, help="Station")
     parser.add_argument("--site", default=None, type=str, help="Site")
     parser.add_argument("--cultivar", default=None, type=str, help="Cultivar Type")
+    parser.add_argument("--withold", default=None, type=str, help="Cultivar Type")
     args = parser.parse_args()
 
     config, data = utils.load_config_data(args)

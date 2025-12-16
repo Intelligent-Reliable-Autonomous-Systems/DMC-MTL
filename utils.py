@@ -167,6 +167,8 @@ def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
         config.DataConfig.station = args.station if args.station is not None else config.DataConfig.station
     if hasattr(args, "site"):
         config.DataConfig.site = args.site if args.site is not None else config.DataConfig.site
+    if hasattr(args, "withold"):
+        config.DataConfig.withold = args.withold if args.withold is not None else config.DataConfig.withold
 
     return config, load_data_from_config(config)
 

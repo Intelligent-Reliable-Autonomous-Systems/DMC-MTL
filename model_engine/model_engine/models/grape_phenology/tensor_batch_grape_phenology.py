@@ -102,16 +102,17 @@ class Grape_Phenology_TensorBatch(BatchTensorModel):
         p = self.params
         r = self.rates
         # Day length sensitivity
+
         if hasattr(drv, "DAYL"):
             self._DAY_LENGTH = drv.DAYL
         elif hasattr(drv, "LAT"):
             self._DAY_LENGTH = daylength(day, drv.LAT)
         if self._DAY_LENGTH.ndim == 0:
-            self._DAY_LENGTH = torch.tile(self._DAY_LENGTH, (self.num_models,))[: self.num_models]
+            self._DAY_LENGTH = torch.tile(self._DAY_LENGTH, (self.num_models,))[: self.num_models].to(self.device)
         elif len(self._DAY_LENGTH) < self.num_models:
             self._DAY_LENGTH = torch.tile(self._DAY_LENGTH, (self.num_models // len(self._DAY_LENGTH) + 1,))[
                 : self.num_models
-            ]
+            ].to(self.device)
 
         r.DTSUME = torch.zeros(size=(self.num_models,)).to(self.device)
         r.DTSUM = torch.zeros(size=(self.num_models,)).to(self.device)

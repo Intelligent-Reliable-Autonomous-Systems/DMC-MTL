@@ -6,18 +6,21 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
-    input_vars: [DAY, DAYL, TEMP, TMIN, TMAX, RAIN, IRRAD, ET0, E0, ES0]
-    output_vars: [DVS]
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
+    output_vars: [PHENOLOGY]
 # Log configuration
 log_path: /_runs/RTMC/Phenology/ParamMTL2/
-synth_data: synth_rtmc_train
-dtype: grape_phenology_
 run_name: param_mtl
 seed: 0
 # Data use
-cultivar: All
-data_fpath: _data/processed_data/
-data_cap: 2
+DataConfig: 
+    region: WA
+    station: Roza2
+    site: Prosser
+    cultivar: All
+    data_fpath: _data/processed_data/
+    data_cap: 2
+    dtype: grape_phenology_
 # Parameters
 params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
 params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]

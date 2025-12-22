@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
     output_vars: [PHENOLOGY]
 # Log configuration
-log_path: /_runs/RTMC/Phenology/ParamMTL5/
+log_path: /_runs/RTMC/Phenology/ParamMTL1/STL/
 run_name: param_mtl
 seed: 0
 # Data use
@@ -19,18 +19,18 @@ DataConfig:
     site: Prosser
     cultivar: All
     data_fpath: _data/processed_data/
-    data_cap: 5
+    data_cap: 1
     dtype: grape_phenology_
 # Parameters
 params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
 params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]
 DConfig: 
     type: Param
-    arch: EmbedFCGRU 
+    arch: FCGRU 
     hidden_dim: 1024
     embed_op: concat
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95
-    batch_size: 12
-    epochs: 400
+    batch_size: 4
+    epochs: 200

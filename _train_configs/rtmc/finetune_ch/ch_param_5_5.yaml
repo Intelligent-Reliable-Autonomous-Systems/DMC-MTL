@@ -6,18 +6,21 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
-    input_vars: [DAY, DAYL, TEMP, TMIN, TMAX, RAIN, IRRAD, ET0, E0, ES0]
+    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN, IRRAD, DAYL, MIN_RH, AVG_RH, MAX_RH, MIN_DEWPT, AVG_DEWPT, MAX_DEWPT, WS_MPH, MAX_WS_MPH, ETO]
     output_vars: [LTE50]
 # Log configuration
 log_path: /_runs/RTMC/FineTuneColdHardiness/ParamMTL5_5/
-synth_data: synth_rtmc_test
-dtype: grape_coldhardiness_ferg
 run_name: deep_mtl
 seed: 0
 # Data use
-cultivar: All
-data_fpath: _data/processed_data/
-data_cap: 5
+DataConfig: 
+    cultivar: All
+    data_fpath: _data/processed_data/
+    data_cap: 5
+    dtype: grape_coldhardiness_ferg
+    region: WA
+    station: Roza2
+    site: Prosser
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]

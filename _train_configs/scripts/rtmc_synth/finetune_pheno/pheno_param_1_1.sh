@@ -10,4 +10,4 @@ python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_
 python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_1 --seed 1 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/None/None/None/All/param_mtl__1763829553
 python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_1 --seed 2 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/None/None/None/All/param_mtl__1763833676
 python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_1 --seed 3 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/None/None/None/All/param_mtl__1763837854
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_1 --seed 4 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/None/None/None/All/param_mtl__1763841968
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_1_1 --seed 4 --rnn_fpath_runs/RTMC/Phenology/ParamMTL1/None/None/None/All/param_mtl__1763841968

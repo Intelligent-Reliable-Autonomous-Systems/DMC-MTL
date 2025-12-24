@@ -155,6 +155,9 @@ class BaseFineTuner(BaseModel):
             val_shuffled = self.val[train_name][inds]
             dates_shuffled = self.dates[train_name][inds]
             cultivars_shuffled = self.cultivars[train_name][inds] if self.cultivars is not None else None
+            regions_shuffled = self.regions[train_name][inds] if self.regions is not None else None
+            stations_shuffled = self.stations[train_name][inds] if self.stations is not None else None
+            sites_shuffled = self.sites[train_name][inds] if self.sites is not None else None
             train_avg = torch.zeros(size=(4,)).to(self.device)
 
             # Training
@@ -172,9 +175,12 @@ class BaseFineTuner(BaseModel):
                 batch_cultivars = (
                     cultivars_shuffled[i : i + self.batch_size] if cultivars_shuffled is not None else None
                 )
+                batch_regions = regions_shuffled[i : i + self.batch_size] if regions_shuffled is not None else None
+                batch_stations = stations_shuffled[i : i + self.batch_size] if stations_shuffled is not None else None
+                batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
 
-                output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, target, days=days)
+                output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, regions=batch_regions, stations=batch_stations, sites=batch_sites, val_data=target, days=days)
 
                 loss = self.loss_func(output, target.nan_to_num(nan=0.0))
                 mask = ~torch.isnan(target)
@@ -207,8 +213,14 @@ class BaseFineTuner(BaseModel):
                 batch_cultivars = (
                     self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                 )
+                batch_regions = self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
+                batch_stations = (
+                    self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
+                )
+                batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
+
                 test_target = self.val[test_name][j : j + self.batch_size]
-                test_output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, test_target)
+                test_output, _, _ = self.forward(batch_data, batch_dates, cultivars=batch_cultivars, regions=batch_regions, stations=batch_stations, sites=batch_sites, val_data=test_target)
 
                 test_loss = self.loss_func(test_output, test_target.nan_to_num(nan=0.0))
                 test_mask = ~torch.isnan(test_target)
@@ -271,6 +283,9 @@ class FineTuner(BaseFineTuner):
         data: torch.Tensor,
         dates: np.ndarray,
         cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
         val_data: torch.Tensor = None,
         days: int = None,
         **kwargs,
@@ -305,6 +320,9 @@ class FineTuner(BaseFineTuner):
                 input=torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn=hn_cn,
                 cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites
             )
             params_predict_ft, hn_cn_ft = self.finetuner(
                 error=error_tens[:, i - 1].clone().detach(),

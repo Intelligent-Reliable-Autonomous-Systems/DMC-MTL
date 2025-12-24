@@ -6,8 +6,8 @@
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/None/None/None/All/param_mtl__1763846147
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/None/None/None/All/param_mtl__1763855961
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/None/None/None/All/param_mtl__1763865769
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/None/None/None/All/param_mtl__1763875653
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/None/None/None/All/param_mtl__1763885399
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766447582
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766458575
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766469148
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766479472
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766489925

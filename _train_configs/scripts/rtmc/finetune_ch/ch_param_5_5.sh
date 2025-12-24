@@ -7,8 +7,8 @@
 #SBATCH --gres=gpu:1
 
 
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/None/None/None/All/deep_mtl__1763792945
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/None/None/None/All/deep_mtl__1763805410
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/None/None/None/All/deep_mtl__1763817873
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/None/None/None/All/deep_mtl__1763830052
-python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/None/None/None/All/deep_mtl__1763842280
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766424437
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766436940
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766449435
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766461915
+python3 -m trainers.train_model_rtmc --config rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766474367

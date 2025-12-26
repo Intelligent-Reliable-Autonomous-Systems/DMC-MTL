@@ -1,185 +1,119 @@
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766460142
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766460966
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766461780
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766462586
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766463405
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766636019
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766637026
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766638034
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766639044
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766640056
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Alvarinho/param_mtl__1766464209
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Alvarinho/param_mtl__1766465027
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Alvarinho/param_mtl__1766465850
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Alvarinho/param_mtl__1766466664
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Alvarinho/param_mtl__1766467467
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766641065
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766641694
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766642321
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766642949
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766643581
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Auxerrois/param_mtl__1766468287
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Auxerrois/param_mtl__1766469109
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Auxerrois/param_mtl__1766469921
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Auxerrois/param_mtl__1766470727
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Auxerrois/param_mtl__1766471548
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766644209
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766645223
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766646232
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766647242
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766648251
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766472372
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766473186
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766473994
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766474814
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Barbera/param_mtl__1766475631
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766649253
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766650243
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766651250
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766652256
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766653268
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766476450
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766477257
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766478081
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766478906
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Franc/param_mtl__1766479722
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766654273
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766655279
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766656290
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766657298
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766658310
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766480530
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766481349
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766482169
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766482984
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Cabernet_Sauvignon/param_mtl__1766483791
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Concord/param_mtl__1766659319
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Concord/param_mtl__1766660327
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Concord/param_mtl__1766661334
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Concord/param_mtl__1766662342
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Concord/param_mtl__1766663353
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766484611
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766485432
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766486248
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766487047
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chardonnay/param_mtl__1766487829
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766664362
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766665366
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766666346
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766667348
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766668345
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766488609
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766489379
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766490165
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766490951
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Chenin_Blanc/param_mtl__1766491723
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766669342
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766669966
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766670590
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766671213
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766671839
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Concord/param_mtl__1766492507
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Concord/param_mtl__1766493287
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Concord/param_mtl__1766494062
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Concord/param_mtl__1766494847
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Concord/param_mtl__1766495619
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766672464
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766673465
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766674470
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766675465
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766676466
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Durif/param_mtl__1766496408
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Durif/param_mtl__1766497181
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Durif/param_mtl__1766497970
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Durif/param_mtl__1766498758
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Durif/param_mtl__1766499530
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766677449
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766678439
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766679438
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766680436
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766681425
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766500319
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766501090
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766501876
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766502649
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Gewurztraminer/param_mtl__1766503435
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766682425
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766683419
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766684422
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766685418
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766686414
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Green_Veltliner/param_mtl__1766504205
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Green_Veltliner/param_mtl__1766504994
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Green_Veltliner/param_mtl__1766505771
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Green_Veltliner/param_mtl__1766506559
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Green_Veltliner/param_mtl__1766507337
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766687414
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766688415
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766689410
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766690387
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766691382
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Grenache/param_mtl__1766508110
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Grenache/param_mtl__1766508898
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Grenache/param_mtl__1766509672
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Grenache/param_mtl__1766510458
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Grenache/param_mtl__1766511234
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766692379
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766693380
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766694379
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766695384
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766696387
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766512007
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766512794
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766513567
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766514353
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Lemberger/param_mtl__1766515129
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766697384
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766698380
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766699359
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766700359
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766701359
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766515916
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766516694
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766517482
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766518261
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Malbec/param_mtl__1766519049
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766702362
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766703368
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766704373
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766705376
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766706358
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Melon/param_mtl__1766519829
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Melon/param_mtl__1766520601
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Melon/param_mtl__1766521390
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Melon/param_mtl__1766522181
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Melon/param_mtl__1766522954
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766707346
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766708325
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766709326
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766710322
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766711322
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766523744
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766524516
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766525302
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766526078
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Merlot/param_mtl__1766526866
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766712321
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766713314
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766714293
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766715295
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766716295
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766527640
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766528426
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766529196
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766529980
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Mourvedre/param_mtl__1766530751
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Syrah/param_mtl__1766717293
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Syrah/param_mtl__1766718275
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Syrah/param_mtl__1766719273
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Syrah/param_mtl__1766720270
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Syrah/param_mtl__1766721270
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Muscat_Blanc/param_mtl__1766531535
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Muscat_Blanc/param_mtl__1766532307
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Muscat_Blanc/param_mtl__1766533096
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Muscat_Blanc/param_mtl__1766533870
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Muscat_Blanc/param_mtl__1766534641
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766722287
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766723267
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766724267
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766725264
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766726261
 
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766535427
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766536200
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766536990
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766537768
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Nebbiolo/param_mtl__1766538551
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Petit_Verdot/param_mtl__1766539332
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Petit_Verdot/param_mtl__1766540108
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Petit_Verdot/param_mtl__1766540894
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Petit_Verdot/param_mtl__1766541666
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Petit_Verdot/param_mtl__1766542457
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Blanc/param_mtl__1766543234
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Blanc/param_mtl__1766544023
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Blanc/param_mtl__1766544800
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Blanc/param_mtl__1766545589
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Blanc/param_mtl__1766546361
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766547151
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766547928
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766548718
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766549493
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Gris/param_mtl__1766550270
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Noir/param_mtl__1766551058
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Noir/param_mtl__1766551833
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Noir/param_mtl__1766552618
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Noir/param_mtl__1766553396
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Pinot_Noir/param_mtl__1766554182
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766554966
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766555751
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766556526
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766557317
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Riesling/param_mtl__1766558098
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766558869
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766559658
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766560444
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766561218
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sangiovese/param_mtl__1766562004
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766562792
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766563567
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766564359
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766565143
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Sauvignon_Blanc/param_mtl__1766565917
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766566708
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766567491
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766568259
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766569033
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Semillon/param_mtl__1766569801
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Tempranillo/param_mtl__1766570578
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Tempranillo/param_mtl__1766571343
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Tempranillo/param_mtl__1766572119
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Tempranillo/param_mtl__1766572886
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Tempranillo/param_mtl__1766573658
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766574423
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766575195
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766575962
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766576726
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Viognier/param_mtl__1766577488
-
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766578257
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766579020
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766579785
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766580553
-_runs/RTMC/Phenology/ParamMTL2/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766581324
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766727250
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766728230
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766729225
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766730226
+--rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/STL/WA/Roza2/Prosser/Zinfandel/param_mtl__1766731228

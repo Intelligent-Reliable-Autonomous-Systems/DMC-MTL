@@ -260,7 +260,7 @@ class BatchModelEngine(BaseEngine):
                         cultivars,
                         (0, 0, 0, self.num_models - len(cultivars)),
                         mode="constant",
-                        value=float(cultivars[-1].cpu().numpy().flatten()),
+                        value=float(cultivars[-1].cpu().numpy().flatten().item()),
                     )
                     if len(cultivars) < self.num_models
                     else cultivars

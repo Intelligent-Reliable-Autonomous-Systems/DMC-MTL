@@ -5,6 +5,7 @@
 #SBATCH -p eecs,share,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
+#SBATCH --exclude=cn-gpu3
 
 python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_10_10_stl --seed 0 --cultivar Aligote --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766499491
 python3 -m trainers.train_model_rtmc --config rtmc/finetune_pheno/pheno_param_10_10_stl --seed 1 --cultivar Aligote --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/STL/WA/Roza2/Prosser/Aligote/param_mtl__1766500482

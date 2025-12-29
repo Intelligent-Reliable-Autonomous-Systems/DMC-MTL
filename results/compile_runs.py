@@ -15,7 +15,7 @@ import argparse
 import utils
 from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 
-from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compute_obs_RMSE
+from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot
 from plotters.plotting_functions import compute_rmse_plot
 
 
@@ -33,7 +33,7 @@ def main():
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
-    config_dirs = utils.find_config_yaml_dirs(args.start_dir)
+    config_dirs = utils.find_config_yaml_dirs(start_dir=args.start_dir)
 
     # Setup total storage
     all_avg_pheno = np.zeros((12, args.num_runs))

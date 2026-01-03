@@ -129,7 +129,7 @@ class BaseFineTuner(BaseModel):
         with open(f"{log_path}/config.yaml", "w", encoding="utf-8") as fp:
             OmegaConf.save(config=self.config, f=fp.name)
         fp.close()
-        #torch.save(self.drange, f"{log_path}/model_drange.pt")
+        # torch.save(self.drange, f"{log_path}/model_drange.pt")
 
         self.best_cum_rmse = float("inf")
         self.best_eval_loss = float("inf")
@@ -180,7 +180,16 @@ class BaseFineTuner(BaseModel):
                 batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
 
-                output, _, _ = self.forward(batch_data, batch_dates, batch_cultivars, regions=batch_regions, stations=batch_stations, sites=batch_sites, val_data=target, days=days)
+                output, _, _ = self.forward(
+                    batch_data,
+                    batch_dates,
+                    batch_cultivars,
+                    regions=batch_regions,
+                    stations=batch_stations,
+                    sites=batch_sites,
+                    val_data=target,
+                    days=days,
+                )
 
                 loss = self.loss_func(output, target.nan_to_num(nan=0.0))
                 mask = ~torch.isnan(target)
@@ -220,7 +229,15 @@ class BaseFineTuner(BaseModel):
                 batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
 
                 test_target = self.val[test_name][j : j + self.batch_size]
-                test_output, _, _ = self.forward(batch_data, batch_dates, cultivars=batch_cultivars, regions=batch_regions, stations=batch_stations, sites=batch_sites, val_data=test_target)
+                test_output, _, _ = self.forward(
+                    batch_data,
+                    batch_dates,
+                    cultivars=batch_cultivars,
+                    regions=batch_regions,
+                    stations=batch_stations,
+                    sites=batch_sites,
+                    val_data=test_target,
+                )
 
                 test_loss = self.loss_func(test_output, test_target.nan_to_num(nan=0.0))
                 test_mask = ~torch.isnan(test_target)
@@ -322,7 +339,7 @@ class FineTuner(BaseFineTuner):
                 cultivars=cultivars,
                 regions=regions,
                 stations=stations,
-                sites=sites
+                sites=sites,
             )
             params_predict_ft, hn_cn_ft = self.finetuner(
                 error=error_tens[:, i - 1].clone().detach(),

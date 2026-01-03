@@ -226,11 +226,13 @@ def main():
     mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr)  # Replace 0.0s with nan
     print(mtl_arr.shape)
     nan_count = np.isnan(mtl_arr).sum(axis=-2)
-    dim0, dim1, dim2, dim3, dim4, dim5 = np.where(nan_count==2)
+    dim0, dim1, dim2, dim3, dim4, dim5 = np.where(nan_count == 2)
     new_mtl_arr = np.full(mtl_arr.shape[1:], np.nan)
     print(np.where(nan_count == 2))
     for i in range(len(dim0)):
-        new_mtl_arr[dim1[i], dim2[i],dim3[i],dim4[i], :, dim5[i]] = mtl_arr[dim0[i], dim1[i], dim2[i],dim3[i],dim4[i], :, dim5[i]]
+        new_mtl_arr[dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]] = mtl_arr[
+            dim0[i], dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]
+        ]
     mtl_arr = new_mtl_arr
     # Take average over runs and cultivars
     if args.per:
@@ -246,7 +248,7 @@ def main():
     else:
         mean = np.round(np.nanmean(mtl_arr, axis=-1), decimals=2).squeeze()
         std = np.round(np.nanstd(mtl_arr, axis=-1), decimals=2).squeeze()
-    '''nan_count = np.isnan(mean).sum(axis=-1)
+    """nan_count = np.isnan(mean).sum(axis=-1)
     dim0, dim1, dim2, dim3, dim4 = np.where(nan_count==2)
     print(dim0, dim1, dim2, dim3, dim4)
     new_mean = np.full(mean.shape[1:], np.nan)
@@ -257,7 +259,7 @@ def main():
         new_std[dim1[i], dim2[i],dim3[i],dim4[i]] = std[dim0[i], dim1[i], dim2[i],dim3[i],dim4[i]]
     mean = new_mean
     std = new_std
-    print(mean.shape)'''
+    print(mean.shape)"""
     print(mean.shape)
     if args.per_cult:
         if args.stl:

@@ -19,9 +19,7 @@ def main():
     )
     ch_models_dmc = utils.load_named_pickles(["RTMC/ColdHardiness"], "results_per_cultivars.pkl", include="All")
 
-    pheno_models_rtmc = utils.load_named_pickles(
-        ["RTMC/FineTunePhenology"], "results_per_cultivars.pkl", include="All"
-    )
+    pheno_models_rtmc = utils.load_named_pickles(["RTMC/FineTunePhenology"], "results_per_cultivars.pkl", include="All")
     pheno_models_dmc = utils.load_named_pickles(["RTMC/Phenology"], "results_per_cultivars.pkl", include="All")
 
     ch_param_keys_rtmc = np.char.find(np.asarray(list(ch_models_rtmc.keys())), "Param") >= 0
@@ -47,21 +45,20 @@ def main():
     pheno_array_rtmc[pheno_array_rtmc == 0] = np.nan
     pheno_array_dmc[pheno_array_dmc == 0] = np.nan
 
+    ch_mean_rtmc = np.nanmean(ch_array_rtmc, axis=(1, 2, 3, 4, -1))[:, -1]
+    ch_mean_dmc = np.nanmean(ch_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
 
-    ch_mean_rtmc = np.nanmean(ch_array_rtmc, axis=(1, 2, 3, 4, -1))[:,-1]
-    ch_mean_dmc = np.nanmean(ch_array_dmc, axis=(1, 2, 3, 4, -1))[:,-1]
-
-    pheno_mean_rtmc = np.nanmean(pheno_array_rtmc, axis=(1, 2, 3, 4, -1))[:,-1]
-    pheno_mean_dmc = np.nanmean(pheno_array_dmc, axis=(1, 2, 3, 4, -1))[:,-1]
+    pheno_mean_rtmc = np.nanmean(pheno_array_rtmc, axis=(1, 2, 3, 4, -1))[:, -1]
+    pheno_mean_dmc = np.nanmean(pheno_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
 
     fig, ax = plt.subplots(figsize=(5, 3))
     ax2 = ax.twinx()
-    
-    ax.plot(pheno_mean_dmc[[0,2,3,1]], label="Pheno: Base DMC-MTL", marker="o", c='tab:red')
-    ax.plot(pheno_mean_rtmc[[1,2,0,3]], label="Pheno: In-Season Adapation", marker="s", c='tab:red', linestyle="--")
 
-    ax2.plot(ch_mean_dmc[[0,2,3,1]], label="CH: Base DMC-MTL", marker="o" ,c='tab:blue')
-    ax2.plot(ch_mean_rtmc[[1,2,0,3]], label="CH: In-Season Adapation", marker="s", c='tab:blue', linestyle="--")
+    ax.plot(pheno_mean_dmc[[0, 2, 3, 1]], label="Pheno: Base DMC-MTL", marker="o", c="tab:red")
+    ax.plot(pheno_mean_rtmc[[1, 2, 0, 3]], label="Pheno: In-Season Adapation", marker="s", c="tab:red", linestyle="--")
+
+    ax2.plot(ch_mean_dmc[[0, 2, 3, 1]], label="CH: Base DMC-MTL", marker="o", c="tab:blue")
+    ax2.plot(ch_mean_rtmc[[1, 2, 0, 3]], label="CH: In-Season Adapation", marker="s", c="tab:blue", linestyle="--")
 
     ax.set_xticks(np.arange(4), labels=[1, 2, 5, 10])
     ax.set_xlabel("Years of Per-Cultivar Data")

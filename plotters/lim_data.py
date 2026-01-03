@@ -13,46 +13,79 @@ import utils
 
 def main():
 
-    pheno_deep_models = utils.load_named_pickles(["PaperExperiments/PhenologyLimited"], "results_per_cultivars.pkl", include="Deep")
-    pheno_param_models = utils.load_named_pickles(["PaperExperiments/PhenologyLimited"], "results_per_cultivars.pkl", include="Param")
-    ch_deep_models = utils.load_named_pickles(["PaperExperiments/ColdHardinessLimited"], "results_per_cultivars.pkl", include="Deep")
-    ch_param_models = utils.load_named_pickles(["PaperExperiments/ColdHardinessLimited"], "results_per_cultivars.pkl", include="Param")
+    pheno_deep_models = utils.load_named_pickles(
+        ["PaperExperiments/PhenologyLimited"], "results_per_cultivars.pkl", include="Deep"
+    )
+    pheno_param_models = utils.load_named_pickles(
+        ["PaperExperiments/PhenologyLimited"], "results_per_cultivars.pkl", include="Param"
+    )
+    ch_deep_models = utils.load_named_pickles(
+        ["PaperExperiments/ColdHardinessLimited"], "results_per_cultivars.pkl", include="Deep"
+    )
+    ch_param_models = utils.load_named_pickles(
+        ["PaperExperiments/ColdHardinessLimited"], "results_per_cultivars.pkl", include="Param"
+    )
 
-    pheno_gd_models = utils.load_named_pickles(["PaperExperiments/PhenologyLimited"], "results_agg_cultivars.pkl", include="GD")
-    pheno_hybrid_models = utils.load_named_pickles(["PaperExperiments/PhenologyLimited"], "results_agg_cultivars.pkl", include="Hybrid")
-    ch_gd_models = utils.load_named_pickles(["PaperExperiments/ColdHardinessLimited"], "results_agg_cultivars.pkl", include="GD")
-    ch_hybrid_models = utils.load_named_pickles(["PaperExperiments/ColdHardinessLimited"], "results_agg_cultivars.pkl", include="Hybrid")
+    pheno_gd_models = utils.load_named_pickles(
+        ["PaperExperiments/PhenologyLimited"], "results_agg_cultivars.pkl", include="GD"
+    )
+    pheno_hybrid_models = utils.load_named_pickles(
+        ["PaperExperiments/PhenologyLimited"], "results_agg_cultivars.pkl", include="Hybrid"
+    )
+    pheno_pinn_models = utils.load_named_pickles(
+        ["PaperExperiments/PhenologyLimited"], "results_per_cultivars.pkl", include="PINN"
+    )
+    ch_gd_models = utils.load_named_pickles(
+        ["PaperExperiments/ColdHardinessLimited"], "results_agg_cultivars.pkl", include="GD"
+    )
+    ch_pinn_models = utils.load_named_pickles(
+        ["PaperExperiments/ColdHardinessLimited"], "results_per_cultivars.pkl", include="PINN"
+    )
+    ch_hybrid_models = utils.load_named_pickles(
+        ["PaperExperiments/ColdHardinessLimited"], "results_agg_cultivars.pkl", include="Hybrid"
+    )
 
     inds = [0, 3, 4, 5, 1, 2]
     pheno_deep_sorted_keys = np.argsort(list(pheno_deep_models.keys()))[inds]
     pheno_deep_array = np.array(list(pheno_deep_models.values()))[pheno_deep_sorted_keys]
     pheno_param_sorted_keys = np.argsort(list(pheno_param_models.keys()))[inds]
     pheno_param_array = np.array(list(pheno_param_models.values()))[pheno_param_sorted_keys]
+    pheno_pinn_sorted_keys = np.argsort(list(pheno_pinn_models.keys()))[inds]
+    pheno_pinn_array = np.array(list(pheno_pinn_models.values()))[pheno_pinn_sorted_keys]
 
     pheno_gd_sorted_keys = np.argsort(list(pheno_gd_models.keys()))
-    pheno_gd_sorted_keys = np.concatenate((pheno_gd_sorted_keys[:31], pheno_gd_sorted_keys[93:], pheno_gd_sorted_keys[31:93]))
-    pheno_gd_array = np.array(list(pheno_gd_models.values()))[pheno_gd_sorted_keys].reshape(6,31,12,5)
+    pheno_gd_sorted_keys = np.concatenate(
+        (pheno_gd_sorted_keys[:31], pheno_gd_sorted_keys[93:], pheno_gd_sorted_keys[31:93])
+    )
+    pheno_gd_array = np.array(list(pheno_gd_models.values()))[pheno_gd_sorted_keys].reshape(6, 31, 12, 5)
     pheno_hybrid_sorted_keys = np.argsort(list(pheno_hybrid_models.keys()))
-    pheno_hybrid_sorted_keys = np.concatenate((pheno_hybrid_sorted_keys[:31], pheno_hybrid_sorted_keys[93:], pheno_hybrid_sorted_keys[31:93]))
-    pheno_hybrid_array = np.array(list(pheno_hybrid_models.values()))[pheno_hybrid_sorted_keys].reshape(6,31,12,5)
+    pheno_hybrid_sorted_keys = np.concatenate(
+        (pheno_hybrid_sorted_keys[:31], pheno_hybrid_sorted_keys[93:], pheno_hybrid_sorted_keys[31:93])
+    )
+    pheno_hybrid_array = np.array(list(pheno_hybrid_models.values()))[pheno_hybrid_sorted_keys].reshape(6, 31, 12, 5)
 
     ch_deep_sorted_keys = np.argsort(list(ch_deep_models.keys()))[inds]
     ch_deep_array = np.array(list(ch_deep_models.values()))[ch_deep_sorted_keys]
     ch_param_sorted_keys = np.argsort(list(ch_param_models.keys()))[inds]
     ch_param_array = np.array(list(ch_param_models.values()))[ch_param_sorted_keys]
+    ch_pinn_sorted_keys = np.argsort(list(ch_pinn_models.keys()))[inds]
+    ch_pinn_array = np.array(list(ch_pinn_models.values()))[ch_pinn_sorted_keys]
 
     ch_gd_sorted_keys = np.argsort(list(ch_gd_models.keys()))
     ch_gd_sorted_keys = np.concatenate((ch_gd_sorted_keys[:20], ch_gd_sorted_keys[60:], ch_gd_sorted_keys[20:60]))
     ch_gd_array = np.array(list(ch_gd_models.values()))[ch_gd_sorted_keys].reshape(6, 20, 3, 5)
     ch_hybrid_sorted_keys = np.argsort(list(ch_hybrid_models.keys()))
-    ch_hybrid_sorted_keys = np.concatenate((ch_hybrid_sorted_keys[:20], ch_hybrid_sorted_keys[60:], ch_hybrid_sorted_keys[20:60]))
+    ch_hybrid_sorted_keys = np.concatenate(
+        (ch_hybrid_sorted_keys[:20], ch_hybrid_sorted_keys[60:], ch_hybrid_sorted_keys[20:60])
+    )
     ch_hybrid_array = np.array(list(ch_hybrid_models.values()))[ch_hybrid_sorted_keys].reshape(6, 20, 3, 5)
-
 
     pheno_deep_array[pheno_deep_array == 0] = np.nan
     pheno_param_array[pheno_param_array == 0] = np.nan
+    pheno_pinn_array[pheno_pinn_array == 0] = np.nan
     ch_deep_array[ch_deep_array == 0] = np.nan
     ch_param_array[ch_param_array == 0] = np.nan
+    ch_pinn_array[ch_pinn_array == 0] = np.nan
 
     pheno_gd_array[pheno_gd_array == 0] = np.nan
     pheno_hybrid_array[pheno_hybrid_array == 0] = np.nan
@@ -63,6 +96,8 @@ def main():
     pheno_deep_std = np.nanstd(pheno_deep_array, axis=(-3, -1))[:, -1]
     pheno_param_mean = np.nanmean(pheno_param_array, axis=(-3, -1))[:, -1]
     pheno_param_std = np.nanstd(pheno_param_array, axis=(-3, -1))[:, -1]
+    pheno_pinn_mean = np.nanmean(pheno_pinn_array, axis=(1, 2, 3, 4, -1))[:, -1]
+    pheno_pinn_std = np.nanstd(pheno_pinn_array, axis=(1, 2, 3, 4, -1))[:, -1]
 
     pheno_gd_mean = np.nanmean(pheno_gd_array, axis=(-3, -1))[:, -1]
     pheno_gd_std = np.nanstd(pheno_gd_array, axis=(-3, -1))[:, -1]
@@ -73,6 +108,8 @@ def main():
     ch_deep_std = np.nanstd(ch_deep_array, axis=(-3, -1))[:, -1]
     ch_param_mean = np.nanmean(ch_param_array, axis=(1, 2, 3, 4, -1))[:, -1]
     ch_param_std = np.nanstd(ch_param_array, axis=(1, 2, 3, 4, -1))[:, -1]
+    ch_pinn_mean = np.nanmean(ch_pinn_array, axis=(1, 2, 3, 4, -1))[:, -1]
+    ch_pinn_std = np.nanstd(ch_pinn_array, axis=(1, 2, 3, 4, -1))[:, -1]
 
     ch_gd_mean = np.nanmean(ch_gd_array, axis=(-3, -1))[:, -1]
     ch_gd_std = np.nanstd(ch_gd_array, axis=(-3, -1))[:, -1]
@@ -80,19 +117,30 @@ def main():
     ch_hybrid_std = np.nanstd(ch_hybrid_array, axis=(-3, -1))[:, -1]
 
     fig, ax = plt.subplots(figsize=(5, 3))
+    np.set_printoptions(precision=2)
+    print(ch_deep_mean)
+    print(ch_deep_std)
+    print(ch_param_mean)
+    print(ch_param_std)
+    print(ch_pinn_mean)
+    print(ch_pinn_std)
+    print(ch_gd_mean)
+    print(ch_gd_std)
+    print(ch_hybrid_mean)
+    print(ch_hybrid_std)
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
     ax2.plot(np.arange(6), ch_deep_mean, color=ax2_color, marker="o", label="CH Reg. MTL")
     ax2.plot(np.arange(6), ch_param_mean, color=ax2_color, marker="s", label="CH DMC-MTL")
     ax2.plot(np.arange(6), ch_gd_mean, color=ax2_color, marker="*", label="CH Bio. Model")
-    #ax2.plot(np.arange(6), ch_hybrid_mean, color=ax2_color, marker="d", label="CH Temp-Hybrid")
+    # ax2.plot(np.arange(6), ch_hybrid_mean, color=ax2_color, marker="d", label="CH Temp-Hybrid")
 
     ax1_color = "tab:blue"
     ax.plot(np.arange(6), pheno_deep_mean, color=ax1_color, marker="o", label="Pheno Reg. MTL")
     ax.plot(np.arange(6), pheno_param_mean, color=ax1_color, marker="s", label="Pheno DMC-MTL")
     ax.plot(np.arange(6), pheno_gd_mean, color=ax1_color, marker="*", label="Pheno Bio. Model")
-    #ax.plot(np.arange(6), pheno_hybrid_mean, color=ax1_color, marker="d", label="Pheno Temp-Hybrid")
+    # ax.plot(np.arange(6), pheno_hybrid_mean, color=ax1_color, marker="d", label="Pheno Temp-Hybrid")
     ax.set_xlabel("Seasons of Data per Cultivar")
     ax.set_xticks(np.arange(6), labels=[1, 2, 3, 5, 10, 15])
     ax.set_ylabel("RMSE in Days (Phenology)", color=ax1_color)

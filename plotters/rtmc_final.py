@@ -57,11 +57,11 @@ def main():
     fig, ax = plt.subplots(figsize=(5, 3))
     ax2 = ax.twinx()
     
-    ax.plot(pheno_mean_dmc[[0,2,3,1]], label="Pheno: Base DMC-MTL", marker="o", c='r')
-    ax.plot(pheno_mean_rtmc[[1,2,0,3]], label="Pheno: In-Season Adapation", marker="s", c='r', linestyle="--")
+    ax.plot(pheno_mean_dmc[[0,2,3,1]], label="Pheno: Base DMC-MTL", marker="o", c='tab:red')
+    ax.plot(pheno_mean_rtmc[[1,2,0,3]], label="Pheno: In-Season Adapation", marker="s", c='tab:red', linestyle="--")
 
-    ax2.plot(ch_mean_dmc[[0,2,3,1]], label="CH: Base DMC-MTL", marker="o" ,c='b')
-    ax2.plot(ch_mean_rtmc[[1,2,0,3]], label="CH: In-Season Adapation", marker="s", c='b', linestyle="--")
+    ax2.plot(ch_mean_dmc[[0,2,3,1]], label="CH: Base DMC-MTL", marker="o" ,c='tab:blue')
+    ax2.plot(ch_mean_rtmc[[1,2,0,3]], label="CH: In-Season Adapation", marker="s", c='tab:blue', linestyle="--")
 
     ax.set_xticks(np.arange(4), labels=[1, 2, 5, 10])
     ax.set_xlabel("Years of Per-Cultivar Data")

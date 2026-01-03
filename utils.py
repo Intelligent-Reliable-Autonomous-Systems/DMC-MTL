@@ -363,7 +363,6 @@ def load_named_pickles(folder_paths: list[str], target_name: str, include: str =
 
     for root in folder_paths:
         root = Path(f"./_runs/{root}")
-
         for pkl_file in root.rglob(target_name):
             try:
                 # Get relative subdirectory name

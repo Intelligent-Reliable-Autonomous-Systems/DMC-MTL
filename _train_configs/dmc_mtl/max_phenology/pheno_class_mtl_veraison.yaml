@@ -13,12 +13,13 @@ log_path: /_runs/PaperExperiments/MaxPhenology/Veraison/ClassMTL/
 run_name: class_mtl
 seed: 0
 # Data use
-cultivar: All
-data_fpath: _data/processed_data/
-dtype: grape_coldhardiness_ferg
-region: WA
-station: Roza2
-site: Prosser
+DataConfig: 
+  cultivar: All
+  data_fpath: _data/processed_data/
+  dtype: grape_coldhardiness_ferg
+  region: WA
+  station: Roza2
+  site: Prosser
 # Parameters 
 params: ["TBASEM", "TEFFMX", "TSUMEM", "TSUM1", "TSUM2", "TSUM3", "TSUM4"]
 params_range: [[0,15], [15, 45], [10,100], [100,1000], [100,1000], [100,1000], [100,1000]]

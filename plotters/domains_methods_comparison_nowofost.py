@@ -112,9 +112,9 @@ def main():
     ch_models = load_models(ch_fpaths)
 
     pheno_true, pheno_pred = gen_results(pheno_models, yr=77)
-    ch_true, ch_pred = gen_results(ch_models)
+    ch_true, ch_pred = gen_results(ch_models, yr=77)
 
-    fig, ax = plt.subplots(2, figsize=(6, 5.25))
+    fig, ax = plt.subplots(2, figsize=(6, 4))
 
     pheno_xticks = np.asarray([0, 31, 59, 90, 121, 151, 182, 212, 243])
     pheno_xlabels = [
@@ -180,8 +180,9 @@ def main():
         fontsize=fontsize,
     )
 
-    ax[0].text(0.05, 0.2, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1)
-    ax[1].text(0.05, 0.2, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1)
+    plt.subplots_adjust(hspace=0.2)
+    ax[0].text(0.05, 0.2, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize+1, fontweight="bold")
+    ax[1].text(0.05, 0.2, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize+1, fontweight="bold")
 
     plt.savefig("plotters/figs/domain_methods_comparison_nowofost.png", bbox_inches="tight")
     plt.close()

@@ -13,12 +13,13 @@ log_path: /_runs/PaperExperiments/ColdHardinessLimited/DeepMTL3/
 run_name: param_mtl
 seed: 0
 # Data use
-cultivar: All
-data_fpath: _data/processed_data/
-dtype: grape_coldhardiness_ferg
-region: WA
-station: Roza2
-site: Prosser
+DataConfig: 
+  cultivar: All
+  data_fpath: _data/processed_data/
+  dtype: grape_coldhardiness_ferg
+  region: WA
+  station: Roza2
+  site: Prosser
 data_cap: 2
 # Parameters 
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]

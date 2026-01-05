@@ -1,3 +1,12 @@
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OKFallsWest-Cultivar_Gewurztraminer-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosNortheast-Cultivar_Pinot_Noir-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosSoutheast-Cultivar_Cabernet_Franc-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosSoutheast-Cultivar_Cabernet_Sauvignon-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosSoutheast-Cultivar_Chardonnay-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosSoutheast-Cultivar_Syrah-
+python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_OsoyoosSoutheast-
+
+
 python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_BlackSage-Cultivar_Cabernet_Franc-
 python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_BlackSage-Cultivar_Cabernet_Sauvignon-
 python3 -m results.compile_runs --start_dir _runs/MTLHierarchyTransfer/GrapeColdhardiness/DeepMTLStation/BCOV/All/All/All/Site_BlackSage-Cultivar_Chardonnay-

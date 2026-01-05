@@ -111,31 +111,44 @@ def main():
 
                     for c in cultivars:
                         c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
+                        c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
                         c_inds_test = (
                             torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                         )
-                        a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)].to(torch.float32)
-                        cart = (
-                            cartesian_product(a_inds, test_regions, test_stations, test_sites, test_cults)
-                            .to(torch.int32)
-                            .cpu()
-                        )
-                        true, output, params = gen_batch_data(
-                            calibrator,
-                            calibrator.data[n][cart[:, 0]],
-                            calibrator.dates[n][cart[:, 0]],
-                            calibrator.val[n][cart[:, 0]],
-                            cart[:, 4],
-                            cart[:, 1],
-                            cart[:, 2],
-                            cart[:, 3],
+
+                        test_regions = calibrator.regions["train"].flatten()[c_inds]
+                        test_stations = calibrator.stations["train"].flatten()[c_inds]
+                        test_sites = calibrator.sites["train"].flatten()[c_inds]
+                        test_cults = calibrator.cultivars["train"].flatten()[c_inds]
+                        a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
+                        b_inds = torch.unique(
+                            torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(
+                                torch.int64
+                            ),
+                            dim=0,
                         )
 
-                        true = true[np.arange(0, len(true), a_inds.shape[0])]
+                        a_repeat = a_inds.repeat_interleave(b_inds.size(0))
+
+                        b_repeat = b_inds.repeat(a_inds.size(0), 1)
+
+                        cartesian = torch.concatenate((a_repeat.unsqueeze(1), b_repeat), dim=1)
+
+                        true, output, params = gen_batch_data(
+                            calibrator,
+                            calibrator.data[n][cartesian[:, 0]],
+                            calibrator.dates[n][cartesian[:, 0].cpu().numpy()],
+                            calibrator.val[n][cartesian[:, 0]],
+                            cartesian[:, 4],
+                            cartesian[:, 1],
+                            cartesian[:, 2],
+                            cartesian[:, 3],
+                        )
+                        true = true[np.arange(0, len(true), b_inds.shape[0])]
                         output = np.stack(
                             [
-                                np.mean(output[i * a_inds.shape[0] : (i + 1) * a_inds.shape[0]], axis=0)
-                                for i in range(int(output.shape[0] / a_inds.shape[0]))
+                                np.mean(output[i * b_inds.shape[0] : (i + 1) * b_inds.shape[0]], axis=0)
+                                for i in range(int(output.shape[0] / b_inds.shape[0]))
                             ]
                         )
                         inds = plot_output_coldhardiness(

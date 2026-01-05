@@ -118,16 +118,6 @@ def main():
 
     fig, ax = plt.subplots(figsize=(5, 3))
     np.set_printoptions(precision=2)
-    print(ch_deep_mean)
-    print(ch_deep_std)
-    print(ch_param_mean)
-    print(ch_param_std)
-    print(ch_pinn_mean)
-    print(ch_pinn_std)
-    print(ch_gd_mean)
-    print(ch_gd_std)
-    print(ch_hybrid_mean)
-    print(ch_hybrid_std)
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
@@ -143,16 +133,36 @@ def main():
     # ax.plot(np.arange(6), pheno_hybrid_mean, color=ax1_color, marker="d", label="Pheno Temp-Hybrid")
     ax.set_xlabel("Seasons of Data per Cultivar")
     ax.set_xticks(np.arange(6), labels=[1, 2, 3, 5, 10, 15])
-    ax.set_ylabel("RMSE in Days (Phenology)", color=ax1_color)
-    ax.tick_params(axis="y", labelcolor=ax1_color)
+    ax.set_ylabel("RMSE in Days (Phenology)")
+    ax.tick_params(axis="y")
 
-    ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)", color=ax2_color)
-    ax2.tick_params(axis="y", labelcolor=ax2_color)
-    ax.set_title("Effect of Per Cultivar Data Availability")
+    ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)")
+    ax2.tick_params(axis="y")
+    # ax.set_title("Effect of Per Cultivar Data Availability")
     handles1, labels1 = ax.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
 
-    ax.legend(handles1 + handles2, labels1 + labels2, loc="upper right")
+    # ax.legend(handles1 + handles2, labels1 + labels2, loc="upper right")
+    lb_spacing = 0.3
+    handle_txt_pad = 0.3
+    border_ax_pad = 0.3
+    handle_length = 1.2
+    columnspacing = 0.8
+    fontsize = 12
+    fig.legend(
+        handles=handles1 + handles2,
+        labels=labels1 + labels2,
+        loc="upper center",
+        ncols=3,
+        handletextpad=handle_txt_pad,
+        borderaxespad=border_ax_pad,
+        labelspacing=lb_spacing,
+        handlelength=handle_length,
+        fontsize=fontsize,
+        columnspacing=columnspacing,
+    )
+    fig.subplots_adjust(top=0.8)
+
     ax.set_zorder(ax2.get_zorder() + 1)
     ax.patch.set_visible(False)
 

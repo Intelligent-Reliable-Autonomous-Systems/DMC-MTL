@@ -69,7 +69,12 @@ def gen_results(calibrators: list[torch.nn.Module], yr: int = -1, split: str = "
 
 
 def plot_results(
-    ax: Axes, model_true: list[np.ndarray], model_pred: list[np.ndarray], model_names: list[str], i: int = 0
+    ax: Axes,
+    model_true: list[np.ndarray],
+    model_pred: list[np.ndarray],
+    model_names: list[str],
+    i: int = 0,
+    label: bool = True,
 ) -> None:
     """
     Plot the results on a given axis
@@ -82,14 +87,16 @@ def plot_results(
 
         x = np.arange(len(output))
         if i == 1:
-            ax[i].plot(x, output, label=f"{model_names[j]}", c=C_PER[j])
+            ax[i].plot(x, output, label=f"{model_names[j]}" if label else None, c=C_PER[j])
             if j == len(model_true) - 1:
-                ax[i].scatter(x, model_true[0], label="True Obs.", s=10, c=C_AGG[1], marker=C_SHAPES[0])
+                ax[i].scatter(
+                    x, model_true[0], label="True Obs." if label else None, s=10, c=C_AGG[1], marker=C_SHAPES[0]
+                )
 
         else:
-            ax[i].plot(x, output, label=f"{model_names[j]}", c=C_PER[j])
+            ax[i].plot(x, output, label=f"{model_names[j]}" if label else None, c=C_PER[j])
             if j == len(model_true) - 1:
-                ax[i].plot(x, model_true[0], label="True Obs.", c=C_AGG[1])
+                ax[i].plot(x, model_true[0], label="True Obs." if label else None, c=C_AGG[1])
 
 
 def main():
@@ -114,7 +121,7 @@ def main():
     pheno_true, pheno_pred = gen_results(pheno_models, yr=77)
     ch_true, ch_pred = gen_results(ch_models, yr=77)
 
-    fig, ax = plt.subplots(2, figsize=(6, 4))
+    fig, ax = plt.subplots(2, figsize=(6, 3.5))
 
     pheno_xticks = np.asarray([0, 31, 59, 90, 121, 151, 182, 212, 243])
     pheno_xlabels = [
@@ -141,16 +148,16 @@ def main():
         "May",
     ]
 
-    plot_results(ax, pheno_true, pheno_pred, pheno_model_names, i=0)
-    plot_results(ax, ch_true, ch_pred, ch_model_names, i=1)
+    plot_results(ax, pheno_true, pheno_pred, pheno_model_names, i=0, label=True)
+    plot_results(ax, ch_true, ch_pred, ch_model_names, i=1, label=False)
 
     lb_spacing = 0.3
     handle_txt_pad = 0.3
     border_ax_pad = 0.3
     handle_length = 0.6
-    fontsize = 11.5
+    fontsize = 12
 
-    ax[0].set_title("Comparison of Model Outputs Across Domains")
+    # ax[0].set_title("Comparison of Model Outputs Across Domains")
     ax[0].set_yticks(
         [0, 1, 2, 3],
         ["Ecodorm", "Budbreak", "Bloom", "Veraison"],
@@ -158,8 +165,9 @@ def main():
     ax[0].set_ylim(ymin=-0.02)
     ax[0].set_xlim([0, 250])
     ax[0].set_xticks(pheno_xticks, pheno_xlabels)
-    ax[0].legend(
-        loc="upper left",
+    fig.legend(
+        loc="upper center",
+        ncols=3,
         handletextpad=handle_txt_pad,
         borderaxespad=border_ax_pad,
         labelspacing=lb_spacing,
@@ -171,18 +179,22 @@ def main():
     ax[1].set_xticks(ch_xticks, ch_xlabels)
     ax[1].set_xlim([0, len(ch_true[0])])
     ax[1].set_ylim(bottom=-40)
-    ax[1].legend(
+    """ax[1].legend(
         loc="lower right",
         handletextpad=handle_txt_pad,
         borderaxespad=border_ax_pad,
         labelspacing=lb_spacing,
         handlelength=handle_length,
         fontsize=fontsize,
-    )
+    )"""
 
     plt.subplots_adjust(hspace=0.2)
-    ax[0].text(0.05, 0.2, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize+1, fontweight="bold")
-    ax[1].text(0.05, 0.2, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize+1, fontweight="bold")
+    ax[0].text(
+        0.05, 0.2, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1, fontweight="bold"
+    )
+    ax[1].text(
+        0.05, 0.2, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1, fontweight="bold"
+    )
 
     plt.savefig("plotters/figs/domain_methods_comparison_nowofost.png", bbox_inches="tight")
     plt.close()

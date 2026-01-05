@@ -224,11 +224,9 @@ def main():
     sorted_keys = np.argsort(list(mtl_models.keys()))  # Reorder based on alphabetical
     mtl_arr = np.array(list(mtl_models.values()))[sorted_keys]
     mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr)  # Replace 0.0s with nan
-    print(mtl_arr.shape)
     nan_count = np.isnan(mtl_arr).sum(axis=-2)
     dim0, dim1, dim2, dim3, dim4, dim5 = np.where(nan_count == 2)
     new_mtl_arr = np.full(mtl_arr.shape[1:], np.nan)
-    print(np.where(nan_count == 2))
     for i in range(len(dim0)):
         new_mtl_arr[dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]] = mtl_arr[
             dim0[i], dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]

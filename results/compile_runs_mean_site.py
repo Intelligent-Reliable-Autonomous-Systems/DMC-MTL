@@ -20,7 +20,6 @@ from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compu
 from plotters.plotting_functions import compute_rmse_plot, plot_output_coldhardiness
 from plotters.plot_utils import gen_batch_data
 
-
 def cartesian_product(*tensors):
     mesh = torch.meshgrid(*tensors, indexing="ij")
     return torch.stack(mesh, dim=-1).reshape(-1, len(tensors))
@@ -104,23 +103,18 @@ def main():
                     si_inds = torch.argwhere(calibrator.sites["train"].flatten() == si[0]) if len(si) != 0 else si
                     si_inds_test = torch.argwhere(calibrator.sites["test"].flatten() == si[0]) if len(si) != 0 else si
 
-                    test_regions = torch.unique(calibrator.regions["train"].flatten()[si_inds])
-                    test_stations = torch.unique(calibrator.stations["train"].flatten()[si_inds])
-                    test_sites = torch.unique(calibrator.sites["train"].flatten()[si_inds])
-                    test_cults = torch.unique(calibrator.cultivars["train"].flatten()[si_inds])
+                    test_regions = calibrator.regions["train"].flatten()[si_inds]
+                    test_stations = calibrator.stations["train"].flatten()[si_inds]
+                    test_sites = calibrator.sites["train"].flatten()[si_inds]
+                    test_cults = calibrator.cultivars["train"].flatten()[si_inds]
 
                     for c in cultivars:
                         c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
-                        c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
                         c_inds_test = (
                             torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                         )
-
-                        test_regions = calibrator.regions["train"].flatten()[c_inds]
-                        test_stations = calibrator.stations["train"].flatten()[c_inds]
-                        test_sites = calibrator.sites["train"].flatten()[c_inds]
-                        test_cults = calibrator.cultivars["train"].flatten()[c_inds]
                         a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
+
                         b_inds = torch.unique(
                             torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(
                                 torch.int64
@@ -133,7 +127,6 @@ def main():
                         b_repeat = b_inds.repeat(a_inds.size(0), 1)
 
                         cartesian = torch.concatenate((a_repeat.unsqueeze(1), b_repeat), dim=1)
-
                         true, output, params = gen_batch_data(
                             calibrator,
                             calibrator.data[n][cartesian[:, 0]],
@@ -145,6 +138,7 @@ def main():
                             cartesian[:, 3],
                         )
                         true = true[np.arange(0, len(true), b_inds.shape[0])]
+                        
                         output = np.stack(
                             [
                                 np.mean(output[i * b_inds.shape[0] : (i + 1) * b_inds.shape[0]], axis=0)

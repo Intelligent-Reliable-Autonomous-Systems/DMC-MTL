@@ -44,6 +44,9 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                 if args.include is not None and args.include == "Cultivar" and "Cultivar" not in str(pkl_file):
                     print(str(pkl_file))
                     continue
+                if args.exclude is not None and args.exclude == "Cultivar" and "Cultivar" in str(pkl_file):
+                    print(str(pkl_file))
+                    continue
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
             except Exception as e:
@@ -216,6 +219,7 @@ def main():
     parser.add_argument("--per_cult", action="store_false", help="If to print per cultivar results")
     parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
     parser.add_argument("--include", default=None, type=str, help="What to include in file")
+    parser.add_argument("--exclude", default=None, type=str, help="What to exclude from file")
     args = parser.parse_args()
 
     fpath = args.prefix + "results_agg_cultivars.pkl"

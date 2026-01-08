@@ -20,7 +20,6 @@ from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot, compu
 from plotters.plotting_functions import compute_rmse_plot, plot_output_coldhardiness
 from plotters.plot_utils import gen_batch_data
 
-
 def cartesian_product(*tensors):
     mesh = torch.meshgrid(*tensors, indexing="ij")
     return torch.stack(mesh, dim=-1).reshape(-1, len(tensors))

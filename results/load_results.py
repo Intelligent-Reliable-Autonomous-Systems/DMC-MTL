@@ -3,6 +3,8 @@ load_results.py
 
 Loads data from pickle and prints statistics
 
+python3 -m results.load_results --start_dir <path_to_dir_of_models>
+
 Written by Will Solow, 2025
 """
 

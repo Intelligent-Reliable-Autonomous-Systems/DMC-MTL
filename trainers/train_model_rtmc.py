@@ -1,7 +1,7 @@
 """
-train_model.py
+train_model_rmtc.py
 
-Entry interface for RNN training.
+Entry interface for RNN training. Used for in-season adaptation training
 
 Written by Will Solow, 2025
 """

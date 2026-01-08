@@ -1,0 +1,47 @@
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_1_1 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766424437
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_1_1 --seed 1 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766429446
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_1_1 --seed 2 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766434472
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_1_1 --seed 3 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766439433
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_1_1 --seed 4 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766444439
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766424437
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766431580
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766438739
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766445884
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766452994
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766424437
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766436940
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766449435
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766461915
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766474367
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_10_10 --seed 0 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766424430
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_10_10 --seed 1 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766439427
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_10_10 --seed 2 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766454570
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_10_10 --seed 3 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766469536
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_ch/ch_param_10_10 --seed 4 --rnn_fpath _runs/RTMC/ColdHardiness/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766484614
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_1_1 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766424582
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_1_1 --seed 1 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766429186
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_1_1 --seed 2 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766433780
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_1_1 --seed 3 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766438376
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_1_1 --seed 4 --rnn_fpath _runs/RTMC/Phenology/ParamMTL1/WA/Roza2/Prosser/All/param_mtl__1766442966
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766424589
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766431064
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766437524
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766443984
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_2_2 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL2/WA/Roza2/Prosser/All/param_mtl__1766450461
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766447582
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766458575
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766469148
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766479472
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_5_5 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL5/WA/Roza2/Prosser/All/param_mtl__1766489925
+
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_10_10 --seed 0 --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766449473
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_10_10 --seed 1 --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766473913
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_10_10 --seed 2 --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766497775
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_10_10 --seed 3 --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766521102
+python3 -m trainers.train_model_rtmc --config paper_experiments/rtmc/finetune_pheno/pheno_param_10_10 --seed 4 --rnn_fpath _runs/RTMC/Phenology/ParamMTL10/WA/Roza2/Prosser/All/param_mtl__1766544434

@@ -14,47 +14,65 @@ import utils
 
 def main():
 
-    # Not quite right, needs exlcude=True and "ParamMTL" in subdir
-    pheno_models = utils.load_named_pickles(["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", exclude=True)
+    ch_models_rtmc = utils.load_named_pickles(
+        ["RTMC/FineTuneColdHardiness"], "results_per_cultivars.pkl", include="All"
+    )
+    ch_models_dmc = utils.load_named_pickles(["RTMC/ColdHardiness"], "results_per_cultivars.pkl", include="All")
 
-    pheno_sorted_keys = np.argsort(list(pheno_models.keys()))
-    pheno_array = np.array(list(pheno_models.values()))[pheno_sorted_keys]
-    print(np.array(list(pheno_models.keys()))[pheno_sorted_keys])
-    pheno_array[pheno_array == 0] = np.nan
-    pheno_mean = np.nanmean(pheno_array, axis=(1, 2, 3, 4, -1))[:, -1, -1]
-    pheno_std = np.nanstd(pheno_array, axis=(1, 2, 3, 4, -1))[:, -1, -1]
+    pheno_models_rtmc = utils.load_named_pickles(["RTMC/FineTunePhenology"], "results_per_cultivars.pkl", include="All")
+    pheno_models_dmc = utils.load_named_pickles(["RTMC/Phenology"], "results_per_cultivars.pkl", include="All")
 
-    ones = np.array([4, 8, 12, 0])
-    twos = ones + 2
-    fives = ones + 3
-    tens = ones + 1
+    ch_param_keys_rtmc = np.char.find(np.asarray(list(ch_models_rtmc.keys())), "Param") >= 0
+    ch_param_keys_rtmc = np.sort(np.asarray(list(ch_models_rtmc.keys()))[ch_param_keys_rtmc])
 
-    data = [pheno_mean[ones], pheno_mean[twos], pheno_mean[fives], pheno_mean[tens]]
+    pheno_param_keys_rtmc = np.char.find(np.asarray(list(pheno_models_rtmc.keys())), "Param") >= 0
+    pheno_param_keys_rtmc = np.sort(np.asarray(list(pheno_models_rtmc.keys()))[pheno_param_keys_rtmc])
 
-    spacing = 2
-    pos = 0
+    ch_array_rtmc = np.array([ch_models_rtmc[k] for k in ch_param_keys_rtmc])
+    pheno_array_rtmc = np.array([pheno_models_rtmc[k] for k in pheno_param_keys_rtmc])
+
+    ch_param_keys_dmc = np.char.find(np.asarray(list(ch_models_dmc.keys())), "Param") >= 0
+    ch_param_keys_dmc = np.sort(np.asarray(list(ch_models_dmc.keys()))[ch_param_keys_dmc])
+    pheno_param_keys_dmc = np.char.find(np.asarray(list(pheno_models_dmc.keys())), "Param") >= 0
+    pheno_param_keys_dmc = np.sort(np.asarray(list(pheno_models_dmc.keys()))[pheno_param_keys_dmc])
+
+    ch_array_dmc = np.array([ch_models_dmc[k] for k in ch_param_keys_dmc])
+    pheno_array_dmc = np.array([pheno_models_dmc[k] for k in pheno_param_keys_dmc])
+
+    ch_array_rtmc[ch_array_rtmc == 0] = np.nan
+    ch_array_dmc[ch_array_dmc == 0] = np.nan
+
+    pheno_array_rtmc[pheno_array_rtmc == 0] = np.nan
+    pheno_array_dmc[pheno_array_dmc == 0] = np.nan
+
+    ch_mean_rtmc = np.nanmean(ch_array_rtmc, axis=(1, 2, 3, 4, -1))[:, -1]
+    ch_mean_dmc = np.nanmean(ch_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
+
+    pheno_mean_rtmc = np.nanmean(pheno_array_rtmc, axis=(1, 2, 3, 4, -1))[:, -1]
+    pheno_mean_dmc = np.nanmean(pheno_array_dmc, axis=(1, 2, 3, 4, -1))[:, -1]
+
     fig, ax = plt.subplots(figsize=(5, 3))
-    colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
-    for group in data:
-        for i, box in enumerate(group):
-            ax.bar(pos, height=box, width=1, color=colors[i])
-            pos += 1
-        pos += spacing  # add group spacing
+    ax2 = ax.twinx()
 
-    ax.set_xticks([1.5, 7.5, 13.5, 19.5], labels=[1, 2, 5, 10])
-    ax.set_xlabel("Per cultivar seasons of initial data")
-    ax.set_ylabel("Root Mean Sqaured Error")
-    legend_patches = [
-        Patch(facecolor="tab:blue", label="Extra 1"),
-        Patch(facecolor="tab:orange", label="Extra 2"),
-        Patch(facecolor="tab:green", label="Extra 5"),
-        Patch(facecolor="tab:red", label="Extra 10"),
-    ]
+    ax.plot(pheno_mean_dmc[[0, 2, 3, 1]], label="Pheno: Base DMC-MTL", marker="o", c="tab:red")
+    ax.plot(pheno_mean_rtmc[[1, 2, 0, 3]], label="Pheno: In-Season Adapation", marker="s", c="tab:red", linestyle="--")
 
-    ax.legend(handles=legend_patches)
-    ax.set_title("Cold-Hardiness RTMC with Additional Data")
+    ax2.plot(ch_mean_dmc[[0, 2, 3, 1]], label="CH: Base DMC-MTL", marker="o", c="tab:blue")
+    ax2.plot(ch_mean_rtmc[[1, 2, 0, 3]], label="CH: In-Season Adapation", marker="s", c="tab:blue", linestyle="--")
 
-    plt.savefig("plotters/figs/rtmc.png", bbox_inches="tight")
+    ax.set_xticks(np.arange(4), labels=[1, 2, 5, 10])
+    ax.set_xlabel("Years of Per-Cultivar Data")
+    ax2.set_ylabel(r"CH: Root Mean Sqaured Error ($^\circ$C)")
+    ax.set_ylabel(r"Pheno: Root Mean Sqaured Error (Days)")
+
+    h1, l1 = ax.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+
+    ax.legend(h1 + h2, l1 + l2, loc="best")
+
+    ax.set_title("In-Season Adaptation of DMC-MTL")
+
+    plt.savefig("plotters/figs/rtmc_new.png", bbox_inches="tight")
     plt.close()
 
 

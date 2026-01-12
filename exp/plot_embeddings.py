@@ -47,15 +47,17 @@ def plot(
         site = SITES[sites[k]]
 
         if k == 0:
-            ax[0].plot(output[k], label=f"TRUE: {stat} {site} {cult}")
-            ax[3].plot(output[k], label=f"TRUE: {stat} {site} {cult}")
+            ax[0].plot(output[k], label=f"PRED: {stat} {site} {cult}")
+            ax[3].plot(output[k], label=f"PRED: {stat} {site} {cult}")
+            ax[0].scatter(np.arange(len(true[k])), true[k], label=f"OBS: {stat} {site} {cult}")
+            ax[3].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
             orig_site = site
             orig_stat = stat
             orig_cult = cult
         else:
             if site == orig_site and orig_stat == stat and orig_cult == cult:
                 continue
-            ax[0].plot(output[k], alpha=0.5, label=f"TEST: {stat} {site} {cult}")
+            ax[0].plot(output[k], alpha=0.5, label=f"EVAL: {stat} {site} {cult}")
 
     for k in range(sum(inds[:3]), sum(inds[:4])):
         cult = CROP_NAMES["grape_coldhardiness_reg"][cultivars[k]]
@@ -65,7 +67,7 @@ def plot(
         if site == orig_site and orig_stat == stat and orig_cult == cult:
             continue
         else:
-            ax[3].plot(output[k], alpha=0.5, label=f"TEST: {stat} {site} {cult}")
+            ax[3].plot(output[k], alpha=0.5, label=f"EVAL: {stat} {site} {cult}")
 
     for k in range(inds[0], sum(inds[:2])):
         cult = CROP_NAMES["grape_coldhardiness_reg"][cultivars[k]]
@@ -73,15 +75,17 @@ def plot(
         stat = STATIONS[stations[k]]
         site = SITES[sites[k]]
         if k == inds[0]:
-            ax[1].plot(output[k], label=f"TRUE: {stat} {site} {cult}")
-            ax[2].plot(output[k], label=f"TRUE: {stat} {site} {cult}")
+            ax[1].plot(output[k], label=f"PRED: {stat} {site} {cult}")
+            ax[2].plot(output[k], label=f"PRED: {stat} {site} {cult}")
+            ax[1].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
+            ax[2].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
             orig_site = site
             orig_stat = stat
             orig_cult = cult
         else:
             if site == orig_site and orig_stat == stat and orig_cult == cult:
                 continue
-            ax[1].plot(output[k], alpha=0.5, label=f"TEST: {stat} {site} {cult}")
+            ax[1].plot(output[k], alpha=0.5, label=f"EVAL: {stat} {site} {cult}")
 
     for k in range(sum(inds[:2]), sum(inds[:3])):
         cult = CROP_NAMES["grape_coldhardiness_reg"][cultivars[k]]
@@ -92,7 +96,7 @@ def plot(
         if site == orig_site and orig_stat == stat and orig_cult == cult:
             continue
         else:
-            ax[2].plot(output[k], alpha=0.5, label=f"TEST: {stat} {site} {cult}")
+            ax[2].plot(output[k], alpha=0.5, label=f"EVAL: {stat} {site} {cult}")
 
     ax[0].legend()
     ax[1].legend()

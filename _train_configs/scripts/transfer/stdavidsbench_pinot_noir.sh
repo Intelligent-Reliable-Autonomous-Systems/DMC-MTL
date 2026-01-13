@@ -11,10 +11,3 @@ python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_witho
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Pinot_Noir]}"
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Pinot_Noir]}"
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Pinot_Noir]}"
-
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 0 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Sauvignon_Blanc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 1 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Sauvignon_Blanc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Sauvignon_Blanc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Sauvignon_Blanc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [StDavidsBench], Cultivar: [Sauvignon_Blanc]}"
-

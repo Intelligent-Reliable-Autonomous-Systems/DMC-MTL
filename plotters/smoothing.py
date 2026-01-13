@@ -31,7 +31,7 @@ def main():
     ax1_color = "tab:blue"
     ax.plot(np.arange(4), pheno_mean, color=ax1_color, label="Phenology", marker="o")
     ax.set_xlabel("Smoothing")
-    ax.set_xticks(np.arange(4), labels=[1e-5, 1e-4, 0.001, 0.01])
+    ax.set_xticks(np.arange(4), labels=[0.00001, 0.0001, 0.001, 0.01])
     ax.set_ylabel("RMSE in Days (Phenology)")
     ax.tick_params(axis="y")
 

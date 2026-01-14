@@ -1,8 +1,7 @@
 """
-compile_runs.py
+compile_runs_mean_cult.py
 
-Compiles RNN data across multiple runs and takes the average RMSE,
-saving data to file
+Transfer via naive averaging over target cultivar in a region
 
 Written by Will Solow, 2025
 """

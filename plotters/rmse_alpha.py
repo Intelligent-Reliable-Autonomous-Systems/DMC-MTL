@@ -121,11 +121,11 @@ def main():
         handlelength=1.2,
     )
 
-    fig.subplots_adjust(top=0.92)
+    fig.subplots_adjust(top=0.89)
     ax[0].tick_params(axis="both", labelsize=font_size)
     ax[1].tick_params(axis="both", labelsize=font_size)
-    ax[0].set_yticks([0, 0.5, 1.0])
-    ax[1].set_yticks([0, 0.5, 1.0])
+    ax[0].set_yticks([0, 0.5, 1.0], labels=[0, 50, 100])
+    ax[1].set_yticks([0, 0.5, 1.0], labels=[0, 50, 100])
     ax[0].text(
         0.05, 0.3, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=font_size + 1, fontweight="bold"
     )

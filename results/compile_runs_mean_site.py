@@ -1,8 +1,7 @@
 """
-compile_runs.py
+compile_runs_mean_site.py
 
-Compiles RNN data across multiple runs and takes the average RMSE,
-saving data to file
+Transfer via naive averaging over cultivars at a site 
 
 Written by Will Solow, 2025
 """

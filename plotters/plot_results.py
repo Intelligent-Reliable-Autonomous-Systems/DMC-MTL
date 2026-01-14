@@ -49,6 +49,9 @@ def main():
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(f"{fpath}", name=args.rnn_name)
     calibrator.eval()
+    print(calibrator.dates)
+
+    calibrator.forward()
 
     # Setup Storage
     true_data = [[], [], []]

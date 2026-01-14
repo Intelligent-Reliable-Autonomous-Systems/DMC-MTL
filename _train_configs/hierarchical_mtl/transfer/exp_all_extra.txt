@@ -20,28 +20,3 @@ python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_witho
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [FourMileCreek], Cultivar: [Sauvignon_Blanc]}"
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [FourMileCreek], Cultivar: [Sauvignon_Blanc]}"
 python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [FourMileCreek], Cultivar: [Sauvignon_Blanc]}"
-
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 0 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Cabernet_Franc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 1 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Cabernet_Franc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Cabernet_Franc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Cabernet_Franc]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Cabernet_Franc]}"
-
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 0 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Chardonnay]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 1 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Chardonnay]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Chardonnay]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Chardonnay]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Chardonnay]}"
-
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 0 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Merlot]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 1 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Merlot]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Merlot]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Merlot]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Merlot]}"
-
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 0 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Pinot_Noir]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 1 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Pinot_Noir]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 2 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Pinot_Noir]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 3 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Pinot_Noir]}"
-python3 -m trainers.train_model --config hierarchical_mtl/transfer/ch_deep_withold_mtl_station --seed 4 --region ONNP --withold "{Site: [NiagaraLakeshores], Cultivar: [Pinot_Noir]}"
-

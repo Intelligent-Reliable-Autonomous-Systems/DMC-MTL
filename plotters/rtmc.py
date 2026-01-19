@@ -61,7 +61,7 @@ def main():
     ax2.plot(ch_mean_rtmc[[1, 2, 0, 3]], label="CH: In-Season Adapation", marker="s", c="tab:blue", linestyle="--")
 
     ax.set_xticks(np.arange(4), labels=[1, 2, 5, 10])
-    ax.set_xlabel("Years of Per-Cultivar Data")
+    ax.set_xlabel("Years of Per-Cultivar Data", fontsize=12)
     ax2.set_ylabel(r"CH: Root Mean Sqaured Error ($^\circ$C)")
     ax.set_ylabel(r"Pheno: Root Mean Sqaured Error (Days)")
 

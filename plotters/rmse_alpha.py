@@ -90,7 +90,7 @@ def main():
     ch_mtl_rmse_alpha = np.array([count_below(ch_mtl_rmse, t) / num_cultivars_ch for t in thresholds_ch])
     ch_bio_rmse_alpha = np.array([count_below(ch_bio_rmse, t) / num_cultivars_ch for t in thresholds_ch])
 
-    fig, ax = plt.subplots(2, figsize=(6, 4))
+    fig, ax = plt.subplots(2, figsize=(6.5, 3.5))
     per_cultivar_names = ["DMC-MTL", "Deep-MTL", "PINN-MTL"]
     for i, m in enumerate(per_cultivar_names[: len(per_cultivar_pheno_models)]):
         ax[0].plot(thresholds_pheno, pheno_mtl_rmse_alpha[:, i], label=m, marker="x", c=C_PER[i])
@@ -112,7 +112,7 @@ def main():
     # ax[1].legend(fontsize=12, loc="lower right")
     fig.legend(
         loc="upper center",
-        # bbox_to_anchor=(0.5, 1.05),
+        bbox_to_anchor=(0.5, 1.01),
         ncol=4,
         frameon=True,
         fontsize=font_size,

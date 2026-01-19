@@ -121,13 +121,13 @@ def main():
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
-    ax2.plot(np.arange(6), ch_deep_mean, color=ax2_color, marker="o", label="CH Reg. MTL")
+    ax2.plot(np.arange(6), ch_deep_mean, color=ax2_color, marker="o", label="CH Deep MTL")
     ax2.plot(np.arange(6), ch_param_mean, color=ax2_color, marker="s", label="CH DMC-MTL")
     ax2.plot(np.arange(6), ch_gd_mean, color=ax2_color, marker="*", label="CH Bio. Model")
     # ax2.plot(np.arange(6), ch_hybrid_mean, color=ax2_color, marker="d", label="CH Temp-Hybrid")
 
     ax1_color = "tab:blue"
-    ax.plot(np.arange(6), pheno_deep_mean, color=ax1_color, marker="o", label="Pheno Reg. MTL")
+    ax.plot(np.arange(6), pheno_deep_mean, color=ax1_color, marker="o", label="Pheno Deep MTL")
     ax.plot(np.arange(6), pheno_param_mean, color=ax1_color, marker="s", label="Pheno DMC-MTL")
     ax.plot(np.arange(6), pheno_gd_mean, color=ax1_color, marker="*", label="Pheno Bio. Model")
     # ax.plot(np.arange(6), pheno_hybrid_mean, color=ax1_color, marker="d", label="Pheno Temp-Hybrid")

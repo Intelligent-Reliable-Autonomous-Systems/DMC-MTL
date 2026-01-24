@@ -17,7 +17,8 @@ from model_engine.inputs.weather_util import daylength
 import argparse
 
 # Absolute path of .csv files relative to this directory
-DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/Frost_Mitigation_Datasets/ColdHardiness/Grapes/Processed/WashingtonState/Prosser/Python/New/"
+DATASET_DIRECTORY_GRAPE = f"{Path(os.getcwd()).parent.absolute()}/Frost_Mitigation_Datasets/ColdHardiness/Grapes/Processed/WashingtonState/Prosser/Python/New/"
+DATASET_DIRECTORY_CHERRY = f"{Path(os.getcwd()).parent.absolute()}/Frost_Mitigation_Datasets/ColdHardiness/Cherries/Processed/WashingtonState/Prosser/"
 
 # Specific Names
 PHENO_STAGES = [
@@ -43,6 +44,7 @@ RENAME_COLUMN_MAP = {
     "MAX_AT": "TMAX",
     "MIN_AT": "TMIN",
 }
+
 COL_ORDERING = [
     "DATE",
     "PHENOLOGY",
@@ -71,7 +73,7 @@ def load_and_process_data_phenology(cultivar: str, location: str) -> np.ndarray:
     Include reduced years by not ommitting certain weather variables
     """
 
-    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{location}_{cultivar}.csv")
+    df = pd.read_csv(f"{DATASET_DIRECTORY_GRAPE}" + f"ColdHardiness_Grape_{location}_{cultivar}.csv")
     # Remove all grape stages we are not interested in predicting
     df.loc[~df["PHENOLOGY"].isin(PHENO_STAGES), "PHENOLOGY"] = np.nan
 
@@ -265,14 +267,19 @@ def load_and_process_data_phenology(cultivar: str, location: str) -> np.ndarray:
         return np_arr_df, np_arr_stages
 
 
-def load_and_process_data_coldhardiness(cultivar: str, location) -> np.ndarray:
+def load_and_process_data_coldhardiness(cultivar: str, location: str, fruit: str = "Grape") -> np.ndarray:
     """
     Load and process AgAid GitHub repository data for cold hardiness
     Do not assume dormancy data is available
     Includes relevant feature variables
     """
-
-    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{location}_{cultivar}.csv")
+    if fruit == "Grape":
+        directory = DATASET_DIRECTORY_GRAPE
+    elif fruit == "Cherry":
+        directory = DATASET_DIRECTORY_CHERRY
+    else:
+        raise Exception(f"Unknown Fruit Type `{fruit}`")
+    df = pd.read_csv(f"{directory}" + f"ColdHardiness_{fruit}_{location}_{cultivar}.csv")
 
     # Drop all columns we don't care about
     df.drop(
@@ -385,12 +392,225 @@ def load_and_process_data_coldhardiness(cultivar: str, location) -> np.ndarray:
         return np_arr_df, np_arr_stages
 
 
+def load_and_process_data_cherry_coldhardiness(cultivar: str, location: str, fruit: str = "Cherry") -> np.ndarray:
+    """
+    Load and process AgAid GitHub repository data for cold hardiness
+    Do not assume dormancy data is available
+    Includes relevant feature variables
+    """
+    if fruit == "Grape":
+        directory = DATASET_DIRECTORY_GRAPE
+    elif fruit == "Cherry":
+        directory = DATASET_DIRECTORY_CHERRY
+    else:
+        raise Exception(f"Unknown Fruit Type `{fruit}`")
+    df = pd.read_csv(f"{directory}" + f"ColdHardiness_{fruit}_{cultivar}.csv")
+
+    # Drop all columns we don't care about
+    df.drop(
+        columns=[
+            "AWN_STATION",
+            "SEASON",
+            "SEASON_JDAY",
+            "PHENOLOGY",
+            "MIN_ST2",
+            "ST2",
+            "MAX_ST2",
+            "MIN_ST8",
+            "ST8",
+            "MAX_ST8",
+            "SM8_PCNT",
+            "SWP8_KPA",
+            "MSLP_HPA",
+            "LW_UNITY",
+            "ETR",
+            "LTER_ACC",
+            "LTER_DEACC",
+            "P_INCHES",
+            "MIN_REL_HUMIDITY",
+            "MAX_REL_HUMIDITY",
+            "AVG_REL_HUMIDITY",
+            "MIN_DEWPT",
+            "AVG_DEWPT",
+            "MAX_DEWPT",
+            "WS_MPH",
+            "MAX_WS_MPH",
+            "ETO",
+            "SR_MJM2",
+        ],
+        inplace=True,
+        errors="ignore",
+    )
+    """            "P_INCHES",
+            "MIN_REL_HUMIDITY",
+            "MAX_REL_HUMIDITY",
+            "AVG_REL_HUMIDITY",
+            "MIN_DEWPT",
+            "AVG_DEWPT",
+            "MAX_DEWPT",
+            "WS_MPH",
+            "MAX_WS_MPH",
+            "ETO",
+            "SR_MJM2","""
+
+    # Unit conversions
+    # Convert MJ to J
+    # df.loc[:, "SR_MJM2"] *= MJ_TO_J #SR_MJM2
+
+    # Convert inches of rainfall to cm
+    # df.loc[:, "P_INCHES"] *= IN_TO_CM
+
+    # Convet mph wind speed to m/s
+    # df.loc[:, ["WS_MPH", "MAX_WS_MPH"]] *= MPH_TO_MS
+
+    # Rename columns for compatibility
+    df.rename(columns=RENAME_COLUMN_MAP, inplace=True)
+
+    # Add latitute and longitude columns
+    df["LAT"] = LAT
+    df["LON"] = LON
+
+    days = df["DATE"].to_numpy().astype(np.datetime64)
+    df["DAYL"] = daylength(days, np.tile(LAT, len(days)))
+    df.drop(columns=["AVG_AT", "WD_DEGREE"], inplace=True)
+
+    df_list = []
+    stages_list = []
+
+    ys = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == 1).flatten()
+    ye = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == -1).flatten()
+    for i in range(len(ys)):
+        # Get the slices of each individual year
+        if i >= len(ye):
+            year_df = df[ys[i] :].copy().reset_index(drop=True)
+        else:
+            year_df = df[ys[i] : ye[i]].copy().reset_index(drop=True)
+
+        # Interpolate passed variables
+        """"RAIN",
+                "MIN_REL_HUMIDITY",
+                "MAX_REL_HUMIDITY",
+                "AVG_REL_HUMIDITY",
+                "MIN_DEWPT",
+                "AVG_DEWPT",
+                "MAX_DEWPT",
+                "WS_MPH",
+                "MAX_WS_MPH",
+                "ETO",
+                "IRRAD","""
+        year_df, percent_missing = interpolate_data(
+            year_df,
+            df,
+            cols=[
+                "TEMP",
+                "TMAX",
+                "TMIN",
+            ],
+            max_days=float("inf"),
+        )
+
+        # If too much missing weather data, continue
+        if percent_missing >= 0.1:
+            continue
+
+        # If there are any nan values in the weather throw out the entire year
+        if year_df.drop(columns=["LTE50", "LTE10"], inplace=False).isnull().any().any():
+            continue
+        if year_df.loc[:, ["LTE50", "LTE10"]].isnull().all().all():
+            continue
+        # if (year_df.loc[:, ["IRRAD"]] == 0).all().all():
+        #    continue
+        # Otherwise append
+        df_list.append(year_df)
+    for yr_df in df_list:
+        yr_df.drop(columns=["DORMANT_SEASON", "YEAR_JDAY"], inplace=True)
+
+    if len(df_list) != 1:
+        return np.array(df_list, dtype=object), np.array(stages_list, dtype=object)
+    else:
+        np_arr_df = np.empty(len(df_list), dtype=object)
+        np_arr_stages = np.empty(len(stages_list), dtype=object)
+        for i, df in enumerate(df_list):
+            np_arr_df[i] = df
+        for i, s in enumerate(stages_list):
+            np_arr_stages[i] = s
+        return np_arr_df, np_arr_stages
+
+
 def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str, station: str) -> None:
-    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ca_ch_weather_data/"
-    if region == "BCOV":
+    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ch_weather_data_ca/"
+    if region in ["NS", "BCOV"]:
         LTE_VALS = ["LTE50"]
     elif region == "ONNP":
         LTE_VALS = ["LTE50", "LTE10", "LTE90"]
+    else:
+        raise Exception(f"Unexpected region `{region}`")
+
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{region}{site}_{cultivar}.csv")
+    df_list = []
+    stages_list = []
+
+    ys = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == 1).flatten()
+    ye = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == -1).flatten()
+
+    df.drop(columns="RAIN", inplace=True)
+    for i in range(len(ys)):
+        # Get the slices of each individual year
+        if i >= len(ye):
+            year_df = df[ys[i] :].copy().reset_index(drop=True)
+        else:
+            year_df = df[ys[i] : ye[i]].copy().reset_index(drop=True)
+
+        # Interpolate passed variables
+        year_df, percent_missing = interpolate_data(
+            year_df,
+            df,
+            cols=[
+                "TEMP",
+                "TMAX",
+                "TMIN",
+                # "RAIN",
+            ],
+            max_days=float("inf"),
+        )
+        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            continue
+        # If too much missing weather data, continue
+        if percent_missing >= 0.1:
+            print("MSSING:", percent_missing)
+            continue
+
+        # If there are any nan values in the weather throw out the entire year
+        if year_df.drop(columns=LTE_VALS, inplace=False).isnull().any().any():
+            continue
+
+        # Otherwise append
+        df_list.append(year_df)
+
+    for yr_df in df_list:
+        # yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY", "Unnamed: 0"], inplace=True)
+        yr_df.drop(columns=["DORMANT_SEASON", "Unnamed: 0"], inplace=True)
+
+    df_array = np.empty(len(df_list), dtype=object)
+    if len(df_list) != 1:
+        for i, d in enumerate(df_list):
+            df_array[i] = d
+        return df_array, np.array(stages_list, dtype=object)
+    else:
+        np_arr_df = np.empty(len(df_list), dtype=object)
+        np_arr_stages = np.empty(len(stages_list), dtype=object)
+        for i, df in enumerate(df_list):
+            np_arr_df[i] = df
+        for i, s in enumerate(stages_list):
+            np_arr_stages[i] = s
+
+        return np_arr_df, np_arr_stages
+
+
+def load_and_process_mi_data_coldhardiness(region: str, site: str, cultivar: str, station: str) -> None:
+    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ch_weather_data_mi/"
+    if region == "MI":
+        LTE_VALS = ["LTE50"]
     else:
         raise Exception(f"Unexpected region `{region}`")
 
@@ -417,24 +637,155 @@ def load_and_process_ca_data_coldhardiness(region: str, site: str, cultivar: str
                 "TMAX",
                 "TMIN",
                 "RAIN",
+                "MAX_DEWPT",
+                "MIN_DEWPT",
+                "MAX_RH",
+                "MIN_RH",
+                "ETO",
+                "IRRAD",
+                "MAX_WS_MPH",
             ],
             max_days=float("inf"),
         )
 
+        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            print("Breaking from no LTE")
+            continue
+
         # If too much missing weather data, continue
-        if percent_missing >= 0.1:
+        print(percent_missing)
+        if percent_missing >= 0.2:
+            print("BREAKING FROM MISSING")
             continue
 
         # If there are any nan values in the weather throw out the entire year
         if year_df.drop(columns=LTE_VALS, inplace=False).isnull().any().any():
-            continue
-        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            print("breaking from weather nan")
+            tmp = year_df.drop(columns=LTE_VALS, inplace=False)
+
+            nan_mask = tmp.isnull()
+
+            if nan_mask.any().any():
+                print("breaking from weather nan")
+
+                # 1) Columns that contain NaNs
+                cols_with_nan = nan_mask.any()
+                print("Columns with NaNs:")
+                print(cols_with_nan[cols_with_nan].index.tolist())
+
+                # 2) Rows that contain NaNs
+                rows_with_nan = nan_mask.any(axis=1)
+                print("Rows with NaNs:")
+                print(tmp.index[rows_with_nan])
+
+                # 3) Exact locations (row, column)
+                print("Exact NaN locations:")
+                for col in tmp.columns:
+                    nan_rows = tmp.index[tmp[col].isna()]
+                    if len(nan_rows) > 0:
+                        print(f"{col}: {list(nan_rows)}")
             continue
         # Otherwise append
         df_list.append(year_df)
 
     for yr_df in df_list:
-        yr_df.drop(columns=["DORMANT_SEASON", "JDAY", "SEASON_JDAY", "Unnamed: 0"], inplace=True)
+        yr_df.drop(columns=["DORMANT_SEASON", "Unnamed: 0"], inplace=True)
+
+    df_array = np.empty(len(df_list), dtype=object)
+    if len(df_list) != 1:
+        for i, d in enumerate(df_list):
+            df_array[i] = d
+        return df_array, np.array(stages_list, dtype=object)
+    else:
+        np_arr_df = np.empty(len(df_list), dtype=object)
+        np_arr_stages = np.empty(len(stages_list), dtype=object)
+        for i, df in enumerate(df_list):
+            np_arr_df[i] = df
+        for i, s in enumerate(stages_list):
+            np_arr_stages[i] = s
+
+        return np_arr_df, np_arr_stages
+
+
+def load_and_process_ny_data_coldhardiness(region: str, site: str, cultivar: str, station: str) -> None:
+    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ch_weather_data_ny/"
+    if region == "NY":
+        LTE_VALS = ["LTE50"]
+    else:
+        raise Exception(f"Unexpected region `{region}`")
+
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{region}{site}_{cultivar}.csv")
+    df_list = []
+    stages_list = []
+
+    ys = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == 1).flatten()
+    ye = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == -1).flatten()
+
+    for i in range(len(ys)):
+        # Get the slices of each individual year
+        if i >= len(ye):
+            year_df = df[ys[i] :].copy().reset_index(drop=True)
+        else:
+            year_df = df[ys[i] : ye[i]].copy().reset_index(drop=True)
+
+        # Interpolate passed variables
+        year_df, percent_missing = interpolate_data(
+            year_df,
+            df,
+            cols=[
+                "TEMP",
+                "TMAX",
+                "TMIN",
+                "RAIN",
+                "AVG_RH",
+                "IRRAD",
+                "WS_MPH",
+            ],
+            max_days=float("inf"),
+        )
+
+        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            print("Breaking from no LTE")
+            continue
+
+        # If too much missing weather data, continue
+        print(percent_missing)
+        if percent_missing >= 0.2:
+            print("BREAKING FROM MISSING")
+            continue
+
+        # If there are any nan values in the weather throw out the entire year
+        if year_df.drop(columns=LTE_VALS, inplace=False).isnull().any().any():
+            print("breaking from weather nan")
+            tmp = year_df.drop(columns=LTE_VALS, inplace=False)
+
+            nan_mask = tmp.isnull()
+
+            if nan_mask.any().any():
+                print("breaking from weather nan")
+
+                # 1) Columns that contain NaNs
+                cols_with_nan = nan_mask.any()
+                print("Columns with NaNs:")
+                print(cols_with_nan[cols_with_nan].index.tolist())
+
+                # 2) Rows that contain NaNs
+                rows_with_nan = nan_mask.any(axis=1)
+                print("Rows with NaNs:")
+                print(tmp.index[rows_with_nan])
+
+                # 3) Exact locations (row, column)
+                print("Exact NaN locations:")
+                for col in tmp.columns:
+                    nan_rows = tmp.index[tmp[col].isna()]
+                    if len(nan_rows) > 0:
+                        print(f"{col}: {list(nan_rows)}")
+            continue
+        # Otherwise append
+        df_list.append(year_df)
+
+    for yr_df in df_list:
+        yr_df.drop(columns=["DORMANT_SEASON", "Unnamed: 0"], inplace=True)
 
     df_array = np.empty(len(df_list), dtype=object)
     if len(df_list) != 1:

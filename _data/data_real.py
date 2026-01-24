@@ -15,6 +15,7 @@ import pickle
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cultivar", default="Chardonnay", type=str, help="Path to Config")
+    parser.add_argument("--fruit", default="Grape", type=str, help="Path to Config")
     parser.add_argument("--name", default="grape_coldhardiness", type=str)
     parser.add_argument("--region", default="WA", type=str)
     parser.add_argument("--site", default="Prosser", type=str)
@@ -33,11 +34,18 @@ def main():
 
         p_str = f"{args.cultivar}, {len(data)}"
 
-    elif "grape_coldhardiness" in args.name:
+    elif "coldhardiness" in args.name:
         if args.region in ["WA"]:
-            data, _ = ld.load_and_process_data_coldhardiness(args.cultivar, args.site)
-        else:
+            if args.fruit == "Grape":
+                data, _ = ld.load_and_process_data_coldhardiness(args.cultivar, args.site, args.fruit)
+            elif args.fruit == "Cherry":
+                data, _ = ld.load_and_process_data_cherry_coldhardiness(args.cultivar, args.site, args.fruit)
+        elif args.region in ["BCOV", "ONNP", "NS"]:
             data, _ = ld.load_and_process_ca_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
+        elif args.region in ["MI"]:
+            data, _ = ld.load_and_process_mi_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
+        elif args.region in ["NY"]:
+            data, _ = ld.load_and_process_ny_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
         with open(
             f"_data/processed_data/{args.name}/{args.region}/{args.station}/{args.site}/{args.region}_{args.site}_{args.name}_{args.cultivar.replace(' ', '_')}.pkl",
             "wb",

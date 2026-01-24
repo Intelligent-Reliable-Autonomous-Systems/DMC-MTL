@@ -109,11 +109,11 @@ def main():
                     s_test_sites = calibrator.sites["train"].flatten()[si_inds]
                     s_test_cults = calibrator.cultivars["train"].flatten()[si_inds]
                     s_test = torch.unique(
-                            torch.concatenate((s_test_regions, s_test_stations, s_test_sites, s_test_cults), dim=1).to(
-                                torch.int64
-                            ),
-                            dim=0,
-                        )
+                        torch.concatenate((s_test_regions, s_test_stations, s_test_sites, s_test_cults), dim=1).to(
+                            torch.int64
+                        ),
+                        dim=0,
+                    )
                     for c in cultivars:
                         c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                         c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
@@ -131,23 +131,23 @@ def main():
                         test_sites = calibrator.sites["test"]
                         test_cults = calibrator.cultivars["test"]
                         all_info = torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=-1).to(
-                                torch.int64
-                            )
+                            torch.int64
+                        )
 
-                        # Get all the sites and cultivars from which we can evaluate transfer from 
+                        # Get all the sites and cultivars from which we can evaluate transfer from
                         s_transfer_inds = torch.argwhere(torch.isin(calibrator.sites["train"].flatten(), c_test_sites))
                         st_test_regions = calibrator.regions["train"].flatten()[s_transfer_inds]
                         st_test_stations = calibrator.stations["train"].flatten()[s_transfer_inds]
                         st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                         st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                         st_test_all = torch.unique(
-                            torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
-                                torch.int64
-                            ),
+                            torch.concatenate(
+                                (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
+                            ).to(torch.int64),
                             dim=0,
                         )
-                        st_test = st_test_all[torch.isin(st_test_all[:,-1], torch.unique(s_test[:,-1]))]
-                        # Get all the cultivars at other sites that we can use for transfer 
+                        st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
+                        # Get all the cultivars at other sites that we can use for transfer
                         c_test = torch.unique(
                             torch.concatenate((c_test_regions, c_test_stations, c_test_sites, c_test_cults), dim=1).to(
                                 torch.int64
@@ -155,11 +155,13 @@ def main():
                             dim=0,
                         )
                         test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
-                        
-                        c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0),dim=1).squeeze().reshape(-1, 4)
+
+                        c_repeat = (
+                            all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
+                        )
                         a_repeat = test_inds.repeat_interleave(st_test.size(0))
                         b_repeat = st_test.repeat(test_inds.size(0), 1)
-                        c_mask = c_repeat[:,-1] == b_repeat[:,-1]
+                        c_mask = c_repeat[:, -1] == b_repeat[:, -1]
 
                         a_repeat = a_repeat[c_mask]
                         b_repeat = b_repeat[c_mask]
@@ -176,10 +178,12 @@ def main():
                             cartesian[:, 3],
                         )
 
-                        # Compute the average root mean squared error of each cultivar prediction 
-                        # at the site that we want to transfer to 
-                        rmse = torch.tensor(np.sqrt(np.nanmean((transfer_true - transfer_output) ** 2, axis=1)),device=cartesian.device)
-                        uniq_keys, inv = torch.unique(cartesian[:,-2], dim=0, return_inverse=True)
+                        # Compute the average root mean squared error of each cultivar prediction
+                        # at the site that we want to transfer to
+                        rmse = torch.tensor(
+                            np.sqrt(np.nanmean((transfer_true - transfer_output) ** 2, axis=1)), device=cartesian.device
+                        )
+                        uniq_keys, inv = torch.unique(cartesian[:, -2], dim=0, return_inverse=True)
                         group_sum = torch.zeros(len(uniq_keys), device=cartesian.device)
                         group_count = torch.zeros(len(uniq_keys), device=cartesian.device)
                         group_sum.scatter_add_(0, inv, rmse)
@@ -188,7 +192,7 @@ def main():
 
                         soft_m = torch.nn.Softmax(dim=0)
                         weights = soft_m(avg_rmse).cpu().numpy()
-                        c_test = c_test[torch.isin(c_test[:,-2], uniq_keys)]
+                        c_test = c_test[torch.isin(c_test[:, -2], uniq_keys)]
                         a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
                         a_repeat = a_inds.repeat_interleave(c_test.size(0))
                         b_repeat = c_test.repeat(a_inds.size(0), 1)
@@ -208,7 +212,9 @@ def main():
                         true = true[np.arange(0, len(true), c_test.shape[0])]
                         output = np.stack(
                             [
-                                np.average(output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights)
+                                np.average(
+                                    output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights
+                                )
                                 for i in range(int(output.shape[0] / c_test.shape[0]))
                             ]
                         )

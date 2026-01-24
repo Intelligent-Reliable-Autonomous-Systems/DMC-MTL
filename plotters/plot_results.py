@@ -49,9 +49,6 @@ def main():
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(f"{fpath}", name=args.rnn_name)
     calibrator.eval()
-    print(calibrator.dates)
-
-    calibrator.forward()
 
     # Setup Storage
     true_data = [[], [], []]
@@ -76,6 +73,8 @@ def main():
     elif args.mode == "error":
         plot_func = gen_all_data_and_plot_error
 
+    print(len(calibrator.data["train"]))
+    print(len(calibrator.data["test"]))
     # Generate all data
     plot_func(
         config,

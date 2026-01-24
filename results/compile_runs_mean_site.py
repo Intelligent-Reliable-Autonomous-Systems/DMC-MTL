@@ -1,7 +1,7 @@
 """
 compile_runs_mean_site.py
 
-Transfer via naive averaging over cultivars at a site 
+Transfer via naive averaging over cultivars at a site
 
 Written by Will Solow, 2025
 """

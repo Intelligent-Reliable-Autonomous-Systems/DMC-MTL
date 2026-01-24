@@ -24,6 +24,7 @@ def main():
         "WA": ["Roza2"],
         "BCOV": ["Osoyoos_CS", "Summerland", "Kelowna", "Kelowna_UBC"],
         "ONNP": ["Vineland_Station", "Grimbsy_Mtn"],
+        "NY": ["Bejo", "Geneva", "Hudson", "Portland"],
     }
     site = {
         "Roza2": ["Prosser"],
@@ -40,6 +41,10 @@ def main():
             "StDavidsBench",
         ],
         "Grimbsy_Mtn": ["BeamsvilleBench", "LincolnLakeshore", "TwentyMileBench", "VinemountRidge"],
+        "Bejo": ["Bejo"],
+        "Geneva": ["Geneva"],
+        "Hudson": ["Hudson"],
+        "Portland": ["Portland"],
     }
 
     # cultivars = ["Barbera","Cabernet_Franc", "Cabernet_Sauvignon","Chardonnay","Chenin_Blanc","Concord","Gewurztraminer","Grenache", "Lemberger","Malbec","Merlot","Mourvedre","Nebbiolo",  "Pinot_Gris","Riesling", "Sangiovese","Sauvignon_Blanc","Semillon","Syrah", "Viognier","Zinfandel",]

@@ -38,16 +38,16 @@ def main():
 
     fig, ax = plt.subplots(figsize=(5, 2.5))
     ax1_color = "tab:blue"
-    ax.plot(np.arange(7), pheno_mean, color=ax1_color, label="Phenology",marker="o")
+    ax.plot(np.arange(7), pheno_mean, color=ax1_color, label="Phenology", marker="o")
     ax.set_xlabel("Window Size")
     ax.set_xticks(np.arange(7), labels=["FF", 1, 5, 10, 20, 50, "All"])
     ax.set_ylabel("RMSE in Days (Phenology)")
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
-    ax2.plot(np.arange(7), ch_mean, color=ax2_color, label="Cold-Hardiness",marker="s")
+    ax2.plot(np.arange(7), ch_mean, color=ax2_color, label="Cold-Hardiness", marker="s")
     ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)")
-    #ax.set_title("Weather Window Size Effect on Error")
+    # ax.set_title("Weather Window Size Effect on Error")
     handles1, labels1 = ax.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
 

@@ -96,7 +96,7 @@ def main():
         ax[0].plot(thresholds_pheno, pheno_mtl_rmse_alpha[:, i], label=m, marker="x", c=C_PER[i])
         ax[1].plot(thresholds_ch, ch_mtl_rmse_alpha[:, i], marker="x", c=C_PER[i])
 
-    agg_cultivar_names = ["GDD Model"]
+    agg_cultivar_names = ["Biophysical Model"]
     for j, m in enumerate(agg_cultivar_names[: len(agg_cultivar_pheno_models)]):
         ax[0].plot(thresholds_pheno, pheno_bio_rmse_alpha[:, j], label=m, marker="x", c=C_AGG[j])
         ax[1].plot(thresholds_ch, ch_bio_rmse_alpha[:, j], marker="x", c=C_AGG[j])

@@ -13,6 +13,7 @@ from scipy.stats import ttest_rel, ttest_ind, wilcoxon
 
 from results.load_results import load_named_pickles
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model1", type=str, default="", help="Path to results .pkls")
@@ -58,11 +59,11 @@ def main():
         mean_2 = mtl_arr_2
 
     # Ignore training data
-    mean_1 = mean_1[:,:,:,:,:,-1,:]
-    mean_2 = mean_2[:,:,:,:,:,-1,:]
+    mean_1 = mean_1[:, :, :, :, :, -1, :]
+    mean_2 = mean_2[:, :, :, :, :, -1, :]
 
-    mean_1 = mean_1.reshape(-1,5)
-    mean_2 = mean_2.reshape(-1,5)
+    mean_1 = mean_1.reshape(-1, 5)
+    mean_2 = mean_2.reshape(-1, 5)
     mask_1 = ~np.isnan(mean_1).any(axis=1)
     mask_2 = ~np.isnan(mean_2).any(axis=1)
     filt_mean_1 = mean_1[mask_1]
@@ -73,6 +74,6 @@ def main():
     print("t-test P-Value: ", tt_pval)
     print("Wilcoxon P-Value: ", w_pval)
 
+
 if __name__ == "__main__":
     main()
-

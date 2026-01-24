@@ -37,10 +37,10 @@ def main():
 
     ax2_color = "tab:red"
     ax2 = ax.twinx()
-    ax2.plot(np.arange(4), ch_mean, label="Cold-Hardiness",marker="s",color=ax2_color)
+    ax2.plot(np.arange(4), ch_mean, label="Cold-Hardiness", marker="s", color=ax2_color)
     ax2.set_ylabel(r"RMSE in $^\circ$C (Cold-Hardiness)")
     ax2.tick_params(axis="y")
-    #ax.set_title("Parameter Smoothing Effect on Error")
+    # ax.set_title("Parameter Smoothing Effect on Error")
     handles1, labels1 = ax.get_legend_handles_labels()
     handles2, labels2 = ax2.get_legend_handles_labels()
 

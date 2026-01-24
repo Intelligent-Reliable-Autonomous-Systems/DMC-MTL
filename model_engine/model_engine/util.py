@@ -85,18 +85,18 @@ CROP_NAMES = {
     ),
     "grape_coldhardiness_reg": np.array(
         [
-            "Cabernet_Franc",      # 0
+            "Cabernet_Franc",  # 0
             "Cabernet_Sauvignon",  # 1
-            "Chardonnay",          # 2
-            "Gewurztraminer",      # 3
-            "Merlot",              # 4
-            "Pinot_Blanc",         # 5
-            "Pinot_Gris",          # 6
-            "Pinot_Noir",          # 7
-            "Riesling",            # 8
-            "Sauvignon_Blanc",     # 9
-            "Syrah",               # 10
-            "Zinfandel",           # 11
+            "Chardonnay",  # 2
+            "Gewurztraminer",  # 3
+            "Merlot",  # 4
+            "Pinot_Blanc",  # 5
+            "Pinot_Gris",  # 6
+            "Pinot_Noir",  # 7
+            "Riesling",  # 8
+            "Sauvignon_Blanc",  # 9
+            "Syrah",  # 10
+            "Zinfandel",  # 11
         ],
         dtype=str,
     ),
@@ -153,29 +153,29 @@ REGIONS = np.array(["BCOV", "ONNP", "WA"])
 STATIONS = np.array(["Kelowna", "Kelowna_UBC", "Osoyoos_CS", "Summerland", "Grimbsy_Mtn", "Vineland_Station", "Roza2"])
 SITES = np.array(
     [
-        "WestKelowna",       # 0
-        "OKFallsEast",       # 1
-        "OKFallsWest",       # 2
-        "OliverEast",        # 3
-        "OliverSouth",       # 4
-        "OliverWest",        # 5
-        "BlackSage",         # 6
-        "OsoyoosNorth",      # 7
+        "WestKelowna",  # 0
+        "OKFallsEast",  # 1
+        "OKFallsWest",  # 2
+        "OliverEast",  # 3
+        "OliverSouth",  # 4
+        "OliverWest",  # 5
+        "BlackSage",  # 6
+        "OsoyoosNorth",  # 7
         "OsoyoosNortheast",  # 8
         "OsoyoosSoutheast",  # 9
-        "OsoyoosWest",       # 10
-        "NaramataBench",     # 11
-        "BeamsvilleBench",   # 12
+        "OsoyoosWest",  # 10
+        "NaramataBench",  # 11
+        "BeamsvilleBench",  # 12
         "LincolnLakeshore",  # 13
-        "TwentyMileBench",   # 14
-        "VinemountRidge",    # 15
-        "CreekShores",       # 16
-        "FourMileCreek",     # 17
-        "NiagaraLakeshores", # 18
-        "NiagaraRiver",      # 19
-        "ShortHillsBench",   # 20
-        "StDavidsBench",     # 21
-        "Prosser",           # 22
+        "TwentyMileBench",  # 14
+        "VinemountRidge",  # 15
+        "CreekShores",  # 16
+        "FourMileCreek",  # 17
+        "NiagaraLakeshores",  # 18
+        "NiagaraRiver",  # 19
+        "ShortHillsBench",  # 20
+        "StDavidsBench",  # 21
+        "Prosser",  # 22
     ]
 )
 

@@ -50,7 +50,7 @@ def plot(
             ax[0].plot(output[k], label=f"PRED: {stat} {site} {cult}")
             ax[3].plot(output[k], label=f"PRED: {stat} {site} {cult}")
             ax[0].scatter(np.arange(len(true[k])), true[k], label=f"OBS: {stat} {site} {cult}")
-            ax[3].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
+            ax[3].scatter(np.arange(len(true[k])), true[k], label=f"OBS: {stat} {site} {cult}")
             orig_site = site
             orig_stat = stat
             orig_cult = cult
@@ -77,8 +77,8 @@ def plot(
         if k == inds[0]:
             ax[1].plot(output[k], label=f"PRED: {stat} {site} {cult}")
             ax[2].plot(output[k], label=f"PRED: {stat} {site} {cult}")
-            ax[1].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
-            ax[2].scatter(np.arange(len(true[k])),true[k], label=f"OBS: {stat} {site} {cult}")
+            ax[1].scatter(np.arange(len(true[k])), true[k], label=f"OBS: {stat} {site} {cult}")
+            ax[2].scatter(np.arange(len(true[k])), true[k], label=f"OBS: {stat} {site} {cult}")
             orig_site = site
             orig_stat = stat
             orig_cult = cult

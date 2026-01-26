@@ -179,7 +179,7 @@ def gen_all_data_and_plot(
         true_arr.append(true)
         output_arr.append(output)
 
-        if "grape_phenology" in config.DataConfig.dtype:
+        if "phenology" in config.DataConfig.dtype:
             inds = plot_output_phenology(
                 config,
                 fpath,
@@ -190,7 +190,7 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
-        elif "grape_coldhardiness" in config.DataConfig.dtype:
+        elif "coldhardiness" in config.DataConfig.dtype:
             inds = plot_output_coldhardiness(
                 config,
                 fpath,
@@ -212,6 +212,8 @@ def gen_all_data_and_plot(
                 name=name,
                 save=args.save,
             )
+        else:
+            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
         if len(true.shape) == 1:
             true = true[np.newaxis, :]
@@ -309,7 +311,7 @@ def gen_all_data_and_plot_error(
         output_arr.append(o)
         params_arr.append(p)
 
-        if "grape_phenology" in config.DataConfig.dtype:
+        if "phenology" in config.DataConfig.dtype:
             plot_output_phenology(
                 config,
                 fpath,
@@ -320,7 +322,7 @@ def gen_all_data_and_plot_error(
                 name=name,
                 save=args.save,
             )
-        elif "grape_coldhardiness" in config.DataConfig.dtype:
+        elif "coldhardiness" in config.DataConfig.dtype:
             plot_output_coldhardiness_error(
                 config,
                 fpath,
@@ -342,6 +344,8 @@ def gen_all_data_and_plot_error(
                 name=name,
                 save=args.save,
             )
+        else:
+            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
         if args.break_early:
             break

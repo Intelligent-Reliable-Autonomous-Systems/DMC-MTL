@@ -1,5 +1,5 @@
 """
-tensor_batch_grape_phenology.py
+tensor_batch_gdd_phenology.py
 
 Implementation of the grape phenology model based on the GDD model
 with pytorch tensors to simulate multiple models on batch
@@ -25,7 +25,7 @@ from model_engine.inputs.input_providers import DFTensorWeatherDataContainer
 EPS = 1e-12
 
 
-class Grape_Phenology_TensorBatch(BatchTensorModel):
+class GDD_Phenology_TensorBatch(BatchTensorModel):
     """Implements grape phenology GDD model"""
 
     # Based on the Elkhorn-Lorenz Grape Phenology Stage

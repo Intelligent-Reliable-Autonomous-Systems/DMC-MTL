@@ -122,6 +122,8 @@ class DataConfig:
     synth_data: Optional[str] = None
     """Withold cultivar/site/station/region"""
     withold: Optional[dict] = None
+    """Size of the test set"""
+    test_set_size: Optional[int] = 2
 
 
 @dataclass
@@ -270,14 +272,21 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "")
         if cultivar not in CROP_NAMES[config.DataConfig.dtype]:
             continue
+        region = p.split("/")[3]
+        station = p.split("/")[4]
+        site = p.split("/")[5]
+        if region not in REGIONS:
+            continue
+        if station not in STATIONS:
+            continue
+        if site not in SITES:
+            continue
         with open(p, "rb") as f:
             cult_data = pickle.load(f)
         for cult in cult_data:
             cult["CULTIVAR"] = np.where(CROP_NAMES[config.DataConfig.dtype] == cultivar)[0][0]
             if config.DataConfig.synth_data is None:
-                region = p.split("/")[3]
-                station = p.split("/")[4]
-                site = p.split("/")[5]
+
                 cult["REGION"] = np.where(REGIONS == region)[0][0]
                 cult["STATION"] = np.where(STATIONS == station)[0][0]
                 cult["SITE"] = np.where(SITES == site)[0][0]

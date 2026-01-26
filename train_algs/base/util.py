@@ -187,6 +187,7 @@ def log_training(
     train_avg: float,
     eval_avg: float,
     grad: float,
+    st: float,
 ) -> None:
     """
     Log training statistics and print to console
@@ -213,7 +214,7 @@ def log_training(
     writer.add_scalar("learning_rate", calibrator.optimizer.param_groups[0]["lr"], epoch)
     writer.add_scalar("weight_norm", weight_norm, epoch)
 
-    if "grape_phenology" in calibrator.config.DataConfig.dtype:
+    if "phenology" in calibrator.config.DataConfig.dtype:
         if calibrator.config.DConfig.loss_func == "BudbreakMSELoss":
             best_avg = eval_avg[0]
         elif calibrator.config.DConfig.loss_func == "BloomMSELoss":
@@ -227,7 +228,7 @@ def log_training(
             calibrator.best_cum_rmse = best_avg
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
             calibrator.best_rmse = eval_avg
-    elif "grape_coldhardiness" in calibrator.config.DataConfig.dtype:
+    elif "coldhardiness" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
@@ -235,10 +236,13 @@ def log_training(
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
+    else:
+        raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
     # calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
 
     p_str = f"############### Epoch {epoch} ###############\n"
+    p_str += f"Epoch Time: {time.time()-st:0.2f}s\n"
     p_str += f"Train loss: {train_loss}\n"
     p_str += f"Val loss: {eval_loss}\n"
     p_str += f"Model Grad Norm: {grad/len(calibrator.data['train'])}\n"

@@ -1,5 +1,5 @@
 """
-tensor_batch_grape_coldhardiness.py
+tensor_batch_ferguson_cold_hardiness.py
 Implementation of Feguson Model for Grape Cold Hardiness supporting batches
 
 Written by Will Solow, 2025
@@ -20,7 +20,7 @@ from model_engine.models.states_rates import (
 from model_engine.inputs.input_providers import DFTensorWeatherDataContainer
 
 
-class Grape_ColdHardiness_TensorBatch(BatchTensorModel):
+class Ferguson_ColdHardiness_TensorBatch(BatchTensorModel):
 
     _STAGE_VAL = {"endodorm": 0, "ecodorm": 1}
     _STAGE = NDArray(["endodorm"])

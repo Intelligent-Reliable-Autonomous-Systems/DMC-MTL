@@ -152,7 +152,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     # Pad each array to the maximum length
     dates = [np.pad(arr, (0, max_len - len(arr)), mode="maximum") for arr in dates]
     model.max_dlen = max_len
-    x = 2  # Number of years for testing set
+    x = model.config.DataConfig.test_set_size  # Number of years for testing set
 
     # Shuffle to get train and test splits for data
     train_inds = np.empty(shape=(0,))

@@ -73,8 +73,6 @@ def main():
     elif args.mode == "error":
         plot_func = gen_all_data_and_plot_error
 
-    print(len(calibrator.data["train"]))
-    print(len(calibrator.data["test"]))
     # Generate all data
     plot_func(
         config,

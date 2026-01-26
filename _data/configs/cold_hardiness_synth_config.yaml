@@ -1,7 +1,7 @@
 # Model Configuration
 PConfig:
     config_fpath: _configs_models/
-    model: Grape_ColdHardiness_TensorBatch #Suffixes: Batch, BatchFast
+    model: Ferguson_ColdHardiness_TensorBatch #Suffixes: Batch, BatchFast
     model_parameters: grape_coldhardiness:1
     latitude: 44
     longitude: -123

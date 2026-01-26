@@ -1,7 +1,7 @@
 # Model Configuration
 PConfig:
     config_fpath: _configs_models/
-    model: Grape_Phenology_TensorBatch
+    model: GDD_Phenology_TensorBatch
     model_parameters: grape_phenology:1 
     latitude: 46
     longitude: -120

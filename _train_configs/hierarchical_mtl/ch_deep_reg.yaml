@@ -1,7 +1,7 @@
 # Model Configuration
 PConfig:
     config_fpath: _configs_models/
-    model: Grape_ColdHardiness_TensorBatch
+    model: Ferguson_ColdHardiness_TensorBatch
     model_parameters: grape_coldhardiness:1
     latitude: 46
     longitude: -120
@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLReg/
+log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLRegTEST/
 run_name: deep_mtl
 seed: 0
 #
@@ -31,5 +31,5 @@ DConfig:
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95
-    batch_size: 12
-    epochs: 400
+    batch_size: 144
+    epochs: 200

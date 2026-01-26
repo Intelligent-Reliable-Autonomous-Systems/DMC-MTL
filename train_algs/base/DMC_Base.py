@@ -382,4 +382,4 @@ class ParamModel(BaseModule):
         """
         Forward pass returning temperature response and parameters
         """
-        return None, self.model_params
+        return self.model_params, None

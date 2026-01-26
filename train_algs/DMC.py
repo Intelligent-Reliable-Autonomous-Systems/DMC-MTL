@@ -7,6 +7,7 @@ the model predicts parameters for a physical model.
 Written by Will Solow, 2025
 """
 
+import time
 import os
 import torch
 import torch.nn as nn
@@ -98,6 +99,7 @@ class BaseRNN(BaseModel):
         train_name = "train"
         test_name = "val" if self.config.DataConfig.val_set else "test"
         for epoch in range(self.epochs):
+            st = time.time()
 
             train_loss = 0
             grad = 0
@@ -175,9 +177,9 @@ class BaseRNN(BaseModel):
                 avg_ = cumulative_error(target, output, mask, device=self.device)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-
+            train_loss /= i
             # Evaluation
-            eval_loss = 0
+            test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
 
             for j in range(0, len(self.data[test_name]), self.batch_size):
@@ -234,23 +236,13 @@ class BaseRNN(BaseModel):
                         eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
                     eval_mask = ~torch.isnan(eval_target)
                     eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
-                    eval_loss += eval_loss.item()
+                test_loss += eval_loss.item()
 
                 avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
                 eval_avg[:3] += avg_[1:-1]
                 eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-
-            log_training(
-                self,
-                writer,
-                log_path,
-                epoch,
-                train_loss,
-                eval_loss,
-                train_avg,
-                eval_avg,
-                grad,
-            )
+            eval_loss /= j
+            log_training(self, writer, log_path, epoch, train_loss, test_loss, train_avg, eval_avg, grad, st)
 
         self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))
 
@@ -307,7 +299,6 @@ class ParamRNN(BaseRNN):
                 stations=stations,
                 sites=sites,
             )
-
             params_predict = self.param_cast(params_predict, prev_params=batch_params)
             batch_params = params_predict
             self.model.set_model_params(params_predict, self.params)
@@ -595,6 +586,7 @@ class StationaryModel(BaseRNN):
         )
 
         self.model.set_model_params(batch_params, self.params)
+        self.model.set_model_params(self.param_cast(self.nn.model_params), self.params)
         model_output = self.model.reset(b_size)
 
         for i in range(dlen):

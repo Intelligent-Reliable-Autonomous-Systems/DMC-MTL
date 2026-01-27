@@ -118,9 +118,8 @@ def withold_checker(model: nn.Module, wd: dict, c: int, si: int, s: int, r: int)
 def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     """Process all of the initial data"""
 
-    if len(data) < 3:
+    if len(data) < 2:
         raise Exception(f"Data size: {len(data)}. Insufficient data for building training set.")
-
     model.output_vars = model.config.PConfig.output_vars
     model.input_vars = model.config.PConfig.input_vars
 
@@ -179,7 +178,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
                         cultivar_inds = np.argwhere(
                             (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
                         ).flatten()
-                        if len(cultivar_inds) < 3:
+                        if len(cultivar_inds) < 2:
                             continue
 
                         np.random.shuffle(cultivar_inds)
@@ -203,7 +202,7 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
     else:
         for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
             cultivar_inds = np.argwhere(c == cultivar_data).flatten()
-            if len(cultivar_inds) < 3:
+            if len(cultivar_inds) < 2:
                 continue
             np.random.shuffle(cultivar_inds)
             test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)

@@ -6,11 +6,11 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-09-07
-    input_vars: [TEMP]
+    input_vars: [TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/Cherry/PaperExperiments/ColdHardiness/Ferguson/
-run_name: param_mtl
+log_path: /_runs/Cherry/PaperExperiments/ColdHardiness/DMC/
+run_name: dmc_mtl
 seed: 0
 # Data use
 DataConfig: 
@@ -33,4 +33,4 @@ DConfig:
     learning_rate: .0002
     lr_factor: 0.95
     batch_size: 12
-    epochs: 300
+    epochs: 200

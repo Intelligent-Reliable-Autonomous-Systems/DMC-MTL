@@ -158,7 +158,7 @@ CROP_NAMES = {
             "Chelan",
             "Early_Robin",
             "Early_Star",
-            "Emperor_Francis",
+            #"Emperor_Francis",
             "Hedelfingen",
             # "Index",
             "Kristen",

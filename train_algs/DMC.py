@@ -177,7 +177,7 @@ class BaseRNN(BaseModel):
                 avg_ = cumulative_error(target, output, mask, device=self.device)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-            train_loss /= i
+            train_loss = train_loss if i == 0 else train_loss/i
             # Evaluation
             test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
@@ -241,7 +241,7 @@ class BaseRNN(BaseModel):
                 avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
                 eval_avg[:3] += avg_[1:-1]
                 eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-            eval_loss /= j
+            eval_loss = eval_loss if j == 0 else eval_loss/j
             log_training(self, writer, log_path, epoch, train_loss, test_loss, train_avg, eval_avg, grad, st)
 
         self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))

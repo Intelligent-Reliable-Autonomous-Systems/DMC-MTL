@@ -39,13 +39,15 @@ def main():
     all_avg_pheno = np.zeros((12, args.num_runs))
     all_avg_ch = np.zeros((3, args.num_runs))
     all_avg_wf = np.zeros((3, args.num_runs))
+    args.config = f"{args.start_dir}/{config_dirs[0]}"
+    config0, data, fpath = utils.load_config_data_fpath(args)
     all_cultivar_avg_pheno = np.zeros(
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_phenology_"]), 12, args.num_runs)
+        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES[config0.DataConfig.dtype]), 12, args.num_runs)
     )
     all_cultivar_avg_ch = np.zeros(
-        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES["grape_coldhardiness_ferg"]), 3, args.num_runs)
+        (len(REGIONS), len(STATIONS), len(SITES), len(CROP_NAMES[config0.DataConfig.dtype]), 3, args.num_runs)
     )
-    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost_"]), 3, args.num_runs))
+    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[config0.DataConfig.dtype]), 3, args.num_runs))
 
     for i, config in enumerate(config_dirs):
         print(config)
@@ -111,7 +113,7 @@ def main():
             )
 
         # Store data for averaging
-        if "grape_phenology" in config.DataConfig.dtype:
+        if "phenology" in config.DataConfig.dtype:
             train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
             test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
             val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
@@ -125,7 +127,7 @@ def main():
                     [np.sum(test_avg[1:-1])],
                 )
             )
-        elif "grape_coldhardiness" in config.DataConfig.dtype:
+        elif "coldhardiness" in config.DataConfig.dtype:
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
             test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
@@ -146,7 +148,7 @@ def main():
                             and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
                         ):
                             continue
-                        if "grape_phenology" in config.DataConfig.dtype:
+                        if "phenology" in config.DataConfig.dtype:
                             cultivar_train_avg_pheno, _ = compute_rmse_plot(
                                 config,
                                 true_cultivar_data[r][s][si][k][0],
@@ -180,7 +182,7 @@ def main():
                                     [np.sum(cultivar_test_avg_pheno[1:-1])],
                                 )
                             )
-                        elif "grape_coldhardiness" in config.DataConfig.dtype:
+                        elif "coldhardiness" in config.DataConfig.dtype:
                             cultivar_train_rmse, _ = compute_total_RMSE(
                                 true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
                             )
@@ -208,14 +210,14 @@ def main():
                             )
     # Save Data
     prefix = args.synth_test + "_" if args.synth_test is not None else ""
-    if "grape_phenology" in config.DataConfig.dtype:
+    if "phenology" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_pheno, f)
         f.close()
         with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
             pkl.dump(all_cultivar_avg_pheno, f)
         f.close()
-    elif "grape_coldhardiness" in config.DataConfig.dtype:
+    elif "coldhardiness" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_ch, f)
         f.close()

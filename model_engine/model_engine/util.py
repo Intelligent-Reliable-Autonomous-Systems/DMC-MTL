@@ -158,7 +158,7 @@ CROP_NAMES = {
             "Chelan",
             "Early_Robin",
             "Early_Star",
-            #"Emperor_Francis",
+            # "Emperor_Francis",
             "Hedelfingen",
             # "Index",
             "Kristen",
@@ -185,8 +185,10 @@ CROP_NAMES = {
     ),
 }
 
-REGIONS = np.array(["BCOV", "ONNP", "WA"])
-STATIONS = np.array(["Kelowna", "Kelowna_UBC", "Osoyoos_CS", "Summerland", "Grimbsy_Mtn", "Vineland_Station", "Roza2"])
+REGIONS = np.array(["BCOV", "ONNP", "WA"])  # "NY", "NS", "MI"])
+STATIONS = np.array(
+    ["Kelowna", "Kelowna_UBC", "Osoyoos_CS", "Summerland", "Grimbsy_Mtn", "Vineland_Station", "Roza2"]
+)  # "SMREC", "Beaver", "Bejo", "Geneva", "Hudson", "Portland"])
 SITES = np.array(
     [
         "WestKelowna",  # 0
@@ -212,6 +214,12 @@ SITES = np.array(
         "ShortHillsBench",  # 20
         "StDavidsBench",  # 21
         "Prosser",  # 22
+        # "Mich1",
+        # "Beaver",
+        # "Bejo",
+        # "Geneva",
+        # "Hudson",
+        # "Portland"
     ]
 )
 

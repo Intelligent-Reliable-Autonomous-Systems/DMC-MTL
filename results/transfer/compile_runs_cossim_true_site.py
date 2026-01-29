@@ -180,23 +180,35 @@ def main():
 
                         # Compute the average root mean squared error of each cultivar prediction
                         # at the site that we want to transfer to
+                        transfer_true = (transfer_true - np.nanmean(transfer_true, axis=1)[:, np.newaxis]) / np.nanstd(
+                            transfer_true, axis=1
+                        )[:, np.newaxis]
+                        transfer_output = (
+                            transfer_output - np.nanmean(transfer_output, axis=1)[:, np.newaxis]
+                        ) / np.nanstd(transfer_output, axis=1)[:, np.newaxis]
+
+                        # Cosine similarity
                         rmse = torch.tensor(
-                            np.sqrt(np.nanmean((transfer_true - transfer_output) ** 2, axis=1)), device=cartesian.device
+                            np.nansum(transfer_true * transfer_output, axis=1)
+                            / (
+                                np.sqrt(np.nansum(transfer_true**2, axis=1))
+                                * np.sqrt(np.nansum(transfer_output**2, axis=1))
+                            ),
+                            device=cartesian.device,
                         )
-                        uniq_keys, inv = torch.unique(cartesian[:, 1:5], dim=0, return_inverse=True)
+                        uniq_keys, inv = torch.unique(cartesian[:, -1], dim=0, return_inverse=True)
                         group_sum = torch.zeros(len(uniq_keys), device=cartesian.device)
                         group_count = torch.zeros(len(uniq_keys), device=cartesian.device)
                         group_sum.scatter_add_(0, inv, rmse)
                         group_count.scatter_add_(0, inv, torch.ones_like(rmse))
                         avg_rmse = group_sum / group_count
-                        best_transfer = uniq_keys[torch.argmin(avg_rmse)]
-                        transfer_ind = torch.argwhere((best_transfer[1:3] == c_test[:, 1:3]).all(dim=1)).flatten()
 
-                        c_transfer = c_test[transfer_ind]
+                        soft_m = torch.nn.Softmax(dim=0)
+                        weights = soft_m(avg_rmse).cpu().numpy()
                         a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
-                        a_repeat = a_inds.repeat_interleave(c_transfer.size(0))
-                        b_repeat = c_transfer.repeat(a_inds.size(0), 1)
-
+                        s_test = s_test[torch.isin(s_test[:, -1], uniq_keys)]
+                        a_repeat = a_inds.repeat_interleave(s_test.size(0))
+                        b_repeat = s_test.repeat(a_inds.size(0), 1)
                         eval_cartesian = torch.concatenate((a_repeat.unsqueeze(1), b_repeat), dim=1)
                         true, output, params = gen_batch_data(
                             calibrator,
@@ -207,6 +219,16 @@ def main():
                             eval_cartesian[:, 1],
                             eval_cartesian[:, 2],
                             eval_cartesian[:, 3],
+                        )
+
+                        true = true[np.arange(0, len(true), s_test.shape[0])]
+                        output = np.stack(
+                            [
+                                np.average(
+                                    output[i * s_test.shape[0] : (i + 1) * s_test.shape[0]], axis=0, weights=weights
+                                )
+                                for i in range(int(output.shape[0] / s_test.shape[0]))
+                            ]
                         )
 
                         inds = plot_output_coldhardiness(
@@ -355,7 +377,7 @@ def main():
                                 [cultivar_train_rmse, cultivar_val_rmse, cultivar_test_rmse]
                             )
     # Save Data
-    prefix = "best_source_"
+    prefix = "cossim_true_site_"
     if "grape_phenology" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
             pkl.dump(all_avg_pheno, f)

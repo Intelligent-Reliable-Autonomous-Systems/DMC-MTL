@@ -29,5 +29,3 @@ python3 -m results.compile_runs --start_dir _runs/Cherry/PaperExperiments/ColdHa
 python3 -m results.compile_runs --start_dir _runs/Cherry/PaperExperiments/ColdHardiness/Ferguson/WA/Roza2/Prosser/Van
 python3 -m results.compile_runs --start_dir _runs/Cherry/PaperExperiments/ColdHardiness/Ferguson/WA/Roza2/Prosser/Vega
 python3 -m results.compile_runs --start_dir _runs/Cherry/PaperExperiments/ColdHardiness/Ferguson/WA/Roza2/Prosser/All
-
-python3 -m results.compile_runs --start_dir _runs/MTLHierarchy/GrapeColdhardiness/DeepMTLRegTEST/All/All/All/All

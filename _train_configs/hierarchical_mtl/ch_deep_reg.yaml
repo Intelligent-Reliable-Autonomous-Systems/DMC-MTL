@@ -6,7 +6,7 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
-    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
+    input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
 log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLRegTEST/

@@ -14,12 +14,11 @@ import argparse
 
 import utils
 
-from plotters.plot_utils import gen_all_data_and_plot, gen_all_data_and_plot_error
+from plotters.plot_utils import gen_all_data_and_plot, gen_all_data_and_plot_error, gen_all_data_and_plot_transfer
 from plotters.plotting_functions import plot_loss, plot_stats
 
 
 def main():
-
     argparser = argparse.ArgumentParser(description="Plotting script for model")
     argparser.add_argument("--config", type=str, required=True, help="Path to the config file")
     argparser.add_argument("--break_early", action="store_false", help="If to break early when making data")
@@ -29,8 +28,8 @@ def main():
     argparser.add_argument(
         "--mode",
         default="default",
-        choices=["default", "error"],
-        help="Plot mode: default, rollout, error",
+        choices=["default", "error", "transfer"],
+        help="Plot mode: default, transfer, error",
     )
     np.set_printoptions(precision=2)
 
@@ -72,6 +71,8 @@ def main():
         plot_func = gen_all_data_and_plot
     elif args.mode == "error":
         plot_func = gen_all_data_and_plot_error
+    elif args.mode == "transfer":
+        plot_func = gen_all_data_and_plot_transfer
 
     # Generate all data
     plot_func(

@@ -12,7 +12,6 @@ from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 
 
 class BaseModule(nn.Module):
-
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__()
         self.hidden_dim = c.DConfig.hidden_dim
@@ -42,7 +41,6 @@ class BaseModule(nn.Module):
             self.site_mapping[site_orig] = torch.arange(len(site_orig)).to(torch.int).to(model.device)
 
     def get_init_state(self, batch_size: int = 1) -> torch.Tensor:
-
         return self.h0.repeat(1, batch_size, 1)
 
 
@@ -52,7 +50,6 @@ class FCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(FCGRU, self).__init__(c, model)
 
         self.fc1 = nn.Linear(self.input_dim, self.dim2)
@@ -97,7 +94,6 @@ class EmbeddingFCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(EmbeddingFCGRU, self).__init__(c, model)
 
         self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
@@ -175,7 +171,6 @@ class DeepEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(DeepEmbeddingGRU, self).__init__(c, model)
 
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
@@ -199,7 +194,6 @@ class DeepEmbeddingGRU(BaseModule):
         sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
         embed = self.embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
         gru_input = self.embed_op(embed, input)
 
@@ -222,7 +216,6 @@ class EmbeddingFCFF(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(EmbeddingFCFF, self).__init__(c, model)
 
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
@@ -264,7 +257,6 @@ class OneHotEmbeddingFCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(OneHotEmbeddingFCGRU, self).__init__(c, model)
 
         self.fc1 = nn.Linear(1 + self.input_dim, self.dim2)
@@ -282,7 +274,6 @@ class OneHotEmbeddingFCGRU(BaseModule):
         cultivars: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
         if input.ndim == 2:
             input = input.unsqueeze(1)
         gru_input = torch.concatenate((cultivars, input), dim=-1)
@@ -305,7 +296,6 @@ class GHCNDeepEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(GHCNDeepEmbeddingGRU, self).__init__(c, model)
 
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
@@ -322,7 +312,6 @@ class GHCNDeepEmbeddingGRU(BaseModule):
     def forward(
         self, input: torch.Tensor = None, hn: torch.Tensor = None, cultivars: torch.Tensor = None, **kwargs
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
         embed = self.embedding_layer(cultivars.flatten().to(torch.long))
         if input.ndim == 2:
             input = input.unsqueeze(1)
@@ -346,7 +335,6 @@ class FFTempResponse(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(FFTempResponse, self).__init__(c, model)
 
         self.temp_response = nn.Sequential(
@@ -374,7 +362,6 @@ class ParamModel(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-
         super(ParamModel, self).__init__(c, model)
         self.model_params = nn.Parameter(torch.rand((len(c.params))) - 1)
 

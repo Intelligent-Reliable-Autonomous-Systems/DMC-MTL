@@ -289,6 +289,21 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         else None
     )
 
+    model.all_ids = {
+        "train": torch.unique(
+            torch.cat(
+                (model.regions["train"], model.stations["train"], model.sites["train"], model.cultivars["train"]), dim=1
+            ),
+            dim=0,
+        ),
+        "test": torch.unique(
+            torch.cat(
+                (model.regions["test"], model.stations["test"], model.sites["test"], model.cultivars["test"]), dim=1
+            ),
+            dim=0,
+        ),
+    }
+
     if len(model.data["test"]) < 1:
         raise Exception("Insuffient per-cultivar data to build test set")
 

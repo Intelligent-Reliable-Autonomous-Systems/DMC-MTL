@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 from omegaconf import DictConfig
 
-from model_engine.util import PHENOLOGY_INT
+from model_engine.util import PHENOLOGY_INT, CROP_NAMES, REGIONS, STATIONS, SITES
 
 C_AGG = [
     "#2ca02c",  # green
@@ -53,7 +53,6 @@ def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple
 
 
 def compute_RMSE_STAGE(true_output: np.ndarray, model_output: np.ndarray, stage: int) -> np.ndarray:
-
     curr_stage = (stage) % len(PHENOLOGY_INT)
     true_stage_args = np.argwhere(true_output == curr_stage).flatten()
     model_stage_args = np.argwhere(model_output == curr_stage).flatten()
@@ -646,7 +645,7 @@ def plot_output_coldhardiness_error(
             for j in range(output.shape[0]):
                 if j % 3 != 0:
                     continue
-                ax[0].plot(output[j, k], label=f"Observations {0}-{30*(j+1)}", color=colors[j])
+                ax[0].plot(output[j, k], label=f"Observations {0}-{30 * (j + 1)}", color=colors[j])
 
             ax[0].scatter(
                 np.where(inds[k]),
@@ -666,7 +665,7 @@ def plot_output_coldhardiness_error(
                 for j in range(params.shape[0]):
                     if j % 3 != 0:
                         continue
-                    ax[1].plot(np.array(params[j, k])[:, 0], label=f"Observations {0}-{30*(j+1)}", color=colors[j])
+                    ax[1].plot(np.array(params[j, k])[:, 0], label=f"Observations {0}-{30 * (j + 1)}", color=colors[j])
                     ax[1].set_title("TENDO Parameter Prediction with Additional In-Season Data")
                     ax[1].legend(loc="upper left")
                     ax[1].set_xlim([0, len(inds[k])])
@@ -693,4 +692,81 @@ def plot_output_coldhardiness_error(
             # if params is not None:
             #    plot_params(fpath, config, np.array(params[k]), i[k], name=name)
 
+    return inds
+
+
+def plot_output_coldhardiness_transfer(
+    config: DictConfig,
+    fpath: str,
+    i: np.ndarray,
+    output: np.ndarray,
+    val_data: torch.Tensor,
+    attn_map: np.ndarray,
+    orig_pred: np.ndarray,
+    all_ids: np.ndarray,
+    regions: np.ndarray,
+    stations: np.ndarray,
+    sites: np.ndarray,
+    cultivars: np.ndarray,
+    name: str = "Train",
+    save: bool = True,
+) -> torch.Tensor:
+    """
+    Plot the cold haridness and the parameters for each time series in the passed batch
+    """
+    ind_val_data = val_data.cpu().squeeze()
+    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    val_data = val_data.cpu().numpy()
+    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
+    output = output[:, :, 0] if output.shape[-1] == 3 else output
+
+    # Handle when a batch size of 1 is passed
+    if len(inds.shape) != 2:
+        inds = inds[np.newaxis, :]
+        if len(output.shape) != 2:
+            output = output[np.newaxis, :]
+            attn_map = attn_map[np.newaxis, :]
+            orig_pred = orig_pred[np.newaxis, :]
+
+    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    if save:
+        for k in range(inds.shape[0]):
+            x = np.arange(len(output[k][inds[k]]))
+            fig, ax = plt.subplots(2)
+            target = config.PConfig.output_vars
+            prop_cycle = plt.rcParams["axes.prop_cycle"]
+            colors = prop_cycle.by_key()["color"]
+            ax[0].scatter(
+                np.where(inds[k]),
+                val_data[k][inds[k]],
+                label=f"True {target}",
+                s=10,
+                marker="x",
+                color=colors[1],
+            )
+            for j in range(orig_pred.shape[1]):
+                ax[0].plot(orig_pred[k][j], color="k", alpha=0.5)
+            ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
+
+            ax[0].legend()
+            ax[0].set_title(f"{target} (Predicted)")
+            # ax[0].set_xticks([], [])
+            ax[0].set_xlim([0, len(inds[k])])
+            ax[0].set_ylabel(f"{SITES[int(sites[k])]}/{CROP_NAMES[config.DataConfig.dtype][int(cultivars[k])]}")
+            ax[0].set_xlabel("Days")
+
+            im = ax[1].imshow(attn_map[k], cmap="viridis", aspect="auto", interpolation="none")
+            ax[1].set_xlabel("Days")
+            labs = []
+            for j in range(all_ids.shape[0]):
+                labs.append(f"{SITES[int(all_ids[j, 2])]}/{CROP_NAMES[config.DataConfig.dtype][int(all_ids[j, 3])]}")
+            ax[1].set_yticks(np.arange(all_ids.shape[0]), labs)
+
+            # Attach colorbar to the figure, linked to the imshow
+            fig.colorbar(im, ax=ax[1], label="Attention Weight")
+            plt.savefig(
+                f"{fpath}/ModelTransfer_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
+                bbox_inches="tight",
+            )
+            plt.close()
     return inds

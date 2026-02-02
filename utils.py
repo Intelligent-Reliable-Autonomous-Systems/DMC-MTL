@@ -21,7 +21,7 @@ from torch import nn
 from omegaconf import OmegaConf, DictConfig
 from model_engine.util import CROP_NAMES, REGION_NAMES, REGIONS, STATIONS, SITES
 
-from train_algs import DMC, FineTuner
+from train_algs import DMC, FineTuner, DMC_Transfer
 
 
 @dataclass
@@ -286,7 +286,6 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         for cult in cult_data:
             cult["CULTIVAR"] = np.where(CROP_NAMES[config.DataConfig.dtype] == cultivar)[0][0]
             if config.DataConfig.synth_data is None:
-
                 cult["REGION"] = np.where(REGIONS == region)[0][0]
                 cult["STATION"] = np.where(STATIONS == station)[0][0]
                 cult["SITE"] = np.where(SITES == site)[0][0]
@@ -332,6 +331,10 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC.HybridModel(config, data)
     elif config.DConfig.type == "Residual":
         calibrator = DMC.ResidualRNN(config, data)
+    elif config.DConfig.type == "TransferParam":
+        calibrator = DMC_Transfer.ParamTransferRNN(config, data)
+    elif config.DConfig.type == "TransferDeep":
+        calibrator = DMC_Transfer.DeepTransferRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 

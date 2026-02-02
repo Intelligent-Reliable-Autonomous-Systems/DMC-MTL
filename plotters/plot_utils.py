@@ -20,6 +20,7 @@ from plotters.plotting_functions import (
     plot_output_coldhardiness,
     plot_output_wofost,
     plot_output_coldhardiness_error,
+    plot_output_coldhardiness_transfer,
 )
 from train_algs.base.process_data import unnormalize
 
@@ -89,7 +90,6 @@ def compute_day_RMSE(
     if samples == 0:
         return 0
     else:
-
         return np.sqrt(avgs / samples)
 
 
@@ -130,6 +130,44 @@ def gen_batch_data(
     return true_data, output_data, params
 
 
+def gen_batch_transfer_data(
+    calibrator: nn.Module,
+    input_data: torch.Tensor,
+    dates: np.ndarray,
+    val_data: torch.Tensor,
+    cultivars: torch.Tensor,
+    regions: torch.Tensor,
+    stations: torch.Tensor,
+    sites: torch.Tensor,
+    all_ids: torch.Tensor,
+    days: int = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Generates model output from a single batch
+    """
+    with torch.no_grad():
+        # Output in shape (B, L, 1), Attn Map in shape (B, num_transfers, L, 1), Orig pred in shape (B, num_transfers, L, 1)
+        (output, attn_map, orig_pred) = calibrator.forward(
+            input_data,
+            dates,
+            cultivars=cultivars,
+            val_data=val_data,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+            days=days,
+            transfer_rate=1.0,
+            all_ids=all_ids,
+        )
+
+    true_data = val_data.cpu().squeeze().numpy()
+    output_data = output.detach().cpu().squeeze().numpy()
+    attn_map = attn_map.detach().cpu().squeeze().numpy()
+    orig_pred = orig_pred.detach().cpu().squeeze().numpy()
+
+    return true_data, output_data, attn_map, orig_pred
+
+
 def gen_all_data_and_plot(
     config: DictConfig,
     fpath: str,
@@ -157,7 +195,6 @@ def gen_all_data_and_plot(
     true_arr = []
     output_arr = []
     for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
-
         cultivars = (
             calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
         )
@@ -346,6 +383,113 @@ def gen_all_data_and_plot_error(
             )
         else:
             raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
+
+        if args.break_early:
+            break
+
+
+def gen_all_data_and_plot_transfer(
+    config: DictConfig,
+    fpath: str,
+    args: Namespace,
+    calibrator: nn.Module,
+    true_data: list[np.ndarray],
+    output_data: list[np.ndarray],
+    true_cultivar_data: list[np.ndarray],
+    output_cultivar_data: list[np.ndarray],
+    name: str = "train",
+    days: int = None,
+    all_inds: list[np.ndarray] = None,
+    cult_inds: list[np.ndarray] = None,
+) -> None:
+    """
+    Generates data for train and testing data and plots accordingly for RNNs
+    """
+    if name == "train":
+        n = 0
+    elif name == "val":
+        n = 1
+    else:  # test
+        n = 2
+
+    true_arr = []
+    output_arr = []
+    for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
+        cultivars = (
+            calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
+        )
+        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
+        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
+        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
+
+        true, output, attn_map, orig_pred = gen_batch_transfer_data(
+            calibrator,
+            calibrator.data[name][i : i + calibrator.batch_size],
+            calibrator.dates[name][i : i + calibrator.batch_size],
+            calibrator.val[name][i : i + calibrator.batch_size],
+            cultivars,
+            regions,
+            stations,
+            sites,
+            calibrator.all_ids[name],
+            days=days,
+        )
+        true_arr.append(true)
+        output_arr.append(output)
+
+        if "coldhardiness" in config.DataConfig.dtype:
+            inds = plot_output_coldhardiness_transfer(
+                config,
+                fpath,
+                np.arange(start=i, stop=i + calibrator.batch_size),
+                output,
+                calibrator.val[name][i : i + calibrator.batch_size],
+                attn_map,
+                orig_pred,
+                calibrator.all_ids[name].cpu().numpy(),
+                regions.cpu().numpy(),
+                stations.cpu().numpy(),
+                sites.cpu().numpy(),
+                cultivars.cpu().numpy(),
+                name=name,
+                save=args.save,
+            )
+        else:
+            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
+
+        if len(true.shape) == 1:
+            true = true[np.newaxis, :]
+            output = output[np.newaxis, :]
+        if true.shape[-1] == 3:
+            true = true[:, :, 0]
+            output = output[:, :, 0]
+
+        [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
+        [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
+        (
+            [all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) for k in range(len(inds))]
+            if all_inds is not None
+            else None
+        )
+
+        cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
+        rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
+        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
+        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
+
+        for k in range(len(true)):
+            ck = int(cultivars[k].item()) if cultivars is not None else 0
+            rk = int(regions[k].item()) if regions is not None else 0
+            sk = int(stations[k].item()) if stations is not None else 0
+            sik = int(sites[k].item()) if sites is not None else 0
+
+            true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
+            output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
+            (
+                cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
+                if cult_inds is not None
+                else None
+            )
 
         if args.break_early:
             break

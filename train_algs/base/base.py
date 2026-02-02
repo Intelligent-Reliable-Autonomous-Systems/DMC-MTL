@@ -22,9 +22,7 @@ from model_engine.util import PHENOLOGY_INT
 
 
 class BaseModel(nn.Module):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-
         super(BaseModel, self).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         np.random.seed(config.seed)
@@ -36,7 +34,6 @@ class BaseModel(nn.Module):
         process_data_valset(self, data) if config.DataConfig.val_set else process_data_novalset(self, data)
 
     def make_optimizer(self, model: nn.Module) -> None:
-
         self.learning_rate = self.config.DConfig.learning_rate
         self.batch_size = self.config.DConfig.batch_size
         self.epochs = self.config.DConfig.epochs
@@ -167,7 +164,7 @@ class BaseModel(nn.Module):
         """
         extra_feat = (
             0
-            if config.DConfig.type in ["Deep", "Hybrid", "NoObsParam", "Residual", "WindowParam"]
+            if config.DConfig.type in ["Deep", "Hybrid", "NoObsParam", "Residual", "WindowParam", "TransferDeep"]
             else len(config.PConfig.output_vars)
         )
         extra_feat = (
@@ -180,7 +177,7 @@ class BaseModel(nn.Module):
         """
         Get the output dimension of the model
         """
-        if config.DConfig.type in ["Param", "NoObsParam"]:
+        if config.DConfig.type in ["Param", "NoObsParam", "TransferParam"]:
             return len(config.params)
         else:
             if "CrossEntropyLoss" in config.DConfig.loss_func:

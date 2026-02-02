@@ -43,7 +43,6 @@ def set_embedding_op(model: nn.Module, embed_op: str) -> int:
     elif embed_op == "concat_stat":
 
         def concat(embed1, embed2, embed3, input):
-
             return torch.concatenate((embed1, embed2, embed3, input), dim=-1)
 
         model.embed_op = concat
@@ -81,7 +80,6 @@ def load_config(fpath: str) -> DictConfig:
 
 
 def load_model_fpath(fpath: str, name: str = "rnn_model_best.pt") -> str:
-
     return f"{os.getcwd()}/{fpath}/{name}"
 
 
@@ -239,18 +237,17 @@ def log_training(
     else:
         raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
-    # calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
+    calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
 
     p_str = f"############### Epoch {epoch} ###############\n"
-    p_str += f"Epoch Time: {time.time()-st:0.2f}s\n"
+    p_str += f"Epoch Time: {time.time() - st:0.2f}s\n"
     p_str += f"Train loss: {train_loss}\n"
     p_str += f"Val loss: {eval_loss}\n"
-    p_str += f"Model Grad Norm: {grad/len(calibrator.data['train'])}\n"
+    p_str += f"Model Grad Norm: {grad / len(calibrator.data['train'])}\n"
     if "grape_phenology" in calibrator.config.DataConfig.dtype:
-        p_str += f"Train RMSE: {np.round(train_avg.cpu().numpy(),decimals=2)}\n"
-        p_str += f"Val RMSE: {np.round(eval_avg.cpu().numpy(),decimals=2)}\n"
-        p_str += f"Best Val RMSE: {np.round(calibrator.best_rmse.cpu().numpy(),decimals=2)}\n"
-
+        p_str += f"Train RMSE: {np.round(train_avg.cpu().numpy(), decimals=2)}\n"
+        p_str += f"Val RMSE: {np.round(eval_avg.cpu().numpy(), decimals=2)}\n"
+        p_str += f"Best Val RMSE: {np.round(calibrator.best_rmse.cpu().numpy(), decimals=2)}\n"
     print(p_str)
 
 
@@ -292,7 +289,7 @@ def log_error_training(
     p_str = f"############### Epoch {epoch} ###############\n"
     p_str += f"Train loss: {train_loss}\n"
     p_str += f"Val loss: {eval_loss}\n"
-    p_str += f"Model Grad Norm: {grad/len(calibrator.data['train'])}\n"
+    p_str += f"Model Grad Norm: {grad / len(calibrator.data['train'])}\n"
 
     print(p_str)
 
@@ -399,7 +396,6 @@ class StageCrossEntropyLoss(nn.Module):
 
 
 class QuantileLoss(nn.Module):
-
     __constants__ = ["reduction"]
 
     def __init__(self, quantiles: list, size_average=None, reduce=None, reduction: str = "mean") -> None:

@@ -8,13 +8,17 @@ and then calls correct plot functions
 Written by Will Solow, 2025
 """
 
-import os
-import numpy as np
 import argparse
+import os
+
+import numpy as np
 
 import utils
-
-from plotters.plot_utils import gen_all_data_and_plot, gen_all_data_and_plot_error, gen_all_data_and_plot_transfer
+from plotters.plot_utils import (
+    gen_all_data_and_plot,
+    gen_all_data_and_plot_error,
+    gen_all_data_and_plot_transfer,
+)
 from plotters.plotting_functions import plot_loss, plot_stats
 
 
@@ -44,7 +48,7 @@ def main():
         plot_stats(fpath, config)
     except:
         pass
-
+    config.DConfig.batch_size = 4
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(f"{fpath}", name=args.rnn_name)
     calibrator.eval()

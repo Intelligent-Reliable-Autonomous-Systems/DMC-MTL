@@ -16,9 +16,9 @@ seed: 0
 DataConfig: 
     data_fpath: _data/processed_data/
     dtype: grape_coldhardiness_reg
-    region: BCOV
-    station: Osoyoos_CS
-    site: BlackSage
+    region: All
+    station: All
+    site: All
     cultivar: All
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
@@ -27,9 +27,9 @@ DConfig:
     type: TransferDeep
     arch: EmbedTransferGRU
     hidden_dim: 2048
-    embed_op: concat_reg
+    embed_op: concat_site
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95
-    batch_size: 12
+    batch_size: 36
     epochs: 400

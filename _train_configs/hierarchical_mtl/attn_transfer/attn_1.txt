@@ -1,0 +1,5 @@
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov_osoyoos --seed 0 --region BCOV --station Osoyoos_CS
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov_osoyoos --seed 1 --region BCOV --station Osoyoos_CS
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov_osoyoos --seed 2 --region BCOV --station Osoyoos_CS
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov_osoyoos --seed 3 --region BCOV --station Osoyoos_CS
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov_osoyoos --seed 4 --region BCOV --station Osoyoos_CS

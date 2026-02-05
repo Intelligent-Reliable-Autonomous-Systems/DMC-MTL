@@ -1,0 +1,17 @@
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 0 --region BCOV
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 1 --region BCOV 
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 2 --region BCOV 
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 3 --region BCOV
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 4 --region BCOV 
+
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config hierarchical_mtl/attn_transfer/ch_attn_bcov --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"

@@ -7,28 +7,27 @@ the model predicts parameters for a physical model.
 Written by Will Solow, 2025
 """
 
-import time
 import os
-import torch
-import torch.nn as nn
+import time
+
 import numpy as np
 import pandas as pd
-from omegaconf import OmegaConf, DictConfig
-
+import torch
+import torch.nn as nn
 from model_engine.engine import get_engine
-
-from train_algs.base.DMC_Transfer_Base import (
-    EmbeddingTransferGRU,
-    DeepEmbeddingTransferGRU,
-)
-from train_algs.base.base import BaseModel
 from model_engine.util import per_task_param_loader
+from omegaconf import DictConfig, OmegaConf
 
+from train_algs.base.base import BaseModel
+from train_algs.base.DMC_Transfer_Base import (
+    DeepEmbeddingTransferGRU,
+    EmbeddingTransferGRU,
+)
 from train_algs.base.util import (
-    setup_logging,
     cumulative_error,
     get_grad_norm,
     log_training,
+    setup_logging,
 )
 
 
@@ -95,7 +94,8 @@ class BaseRNN(BaseModel):
             all_ids = self.all_ids[train_name]
 
             # Training
-            train_transfer = 0 if epoch < 100 else (epoch - 100) / self.epochs
+            transfer_start = 5
+            train_transfer = 0 if epoch < transfer_start else 1
             for i in range(0, len(self.data[train_name]), self.batch_size):
                 self.optimizer.zero_grad()
 
@@ -108,6 +108,9 @@ class BaseRNN(BaseModel):
                 batch_stations = stations_shuffled[i : i + self.batch_size] if stations_shuffled is not None else None
                 batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
+
+                old_params = {name: p.clone() for name, p in self.nn.named_parameters() if p.requires_grad}
+
                 output, _, model_output = self.forward(
                     batch_data,
                     batch_dates,
@@ -157,6 +160,13 @@ class BaseRNN(BaseModel):
                 train_loss += loss.item()
                 grad += get_grad_norm(self.nn)
 
+                for name, p in self.nn.named_parameters():
+                    if p.requires_grad:
+                        if not torch.equal(p, old_params[name]):
+                            print(f"{name} updated")
+                        else:
+                            pass  # print(f"{name} unchanged")
+
                 avg_ = cumulative_error(target, output, mask, device=self.device)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
@@ -164,71 +174,85 @@ class BaseRNN(BaseModel):
             # Evaluation
             test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
-            test_transfer = 0 if epoch < 100 else (epoch - 100) / self.epochs
-            for j in range(0, len(self.data[test_name]), self.batch_size):
-                self.optimizer.zero_grad()
-                batch_data = self.data[test_name][j : j + self.batch_size]
-                batch_dates = self.dates[test_name][j : j + self.batch_size]
-                batch_cultivars = (
-                    self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
-                )
-                batch_regions = self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
-                batch_stations = (
-                    self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
-                )
-                batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
+            test_transfer = 0 if epoch < transfer_start else 1
+            with torch.no_grad():
+                for j in range(0, len(self.data[test_name]), self.batch_size):
+                    self.optimizer.zero_grad()
+                    batch_data = self.data[test_name][j : j + self.batch_size]
+                    batch_dates = self.dates[test_name][j : j + self.batch_size]
+                    batch_cultivars = (
+                        self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
+                    )
+                    batch_regions = (
+                        self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
+                    )
+                    batch_stations = (
+                        self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
+                    )
+                    batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
 
-                eval_target = self.val[test_name][j : j + self.batch_size]
-                test_all_ids = self.all_ids[test_name]
-                eval_output, _, eval_model_output = self.forward(
-                    batch_data,
-                    batch_dates,
-                    cultivars=batch_cultivars,
-                    regions=batch_regions,
-                    stations=batch_stations,
-                    sites=batch_sites,
-                    all_ids=test_all_ids,
-                    transfer_rate=test_transfer,
-                )
+                    eval_target = self.val[test_name][j : j + self.batch_size]
+                    test_all_ids = self.all_ids[test_name]
+                    eval_output, _, eval_model_output = self.forward(
+                        batch_data,
+                        batch_dates,
+                        cultivars=batch_cultivars,
+                        regions=batch_regions,
+                        stations=batch_stations,
+                        sites=batch_sites,
+                        all_ids=test_all_ids,
+                        transfer_rate=test_transfer,
+                    )
 
-                # Compute PINN Loss
-                if self.config.DConfig.type == "PINN":
-                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                        eval_output_loss = self.loss_func(
-                            eval_output.view(-1, output.size(-1)),
-                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                        )
-                        eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
+                    # Compute PINN Loss
+                    if self.config.DConfig.type == "PINN":
+                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                            eval_output_loss = self.loss_func(
+                                eval_output.view(-1, output.size(-1)),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                            )
+                            eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
 
-                        eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                            eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                        else:
+                            eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                            eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
+
+                        eval_mask = ~torch.isnan(eval_target)
+                        eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
+                        eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
+
+                        eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
                     else:
-                        eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                        eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                        # Handle Cross Entropy Loss by flattening series
+                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                            eval_loss = self.loss_func(
+                                eval_output.view(-1, eval_output.size(-1)),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                            )
+                            eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
+                        else:
+                            eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                        eval_mask = ~torch.isnan(eval_target)
+                        eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
+                    test_loss += eval_loss.item()
 
-                    eval_mask = ~torch.isnan(eval_target)
-                    eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
-                    eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
-
-                    eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
-                else:
-                    # Handle Cross Entropy Loss by flattening series
-                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                        eval_loss = self.loss_func(
-                            eval_output.view(-1, eval_output.size(-1)),
-                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                        )
-                        eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
-                    else:
-                        eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                    eval_mask = ~torch.isnan(eval_target)
-                    eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
-                test_loss += eval_loss.item()
-
-                avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
-                eval_avg[:3] += avg_[1:-1]
-                eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-            eval_loss = eval_loss if j == 0 else eval_loss / j
-            log_training(self, writer, log_path, epoch, train_loss, test_loss, train_avg, eval_avg, grad, st)
+                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
+                    eval_avg[:3] += avg_[1:-1]
+                    eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
+                eval_loss = eval_loss if j == 0 else eval_loss / j
+            log_training(
+                self,
+                writer,
+                log_path,
+                epoch,
+                train_loss,
+                test_loss,
+                train_avg,
+                eval_avg,
+                grad,
+                st,
+            )
 
         self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))
 
@@ -258,15 +282,17 @@ class DeepTransferRNN(BaseRNN):
         hn = self.nn.get_init_state(batch_size=b_size)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
-        output_predict, _ = self.nn(
-            data[~transfer_inds],
-            cultivars=cultivars[~transfer_inds],
-            regions=regions[~transfer_inds],
-            stations=stations[~transfer_inds],
-            sites=sites[~transfer_inds],
-            hn=hn[:, ~transfer_inds],
-        )
-        output_tens[~transfer_inds, :] = output_predict
+        if (~transfer_inds).sum() != 0:
+            output_predict, _ = self.nn(
+                data[~transfer_inds],
+                cultivars=cultivars[~transfer_inds],
+                regions=regions[~transfer_inds],
+                stations=stations[~transfer_inds],
+                sites=sites[~transfer_inds],
+                hn=hn[:, ~transfer_inds],
+            )
+            output_tens[~transfer_inds, :] = output_predict
+
         if transfer_inds.sum() != 0:
             transfer_predict, attn_map, orig_pred = self.nn.forward_transfer(
                 data[transfer_inds],

@@ -5,10 +5,10 @@ Written by Will Solow, 2025"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from model_engine.util import CROP_NAMES, REGIONS, SITES, STATIONS
 from omegaconf import DictConfig
+
 from train_algs.base.util import set_embedding_op
-from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 
 
 class BaseModule(nn.Module):
@@ -65,7 +65,10 @@ class EmbeddingTransferGRU(BaseModule):
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
         self.weather_rnn = nn.GRU(self.input_dim, self.weather_output_dim, batch_first=True)
-        self.attn_fc1 = nn.Linear(self.weather_output_dim + (self.embed_dim - self.input_dim), self.weather_output_dim2)
+        self.attn_fc1 = nn.Linear(
+            self.weather_output_dim + (2 * self.embed_dim - 2 * self.input_dim),
+            self.weather_output_dim2,
+        )
         self.attn_fc2 = nn.Linear(self.weather_output_dim2, self.weather_output_dim3)
         self.attn_fc3 = nn.Linear(self.weather_output_dim3, 1)
 
@@ -151,78 +154,109 @@ class EmbeddingTransferGRU(BaseModule):
 
         if input.ndim == 2:
             input = input.unsqueeze(1)
-        transfer_input = input.repeat_interleave(all_ids.shape[0], dim=0)
-        transfer_hn = hn.repeat_interleave(all_ids.shape[0], dim=1)
-        transfer_ids = all_ids.repeat(input.shape[0], 1)
+        B, T, _ = input.shape
 
-        transfer_cult_embed = self.cult_embedding_layer(
-            self.cult_mapping[transfer_ids[:, 3].flatten().to(torch.int)]
-        ).detach()
-        transfer_reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[transfer_ids[:, 0].flatten().to(torch.int)]).detach()
-            if self.synth_data is None
-            else None
-        )
-        transfer_stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[transfer_ids[:, 1].flatten().to(torch.int)]).detach()
-            if self.synth_data is None
-            else None
-        )
-        transfer_site_embed = (
-            self.site_embedding_layer(self.site_mapping[transfer_ids[:, 2].flatten().to(torch.int)]).detach()
-            if self.synth_data is None
-            else None
-        )
+        # Embed weather
+        weather_output, _ = self.weather_rnn(input)
 
-        transfer_cult_embed = transfer_cult_embed.unsqueeze(1).expand_as(transfer_input)
-        transfer_reg_embed = (
-            transfer_reg_embed.unsqueeze(1).expand_as(transfer_input) if self.synth_data is None else None
-        )
-        transfer_stat_embed = (
-            transfer_stat_embed.unsqueeze(1).expand_as(transfer_input) if self.synth_data is None else None
-        )
-        transfer_site_embed = (
-            transfer_site_embed.unsqueeze(1).expand_as(transfer_input) if self.synth_data is None else None
-        )
+        true_ids = torch.cat((regions, stations, sites, cultivars), dim=1)
+        ex_all_ids = all_ids.unsqueeze(0).expand(input.shape[0], -1, -1)
+        N, M, D = ex_all_ids.shape
+        mask = (ex_all_ids != true_ids[:, None, :]).any(dim=-1)
+        transfer_ids = ex_all_ids[mask].reshape(N, (M - 1), D)
 
         with torch.no_grad():
-            transfer_pred_orig, _ = self.forward(
-                transfer_input,
-                hn=transfer_hn,
-                regions=transfer_ids[:, 0],
-                stations=transfer_ids[:, 1],
-                sites=transfer_ids[:, 2],
-                cultivars=transfer_ids[:, 3],
-            )
-            transfer_pred_orig = transfer_pred_orig.detach()
+            transfer_preds = []
+            for n in range(N):
+                pred, _ = self.forward(
+                    input[n].unsqueeze(0).expand(M - 1, -1, -1),
+                    hn=hn[:, n].unsqueeze(1).expand(-1, M - 1, -1).contiguous(),
+                    regions=transfer_ids[n, :, 0],
+                    stations=transfer_ids[n, :, 1],
+                    sites=transfer_ids[n, :, 2],
+                    cultivars=transfer_ids[n, :, 3],
+                )
+                transfer_preds.append(pred)
+        transfer_pred_orig = torch.stack(transfer_preds, dim=0).detach()
+        # transfer_pred_orig = transfer_pred_orig.reshape(B, M - 1, T, -1)
 
-        # Attention mech
-        weather_output, _ = self.weather_rnn(transfer_input)
+        transfer_cult_embed = (
+            self.cult_embedding_layer(self.cult_mapping[transfer_ids[:, :, 3].flatten().to(torch.int)])
+            .detach()
+            .view(N, M - 1, -1)
+        )
+        transfer_reg_embed = (
+            self.reg_embedding_layer(self.reg_mapping[transfer_ids[:, :, 0].flatten().to(torch.int)])
+            .detach()
+            .view(N, M - 1, -1)
+        )
+        transfer_stat_embed = (
+            self.stat_embedding_layer(self.stat_mapping[transfer_ids[:, :, 1].flatten().to(torch.int)])
+            .detach()
+            .view(N, M - 1, -1)
+        )
+        transfer_site_embed = (
+            self.site_embedding_layer(self.site_mapping[transfer_ids[:, :, 2].flatten().to(torch.int)])
+            .detach()
+            .view(N, M - 1, -1)
+        )
+
+        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)]).detach()
+        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)]).detach()
+        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)]).detach()
+        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)]).detach()
+
+        transfer_cult_embed = transfer_cult_embed[:, :, None, :].expand(-1, -1, T, -1)
+        transfer_reg_embed = transfer_reg_embed[:, :, None, :].expand(-1, -1, T, -1)
+        transfer_stat_embed = transfer_stat_embed[:, :, None, :].expand(-1, -1, T, -1)
+        transfer_site_embed = transfer_site_embed[:, :, None, :].expand(-1, -1, T, -1)
+        cult_embed = cult_embed[:, None, None, :].expand(-1, M - 1, T, -1)
+        reg_embed = reg_embed[:, None, None, :].expand(-1, M - 1, T, -1)
+        stat_embed = stat_embed[:, None, None, :].expand(-1, M - 1, T, -1)
+        site_embed = site_embed[:, None, None, :].expand(-1, M - 1, T, -1)
+        weather_output = weather_output[:, None, :, :].expand(-1, M - 1, T, -1)
 
         if self.embed_op_str == "concat_reg":
             transfer_input = self.embed_op(
-                transfer_cult_embed, transfer_site_embed, transfer_stat_embed, transfer_reg_embed, weather_output
+                torch.cat((transfer_cult_embed, cult_embed), dim=-1),
+                torch.cat((transfer_site_embed, site_embed), dim=-1),
+                torch.cat((transfer_stat_embed, stat_embed), dim=-1),
+                torch.cat((transfer_reg_embed, reg_embed), dim=-1),
+                weather_output,
             )
         elif self.embed_op_str == "concat_stat":
             transfer_input = self.embed_op(
-                transfer_cult_embed, transfer_site_embed, transfer_stat_embed, weather_output
+                torch.cat((transfer_cult_embed, cult_embed), dim=-1),
+                torch.cat((transfer_site_embed, site_embed), dim=-1),
+                torch.cat((transfer_stat_embed, stat_embed), dim=-1),
+                weather_output,
             )
         elif self.embed_op_str == "concat_site":
-            transfer_input = self.embed_op(transfer_cult_embed, transfer_site_embed, weather_output)
+            transfer_input = self.embed_op(
+                torch.cat((transfer_cult_embed, cult_embed), dim=-1),
+                torch.cat((transfer_site_embed, site_embed), dim=-1),
+                weather_output,
+            )
         elif self.embed_op_str == "concat":
-            transfer_input = self.embed_op(transfer_cult_embed, weather_output)
+            transfer_input = self.embed_op(torch.cat((transfer_cult_embed, cult_embed), dim=-1), weather_output)
 
-        T = input.shape[1]
-        B = input.shape[0]
         transfer_output = self.attn_fc1(transfer_input).relu()
         transfer_output = self.attn_fc2(transfer_output).relu()
         transfer_output = self.attn_fc3(transfer_output)
-        transfer_attn = transfer_output.reshape(B, -1, T, self.output_dim)
-        softm_attn = self.softmax(transfer_attn)
-        transfer_pred = transfer_pred_orig.reshape(B, -1, T, self.output_dim)
-        transfer_pred = torch.sum(softm_attn * transfer_pred, dim=1)
 
-        return transfer_pred, softm_attn, transfer_pred_orig.reshape(B, -1, T, self.output_dim)
+        softm_attn = self.softmax(transfer_output)
+
+        # self_attn = nn.MultiheadAttention(embed_dim=176, num_heads=4, batch_first=True)
+        # attn_out, attn_weights = self_attn(x, x, x)  # attn_weights: (B, T, T)
+
+        # transfer_pred = transfer_pred_orig.reshape(B, -1, T, self.output_dim)
+        transfer_pred = torch.sum(softm_attn * transfer_pred_orig, dim=1)
+
+        return (
+            transfer_pred,
+            softm_attn,
+            transfer_pred_orig.reshape(B, -1, T, self.output_dim),
+        )
 
 
 class DeepEmbeddingTransferGRU(BaseModule):

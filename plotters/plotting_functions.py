@@ -10,12 +10,10 @@ Written by Will Solow, 2025
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
-from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+from model_engine.util import CROP_NAMES, PHENOLOGY_INT, SITES
 from omegaconf import DictConfig
-
-from model_engine.util import PHENOLOGY_INT, CROP_NAMES, REGIONS, STATIONS, SITES
+from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
 C_AGG = [
     "#2ca02c",  # green
@@ -136,6 +134,7 @@ def plot_loss(fpath: str, config: DictConfig, tag1: str = "train_loss", tag2: st
     plt.plot(tag2_steps, tag2_values, label=tag2)
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
+    plt.ylim([0, 15])
     plt.legend()
     plt.savefig(f"{fpath}/Loss_{config.DataConfig.cultivar}.png", bbox_inches="tight")
 
@@ -174,7 +173,10 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Learning Rate")
         plt.legend()
-        plt.savefig(f"{fpath}/LearningRate_{config.DataConfig.cultivar}.png", bbox_inches="tight")
+        plt.savefig(
+            f"{fpath}/LearningRate_{config.DataConfig.cultivar}.png",
+            bbox_inches="tight",
+        )
 
     if tag3 is not None:
         tag3_events = event_acc.Scalars(tag3)
@@ -207,7 +209,10 @@ def plot_params(fpath: str, config: DictConfig, params: np.ndarray, k: int, name
             ax[0].set_title(f"Parameters {name} {k} {config.DataConfig.cultivar}")
             ax[-1].set_xlabel("Days")
     plt.tight_layout()
-    plt.savefig(f"{fpath}/Parameters_{name}_{k}_{config.DataConfig.cultivar}.png", bbox_inches="tight")
+    plt.savefig(
+        f"{fpath}/Parameters_{name}_{k}_{config.DataConfig.cultivar}.png",
+        bbox_inches="tight",
+    )
     plt.close()
 
 
@@ -315,7 +320,10 @@ def plot_params_weather(
     ax[6, 1].set_xticks(xticks, xlabels, rotation=45)
 
     plt.tight_layout()
-    plt.savefig(f"{fpath}/Weather_Params_{name}_{k}_{config.DataConfig.cultivar}.png", bbox_inches="tight")
+    plt.savefig(
+        f"{fpath}/Weather_Params_{name}_{k}_{config.DataConfig.cultivar}.png",
+        bbox_inches="tight",
+    )
     plt.close()
 
 
@@ -572,9 +580,13 @@ def plot_output_phenology_progress(
             target = config.PConfig.output_vars
             ax[0].plot(output[k][inds[k]], label=f"Model {target}", c=C_PER[2])
             ax[0].plot(val_data[k][inds[k]], label=f"True {target}", c=C_PER[3])
-            ax[0].plot(progress_data[k][inds[k]], label=f"Progress: DVS", c=C_PER[2], alpha=0.6)
+            ax[0].plot(progress_data[k][inds[k]], label="Progress: DVS", c=C_PER[2], alpha=0.6)
             unique_vals, first_indices = np.unique(val_data[k][inds[k]], return_index=True)
-            progress_line = np.interp(np.arange(len(val_data[k][inds[k]])), first_indices, unique_vals.astype(float))
+            progress_line = np.interp(
+                np.arange(len(val_data[k][inds[k]])),
+                first_indices,
+                unique_vals.astype(float),
+            )
             ax[0].plot(progress_line, label="Linear Progress", c=C_PER[3], alpha=0.6)
 
             ax[0].legend()
@@ -596,7 +608,17 @@ def plot_output_phenology_progress(
                 ax[1].set_ylabel(r"$^\circ$C")
                 ax[1].set_xlabel("Days")
                 xticks = [1, 32, 60, 91, 121, 152, 182, 213, 244]
-                xlabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"]
+                xlabels = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                ]
                 ax[1].set_xticks(xticks, xlabels)
 
             plt.savefig(
@@ -645,18 +667,22 @@ def plot_output_coldhardiness_error(
             for j in range(output.shape[0]):
                 if j % 3 != 0:
                     continue
-                ax[0].plot(output[j, k], label=f"Observations {0}-{30 * (j + 1)}", color=colors[j])
+                ax[0].plot(
+                    output[j, k],
+                    label=f"Observations {0}-{30 * (j + 1)}",
+                    color=colors[j],
+                )
 
             ax[0].scatter(
                 np.where(inds[k]),
                 val_data[k][inds[k]],
-                label=f"True",
+                label="True",
                 s=10,
                 marker="x",
                 color=colors[-1],
             )
             ax[0].legend(loc="upper left")
-            ax[0].set_title(f"Cold-Hardiness Predictions with Additional In-Season Data")
+            ax[0].set_title("Cold-Hardiness Predictions with Additional In-Season Data")
             ax[0].set_xticks([], [])
             ax[0].set_xlim([0, len(inds[k])])
             ax[0].set_ylabel(f"{target}")
@@ -665,7 +691,11 @@ def plot_output_coldhardiness_error(
                 for j in range(params.shape[0]):
                     if j % 3 != 0:
                         continue
-                    ax[1].plot(np.array(params[j, k])[:, 0], label=f"Observations {0}-{30 * (j + 1)}", color=colors[j])
+                    ax[1].plot(
+                        np.array(params[j, k])[:, 0],
+                        label=f"Observations {0}-{30 * (j + 1)}",
+                        color=colors[j],
+                    )
                     ax[1].set_title("TENDO Parameter Prediction with Additional In-Season Data")
                     ax[1].legend(loc="upper left")
                     ax[1].set_xlim([0, len(inds[k])])
@@ -681,7 +711,10 @@ def plot_output_coldhardiness_error(
             ax[2].set_xlabel("Days")
             ax[2].set_xlim([0, 8])
             # ax[2].set_xticks(np.arange(output.shape[0]), labels=["0-30", "0-60", "0-90", "0-120","0-150", "0-180", "0-210", "0-240", "0-270"])
-            ax[2].set_xticks(np.arange(output.shape[0]), labels=[30, 60, 90, 120, 150, 180, 210, 240, 270])
+            ax[2].set_xticks(
+                np.arange(output.shape[0]),
+                labels=[30, 60, 90, 120, 150, 180, 210, 240, 270],
+            )
             ax[2].set_title("Prediction Error with Additional In-Season Observations")
 
             plt.savefig(
@@ -720,6 +753,8 @@ def plot_output_coldhardiness_transfer(
     val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
 
+    true_ids = np.concatenate((regions, stations, sites, cultivars), axis=1)
+
     # Handle when a batch size of 1 is passed
     if len(inds.shape) != 2:
         inds = inds[np.newaxis, :]
@@ -732,7 +767,11 @@ def plot_output_coldhardiness_transfer(
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
-            fig, ax = plt.subplots(2)
+            fig, ax = plt.subplots(
+                2,
+                figsize=(4, 8),
+                gridspec_kw={"height_ratios": [1, 3]},
+            )
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
@@ -755,12 +794,15 @@ def plot_output_coldhardiness_transfer(
             ax[0].set_ylabel(f"{SITES[int(sites[k])]}/{CROP_NAMES[config.DataConfig.dtype][int(cultivars[k])]}")
             ax[0].set_xlabel("Days")
 
-            im = ax[1].imshow(attn_map[k], cmap="viridis", aspect="auto", interpolation="none")
+            remove_id = np.where((true_ids[k] == all_ids).all(axis=1))[0][0]
+            attn_map_id = np.insert(attn_map[k], remove_id, np.nan, axis=0)
+            attn_map_id = np.ma.masked_invalid(attn_map_id)
+            im = ax[1].imshow(attn_map_id, cmap="viridis", aspect="auto", interpolation="none")
             ax[1].set_xlabel("Days")
             labs = []
             for j in range(all_ids.shape[0]):
                 labs.append(f"{SITES[int(all_ids[j, 2])]}/{CROP_NAMES[config.DataConfig.dtype][int(all_ids[j, 3])]}")
-            ax[1].set_yticks(np.arange(all_ids.shape[0]), labs)
+            ax[1].set_yticks(np.arange(all_ids.shape[0]), labs, fontsize=9)
 
             # Attach colorbar to the figure, linked to the imshow
             fig.colorbar(im, ax=ax[1], label="Attention Weight")

@@ -7,39 +7,37 @@ the model predicts parameters for a physical model.
 Written by Will Solow, 2025
 """
 
-import time
 import os
-import torch
-import torch.nn as nn
+import time
+
 import numpy as np
 import pandas as pd
-from omegaconf import OmegaConf, DictConfig
-
+import torch
+import torch.nn as nn
 from model_engine.engine import get_engine
+from model_engine.util import per_task_param_loader
+from omegaconf import DictConfig, OmegaConf
 
+from train_algs.base.base import BaseModel
 from train_algs.base.DMC_Base import (
     FCGRU,
+    DeepEmbeddingGRU,
+    EmbeddingFCFF,
     EmbeddingFCGRU,
+    FFTempResponse,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
-    FFTempResponse,
     ParamModel,
-    EmbeddingFCFF,
-    DeepEmbeddingGRU,
 )
-from train_algs.base.base import BaseModel
-from model_engine.util import per_task_param_loader
-
 from train_algs.base.util import (
-    setup_logging,
     cumulative_error,
     get_grad_norm,
     log_training,
+    setup_logging,
 )
 
 
 class BaseRNN(BaseModel):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super().__init__(config, data)
@@ -182,73 +180,86 @@ class BaseRNN(BaseModel):
             test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
 
-            for j in range(0, len(self.data[test_name]), self.batch_size):
-                self.optimizer.zero_grad()
-                batch_data = self.data[test_name][j : j + self.batch_size]
-                batch_dates = self.dates[test_name][j : j + self.batch_size]
-                batch_cultivars = (
-                    self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
-                )
-                batch_regions = self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
-                batch_stations = (
-                    self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
-                )
-                batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
+            with torch.no_grad():
+                for j in range(0, len(self.data[test_name]), self.batch_size):
+                    self.optimizer.zero_grad()
+                    batch_data = self.data[test_name][j : j + self.batch_size]
+                    batch_dates = self.dates[test_name][j : j + self.batch_size]
+                    batch_cultivars = (
+                        self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
+                    )
+                    batch_regions = (
+                        self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
+                    )
+                    batch_stations = (
+                        self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
+                    )
+                    batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
 
-                eval_target = self.val[test_name][j : j + self.batch_size]
-                eval_output, _, eval_model_output = self.forward(
-                    batch_data,
-                    batch_dates,
-                    cultivars=batch_cultivars,
-                    regions=batch_regions,
-                    stations=batch_stations,
-                    sites=batch_sites,
-                )
+                    eval_target = self.val[test_name][j : j + self.batch_size]
+                    eval_output, _, eval_model_output = self.forward(
+                        batch_data,
+                        batch_dates,
+                        cultivars=batch_cultivars,
+                        regions=batch_regions,
+                        stations=batch_stations,
+                        sites=batch_sites,
+                    )
 
-                # Compute PINN Loss
-                if self.config.DConfig.type == "PINN":
-                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                        eval_output_loss = self.loss_func(
-                            eval_output.view(-1, output.size(-1)),
-                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                        )
-                        eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
+                    # Compute PINN Loss
+                    if self.config.DConfig.type == "PINN":
+                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                            eval_output_loss = self.loss_func(
+                                eval_output.view(-1, output.size(-1)),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                            )
+                            eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
 
-                        eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                            eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                        else:
+                            eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                            eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
+
+                        eval_mask = ~torch.isnan(eval_target)
+                        eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
+                        eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
+
+                        eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
                     else:
-                        eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                        eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
+                        # Handle Cross Entropy Loss by flattening series
+                        if "CrossEntropyLoss" in self.config.DConfig.loss_func:
+                            eval_loss = self.loss_func(
+                                eval_output.view(-1, eval_output.size(-1)),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
+                            )
+                            eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
+                        else:
+                            eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                        eval_mask = ~torch.isnan(eval_target)
+                        eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
+                    test_loss += eval_loss.item()
 
-                    eval_mask = ~torch.isnan(eval_target)
-                    eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
-                    eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
-
-                    eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
-                else:
-                    # Handle Cross Entropy Loss by flattening series
-                    if "CrossEntropyLoss" in self.config.DConfig.loss_func:
-                        eval_loss = self.loss_func(
-                            eval_output.view(-1, eval_output.size(-1)),
-                            eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
-                        )
-                        eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
-                    else:
-                        eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                    eval_mask = ~torch.isnan(eval_target)
-                    eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
-                test_loss += eval_loss.item()
-
-                avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
-                eval_avg[:3] += avg_[1:-1]
-                eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
-            eval_loss = eval_loss if j == 0 else eval_loss / j
-            log_training(self, writer, log_path, epoch, train_loss, test_loss, train_avg, eval_avg, grad, st)
+                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
+                    eval_avg[:3] += avg_[1:-1]
+                    eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
+                eval_loss = eval_loss if j == 0 else eval_loss / j
+            log_training(
+                self,
+                writer,
+                log_path,
+                epoch,
+                train_loss,
+                test_loss,
+                train_avg,
+                eval_avg,
+                grad,
+                st,
+            )
 
         self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))
 
 
 class ParamRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(ParamRNN, self).__init__(config, data)
@@ -311,7 +322,6 @@ class ParamRNN(BaseRNN):
 
 
 class TransformerParam(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(TransformerParam, self).__init__(config, data)
@@ -324,7 +334,11 @@ class TransformerParam(BaseRNN):
         )
 
     def forward(
-        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Forward pass call for integrated gradients attribution sequence batch data
@@ -352,7 +366,6 @@ class TransformerParam(BaseRNN):
 
 
 class NoObsParamRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(NoObsParamRNN, self).__init__(config, data)
@@ -365,7 +378,11 @@ class NoObsParamRNN(BaseRNN):
         )
 
     def forward(
-        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Forward pass call for integrated gradients attribution sequence batch data
@@ -379,7 +396,6 @@ class NoObsParamRNN(BaseRNN):
         output = self.model.reset(b_size)
         # Run through entirety of time series predicting parameters for physical model at each step
         for i in range(dlen):
-
             params_predict, hn_cn = self.nn(data[:, i], hn_cn, cultivars)
             params_predict = self.param_cast(params_predict)
             self.model.set_model_params(params_predict, self.params)
@@ -393,7 +409,6 @@ class NoObsParamRNN(BaseRNN):
 
 
 class WindowParamRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(WindowParamRNN, self).__init__(config, data)
@@ -406,7 +421,11 @@ class WindowParamRNN(BaseRNN):
         )
 
     def forward(
-        self, data: torch.Tensor = None, dates: np.ndarray = None, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Forward pass call for integrated gradients attribution sequence batch data
@@ -435,7 +454,6 @@ class WindowParamRNN(BaseRNN):
 
 
 class DeepRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
         super(DeepRNN, self).__init__(config, data)
 
@@ -460,7 +478,12 @@ class DeepRNN(BaseRNN):
         # Run through entirety of time series predicting output for each step
         for i in range(dlen):
             output_predict, hn_cn = self.nn(
-                data[:, i], hn_cn, cultivars=cultivars, regions=regions, stations=stations, sites=sites
+                data[:, i],
+                hn_cn,
+                cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites,
             )
             output_tens[:, i] = output_predict
 
@@ -468,7 +491,6 @@ class DeepRNN(BaseRNN):
 
 
 class PINNRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
         super(PINNRNN, self).__init__(config, data)
         self.model = get_engine(self.config)(
@@ -507,7 +529,10 @@ class PINNRNN(BaseRNN):
         # Run through entirety of time series predicting output for each step
         for i in range(dlen):
             output_predict, hn_cn = self.nn(
-                torch.cat((model_output.view(model_output.shape[0], -1).detach(), data[:, i]), dim=-1),
+                torch.cat(
+                    (model_output.view(model_output.shape[0], -1).detach(), data[:, i]),
+                    dim=-1,
+                ),
                 hn_cn,
                 cultivars=cultivars,
                 regions=regions,
@@ -523,7 +548,6 @@ class PINNRNN(BaseRNN):
 
 
 class ResidualRNN(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
         super(ResidualRNN, self).__init__(config, data)
         self.model = get_engine(self.config)(
@@ -535,7 +559,11 @@ class ResidualRNN(BaseRNN):
         self.task_params = per_task_param_loader(config, self.params).to(self.device)
 
     def forward(
-        self, data: torch.Tensor, dates: np.ndarray, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
@@ -560,7 +588,6 @@ class ResidualRNN(BaseRNN):
 
 
 class StationaryModel(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(StationaryModel, self).__init__(config, data)
@@ -575,7 +602,11 @@ class StationaryModel(BaseRNN):
         self.task_params = per_task_param_loader(config, self.params).to(self.device)
 
     def forward(
-        self, data: torch.Tensor, dates: np.ndarray, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
@@ -597,7 +628,6 @@ class StationaryModel(BaseRNN):
 
 
 class HybridModel(BaseRNN):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
         super(HybridModel, self).__init__(config, data)
@@ -612,7 +642,11 @@ class HybridModel(BaseRNN):
         self.task_params = per_task_param_loader(config, self.params).to(self.device)
 
     def forward(
-        self, data: torch.Tensor, dates: np.ndarray, cultivars: torch.Tensor = None, **kwargs
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray,
+        cultivars: torch.Tensor = None,
+        **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)

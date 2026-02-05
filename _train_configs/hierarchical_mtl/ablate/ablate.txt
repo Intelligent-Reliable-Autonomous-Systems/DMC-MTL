@@ -1,0 +1,179 @@
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0002 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0002 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0002 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0002 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0002 --bsize 196
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.001 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.001 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.001 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.001 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.001 --bsize 196
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0001 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0001 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0001 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0001 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 0 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 1 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 2 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 3 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_stat --region BCOV --seed 4 --lr 0.0001 --bsize 196
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0002 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0002 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0002 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0002 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0002 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0002 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0002 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0002 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0002 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0002 --bsize 196
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.001 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.001 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.001 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.001 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.001 --bsize 196
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0001 --bsize 18
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0001 --bsize 18
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0001 --bsize 36
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0001 --bsize 36
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0001 --bsize 72
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0001 --bsize 72
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0001 --bsize 144
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0001 --bsize 144
+
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 0 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 1 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 2 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 3 --lr 0.0001 --bsize 196
+python3 -m trainers.train_model --config hierarchical_mtl/ablate/ch_attn_reg --seed 4 --lr 0.0001 --bsize 196

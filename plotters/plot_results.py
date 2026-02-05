@@ -24,10 +24,16 @@ from plotters.plotting_functions import plot_loss, plot_stats
 
 def main():
     argparser = argparse.ArgumentParser(description="Plotting script for model")
-    argparser.add_argument("--config", type=str, required=True, help="Path to the config file")
-    argparser.add_argument("--break_early", action="store_false", help="If to break early when making data")
+    argparser.add_argument(
+        "--config", type=str, required=True, help="Path to the config file"
+    )
+    argparser.add_argument(
+        "--break_early", action="store_false", help="If to break early when making data"
+    )
     argparser.add_argument("--save", action="store_false", help="If to save the plots")
-    argparser.add_argument("--fname", type=str, default="data.txt", help="File to save data to")
+    argparser.add_argument(
+        "--fname", type=str, default="data.txt", help="File to save data to"
+    )
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     argparser.add_argument(
         "--mode",
@@ -48,7 +54,7 @@ def main():
         plot_stats(fpath, config)
     except:
         pass
-    config.DConfig.batch_size = 4
+    # config.DConfig.batch_size = 4
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(f"{fpath}", name=args.rnn_name)
     calibrator.eval()
@@ -58,14 +64,20 @@ def main():
     output_data = [[], [], []]
     true_cultivar_data = [
         [
-            [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+            [
+                [[[], [], []] for _ in range(calibrator.num_cultivars)]
+                for _ in range(calibrator.num_sites)
+            ]
             for _ in range(calibrator.num_stations)
         ]
         for _ in range(calibrator.num_regions)
     ]
     output_cultivar_data = [
         [
-            [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+            [
+                [[[], [], []] for _ in range(calibrator.num_cultivars)]
+                for _ in range(calibrator.num_sites)
+            ]
             for _ in range(calibrator.num_stations)
         ]
         for _ in range(calibrator.num_regions)

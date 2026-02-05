@@ -30,7 +30,9 @@ C_PER = [
 C_SHAPES = ["o", "^", "s", "x", "d"]
 
 
-def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+def compute_total_RMSE(
+    true: list[np.ndarray], model: list[np.ndarray]
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Computes total RMSE across entire dataset
     """
@@ -50,7 +52,9 @@ def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple
         return np.sqrt(avgs / samples), None
 
 
-def compute_RMSE_STAGE(true_output: np.ndarray, model_output: np.ndarray, stage: int) -> np.ndarray:
+def compute_RMSE_STAGE(
+    true_output: np.ndarray, model_output: np.ndarray, stage: int
+) -> np.ndarray:
     curr_stage = (stage) % len(PHENOLOGY_INT)
     true_stage_args = np.argwhere(true_output == curr_stage).flatten()
     model_stage_args = np.argwhere(model_output == curr_stage).flatten()
@@ -109,13 +113,17 @@ def compute_rmse_plot(
             rotation=0,
         )
         plt.ylabel("Average Error in Days")
-        plt.savefig(f"{path}/PHENOLOGY_{method}_{name}_{config.DataConfig.cultivar}.png")
+        plt.savefig(
+            f"{path}/PHENOLOGY_{method}_{name}_{config.DataConfig.cultivar}.png"
+        )
         plt.close()
 
     return avg, std
 
 
-def plot_loss(fpath: str, config: DictConfig, tag1: str = "train_loss", tag2: str = "eval_loss") -> None:
+def plot_loss(
+    fpath: str, config: DictConfig, tag1: str = "train_loss", tag2: str = "eval_loss"
+) -> None:
     """
     Plot the training and testing losses
     """
@@ -162,7 +170,9 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Gradient Norm")
         plt.legend()
-        plt.savefig(f"{fpath}/GradNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight")
+        plt.savefig(
+            f"{fpath}/GradNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight"
+        )
 
     if tag2 is not None:
         tag2_events = event_acc.Scalars(tag2)
@@ -187,10 +197,14 @@ def plot_stats(
         plt.xlabel("Epochs")
         plt.ylabel("Weight Norm of Parameters")
         plt.legend()
-        plt.savefig(f"{fpath}/WeightNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight")
+        plt.savefig(
+            f"{fpath}/WeightNorm_{config.DataConfig.cultivar}.png", bbox_inches="tight"
+        )
 
 
-def plot_params(fpath: str, config: DictConfig, params: np.ndarray, k: int, name: str = "Train") -> None:
+def plot_params(
+    fpath: str, config: DictConfig, params: np.ndarray, k: int, name: str = "Train"
+) -> None:
     """
     Plot the predicted parameters for a time series
     """
@@ -356,7 +370,9 @@ def plot_output_phenology(
             output = output[np.newaxis, :]
             params = params[np.newaxis, :] if params is not None else None
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
@@ -423,9 +439,15 @@ def plot_output_coldhardiness(
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
     ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    inds = (
+        ~torch.isnan(ind_val_data[:, :, 0])
+        if ind_val_data.shape[-1] == 3
+        else ~torch.isnan(ind_val_data)
+    )
     val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
+    val_data = (
+        val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data
+    )  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
 
     # Handle when a batch size of 1 is passed
@@ -435,7 +457,9 @@ def plot_output_coldhardiness(
             output = output[np.newaxis, :]
             params = params[np.newaxis, :] if params is not None else None
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
@@ -491,7 +515,11 @@ def plot_output_wofost(
     Plot the wofost crop yield and the parameters for each time series in the passed batch
     """
     ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    inds = (
+        ~torch.isnan(ind_val_data[:, :, 0])
+        if ind_val_data.shape[-1] == 3
+        else ~torch.isnan(ind_val_data)
+    )
     val_data = val_data.cpu().numpy()
     if len(inds.shape) != 2:
         inds = inds[np.newaxis, :]
@@ -499,7 +527,9 @@ def plot_output_wofost(
             output = output[np.newaxis, :]
             params = params[np.newaxis, :] if params is not None else None
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
@@ -572,7 +602,9 @@ def plot_output_phenology_progress(
             progress_data = progress_data[np.newaxis, :]
             params = params[np.newaxis, :] if params is not None else None
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
@@ -580,8 +612,12 @@ def plot_output_phenology_progress(
             target = config.PConfig.output_vars
             ax[0].plot(output[k][inds[k]], label=f"Model {target}", c=C_PER[2])
             ax[0].plot(val_data[k][inds[k]], label=f"True {target}", c=C_PER[3])
-            ax[0].plot(progress_data[k][inds[k]], label="Progress: DVS", c=C_PER[2], alpha=0.6)
-            unique_vals, first_indices = np.unique(val_data[k][inds[k]], return_index=True)
+            ax[0].plot(
+                progress_data[k][inds[k]], label="Progress: DVS", c=C_PER[2], alpha=0.6
+            )
+            unique_vals, first_indices = np.unique(
+                val_data[k][inds[k]], return_index=True
+            )
             progress_line = np.interp(
                 np.arange(len(val_data[k][inds[k]])),
                 first_indices,
@@ -644,9 +680,15 @@ def plot_output_coldhardiness_error(
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
     ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    inds = (
+        ~torch.isnan(ind_val_data[:, :, 0])
+        if ind_val_data.shape[-1] == 3
+        else ~torch.isnan(ind_val_data)
+    )
     val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
+    val_data = (
+        val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data
+    )  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
 
     # Handle when a batch size of 1 is passed
@@ -656,7 +698,9 @@ def plot_output_coldhardiness_error(
             output = output[np.newaxis, :]
             params = params[np.newaxis, :] if params is not None else None
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[0, k][inds[k]]))
@@ -696,7 +740,9 @@ def plot_output_coldhardiness_error(
                         label=f"Observations {0}-{30 * (j + 1)}",
                         color=colors[j],
                     )
-                    ax[1].set_title("TENDO Parameter Prediction with Additional In-Season Data")
+                    ax[1].set_title(
+                        "TENDO Parameter Prediction with Additional In-Season Data"
+                    )
                     ax[1].legend(loc="upper left")
                     ax[1].set_xlim([0, len(inds[k])])
                     ax[1].set_ylabel("TENDO Value")
@@ -704,7 +750,9 @@ def plot_output_coldhardiness_error(
                     # ax[1].set_xlabel("Days")
             arr = np.zeros(shape=(output.shape[0]))
             for j in range(output.shape[0]):
-                mean, _ = compute_total_RMSE(val_data[k, :, 0][inds[k]], output[j, k][inds[k]])
+                mean, _ = compute_total_RMSE(
+                    val_data[k, :, 0][inds[k]], output[j, k][inds[k]]
+                )
                 arr[j] = mean
             ax[2].plot(arr, marker="o")
             ax[2].set_ylabel("RMSE")
@@ -748,9 +796,15 @@ def plot_output_coldhardiness_transfer(
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
     ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    inds = (
+        ~torch.isnan(ind_val_data[:, :, 0])
+        if ind_val_data.shape[-1] == 3
+        else ~torch.isnan(ind_val_data)
+    )
     val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
+    val_data = (
+        val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data
+    )  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
 
     true_ids = np.concatenate((regions, stations, sites, cultivars), axis=1)
@@ -763,7 +817,9 @@ def plot_output_coldhardiness_transfer(
             attn_map = attn_map[np.newaxis, :]
             orig_pred = orig_pred[np.newaxis, :]
 
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    assert len(inds.shape) == 2, (
+        "Incorrectly specified data, ensure that the batch setting is being passed"
+    )
     if save:
         for k in range(inds.shape[0]):
             x = np.arange(len(output[k][inds[k]]))
@@ -775,6 +831,10 @@ def plot_output_coldhardiness_transfer(
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
+
+            for j in range(orig_pred.shape[1]):
+                ax[0].plot(orig_pred[k][j], color="k", alpha=0.5, zorder=1)
+            ax[0].plot(output[k], label=f"Model {target}", color=colors[0], zorder=2)
             ax[0].scatter(
                 np.where(inds[k]),
                 val_data[k][inds[k]],
@@ -782,26 +842,30 @@ def plot_output_coldhardiness_transfer(
                 s=10,
                 marker="x",
                 color=colors[1],
+                zorder=3,
             )
-            for j in range(orig_pred.shape[1]):
-                ax[0].plot(orig_pred[k][j], color="k", alpha=0.5)
-            ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
 
             ax[0].legend()
             ax[0].set_title(f"{target} (Predicted)")
             # ax[0].set_xticks([], [])
             ax[0].set_xlim([0, len(inds[k])])
-            ax[0].set_ylabel(f"{SITES[int(sites[k])]}/{CROP_NAMES[config.DataConfig.dtype][int(cultivars[k])]}")
+            ax[0].set_ylabel(
+                f"{SITES[int(sites[k])]}/{CROP_NAMES[config.DataConfig.dtype][int(cultivars[k])]}"
+            )
             ax[0].set_xlabel("Days")
 
             remove_id = np.where((true_ids[k] == all_ids).all(axis=1))[0][0]
             attn_map_id = np.insert(attn_map[k], remove_id, np.nan, axis=0)
             attn_map_id = np.ma.masked_invalid(attn_map_id)
-            im = ax[1].imshow(attn_map_id, cmap="viridis", aspect="auto", interpolation="none")
+            im = ax[1].imshow(
+                attn_map_id, cmap="viridis", aspect="auto", interpolation="none"
+            )
             ax[1].set_xlabel("Days")
             labs = []
             for j in range(all_ids.shape[0]):
-                labs.append(f"{SITES[int(all_ids[j, 2])]}/{CROP_NAMES[config.DataConfig.dtype][int(all_ids[j, 3])]}")
+                labs.append(
+                    f"{SITES[int(all_ids[j, 2])]}/{CROP_NAMES[config.DataConfig.dtype][int(all_ids[j, 3])]}"
+                )
             ax[1].set_yticks(np.arange(all_ids.shape[0]), labs, fontsize=9)
 
             # Attach colorbar to the figure, linked to the imshow

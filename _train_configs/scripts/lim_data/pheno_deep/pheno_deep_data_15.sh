@@ -2,7 +2,7 @@
 #SBATCH -J pheno_deep_data_15
 #SBATCH -o output/pheno_deep_data_15.out
 #SBATCH -e output/pheno_deep_data_15.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

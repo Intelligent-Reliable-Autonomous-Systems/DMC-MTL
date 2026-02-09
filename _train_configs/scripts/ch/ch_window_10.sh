@@ -2,7 +2,7 @@
 #SBATCH -J ch_param_mtl_window_10
 #SBATCH -o output/ch_param_mtl_window_10.out
 #SBATCH -e output/ch_param_mtl_window_10.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

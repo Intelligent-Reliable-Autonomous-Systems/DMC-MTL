@@ -2,7 +2,7 @@
 #SBATCH -J pinn/ch_pinn_10
 #SBATCH -o output/pinn/ch_pinn_10.out
 #SBATCH -e output/pinn/ch_pinn_10.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

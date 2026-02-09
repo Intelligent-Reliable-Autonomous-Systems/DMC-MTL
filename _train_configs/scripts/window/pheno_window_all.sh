@@ -2,7 +2,7 @@
 #SBATCH -J pheno_param_window_all
 #SBATCH -o output/pheno_param_window_all.out
 #SBATCH -e output/pheno_param_window_all.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

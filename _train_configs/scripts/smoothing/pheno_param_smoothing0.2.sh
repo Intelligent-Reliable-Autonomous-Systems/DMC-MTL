@@ -2,7 +2,7 @@
 #SBATCH -J pheno_smoothing_0.2
 #SBATCH -o output/pheno_smoothing_0.2.out
 #SBATCH -e output/pheno_smoothing_0.2.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

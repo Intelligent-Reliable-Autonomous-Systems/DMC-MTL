@@ -2,7 +2,7 @@
 #SBATCH -J ch_param_10_stl
 #SBATCH -o output/ch_param_10_stl.out
 #SBATCH -e output/ch_param_10_stl.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

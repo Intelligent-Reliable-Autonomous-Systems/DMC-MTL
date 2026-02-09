@@ -2,7 +2,7 @@
 #SBATCH -J ch_deep_2_10
 #SBATCH -o output/ch_deep_2_10.out
 #SBATCH -e output/ch_deep_2_10.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-12:00:00
 #SBATCH --gres=gpu:1
 

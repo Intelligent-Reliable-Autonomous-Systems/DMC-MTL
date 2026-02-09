@@ -2,7 +2,7 @@
 #SBATCH -J four_mile_creek
 #SBATCH -o output/four_mile_creek.out
 #SBATCH -e output/four_mile_creek.err
-#SBATCH -p eecs,share,gpu
+#SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1
 

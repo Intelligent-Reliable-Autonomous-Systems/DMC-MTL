@@ -18,5 +18,13 @@
             "console": "integratedTerminal",
             "args": "--mode transfer --config _runs/MTLAttnTransfer/GrapeColdhardiness/DeepMTLAttn/BCOV/Osoyoos_CS/BlackSage/All/deep_mtl__1770244853 --rnn_name rnn_model_current.pt"
         },
+        {
+            "name": "text_debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "trainers.train_model",
+            "console": "integratedTerminal",
+            "args": "--config hierarchical_mtl/ch_deep_stat"
+        },
     ]
 }

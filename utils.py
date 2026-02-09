@@ -9,19 +9,19 @@ Written by Will Solow, 2025
 
 import os
 import pickle
-from typing import Optional
-from dataclasses import dataclass
 from argparse import Namespace
+from dataclasses import dataclass
 from pathlib import Path
-import yaml
+from typing import Optional
 
 import numpy as np
 import pandas as pd
+import yaml
+from omegaconf import DictConfig, OmegaConf
 from torch import nn
-from omegaconf import OmegaConf, DictConfig
-from model_engine.util import CROP_NAMES, REGION_NAMES, REGIONS, STATIONS, SITES
 
-from train_algs import DMC, FineTuner, DMC_Transfer
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
+from train_algs import DMC, DMC_Transfer, FineTuner
 
 
 @dataclass
@@ -238,7 +238,7 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
 
     PREFIX = f"{config.DataConfig.data_fpath}{dtype}/"
     if config.DataConfig.synth_data is not None:
-        paths = find_pickle_files(f"{PREFIX}{config.DataConfig.synth_data}/", prefix=f"synth_")
+        paths = find_pickle_files(f"{PREFIX}{config.DataConfig.synth_data}/", prefix="synth_")
     else:
         if config.DataConfig.region == "All":
             paths = find_pickle_files(
@@ -323,6 +323,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC.TransformerParam(config, data)
     elif config.DConfig.type == "Deep":
         calibrator = DMC.DeepRNN(config, data)
+    elif config.DConfig.type == "DeepText":
+        calibrator = DMC.DeepTextRNN(config, data)
     elif config.DConfig.type == "PINN":
         calibrator = DMC.PINNRNN(config, data)
     elif config.DConfig.type == "Stationary":
@@ -369,7 +371,12 @@ def find_config_yaml_dirs(start_dir="."):
     return config_dirs
 
 
-def load_named_pickles(folder_paths: list[str], target_name: str, include: str = None, exclude_multi: bool = False):
+def load_named_pickles(
+    folder_paths: list[str],
+    target_name: str,
+    include: str = None,
+    exclude_multi: bool = False,
+):
     """
     Load all pickle files matching a given name in all subdirectories.
     """
@@ -381,13 +388,13 @@ def load_named_pickles(folder_paths: list[str], target_name: str, include: str =
             try:
                 # Get relative subdirectory name
                 subdir = "/".join(pkl_file.parent.parts[-6:])
-                if include is not None and not (include in subdir):
+                if include is not None and include not in subdir:
                     continue
                 if "All" in subdir and exclude_multi:
                     continue
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
-            except Exception as e:
+            except Exception:
                 pass
 
     return results

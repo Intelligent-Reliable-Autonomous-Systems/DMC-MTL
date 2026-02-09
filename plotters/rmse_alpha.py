@@ -7,13 +7,14 @@ as a function of threshold tolerance (RMSE)
 Written by, Will Solow 2025
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-from model_engine.util import CROP_NAMES
-from plotters.plotting_functions import C_AGG, C_PER
-import utils
-from pathlib import Path
 import pickle
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from assets import CROP_NAMES
+from plotters.plotting_functions import C_AGG, C_PER
 
 
 def load_named_pickles(folder_paths: list[str], target_name: str, exclude_multi: bool = False):
@@ -32,7 +33,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, exclude_multi:
                     continue
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
-            except Exception as e:
+            except Exception:
                 pass
 
     return results
@@ -127,10 +128,10 @@ def main():
     ax[0].set_yticks([0, 0.5, 1.0], labels=[0, 50, 100])
     ax[1].set_yticks([0, 0.5, 1.0], labels=[0, 50, 100])
     ax[0].text(
-        0.05, 0.3, f"(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=font_size + 1, fontweight="bold"
+        0.05, 0.3, "(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=font_size + 1, fontweight="bold"
     )
     ax[1].text(
-        0.05, 0.3, f"(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=font_size + 1, fontweight="bold"
+        0.05, 0.3, "(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=font_size + 1, fontweight="bold"
     )
     plt.savefig("plotters/figs/rmse_alpha.png", bbox_inches="tight")
     plt.close()

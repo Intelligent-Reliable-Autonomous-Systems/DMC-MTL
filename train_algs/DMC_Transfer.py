@@ -1,5 +1,5 @@
 """
-ParamRNN.py
+DMC_Transfer.py
 
 Contains classes for running Param RNN models. We assume that
 the model predicts parameters for a physical model.
@@ -86,18 +86,10 @@ class BaseRNN(BaseModel):
             data_shuffled = self.data[train_name][inds]
             val_shuffled = self.val[train_name][inds]
             dates_shuffled = self.dates[train_name][inds]
-            cultivars_shuffled = (
-                self.cultivars[train_name][inds] if self.cultivars is not None else None
-            )
-            regions_shuffled = (
-                self.regions[train_name][inds] if self.regions is not None else None
-            )
-            stations_shuffled = (
-                self.stations[train_name][inds] if self.stations is not None else None
-            )
-            sites_shuffled = (
-                self.sites[train_name][inds] if self.sites is not None else None
-            )
+            cultivars_shuffled = self.cultivars[train_name][inds] if self.cultivars is not None else None
+            regions_shuffled = self.regions[train_name][inds] if self.regions is not None else None
+            stations_shuffled = self.stations[train_name][inds] if self.stations is not None else None
+            sites_shuffled = self.sites[train_name][inds] if self.sites is not None else None
             train_avg = torch.zeros(size=(4,)).to(self.device)
             all_ids = self.all_ids[train_name]
 
@@ -110,25 +102,11 @@ class BaseRNN(BaseModel):
                 batch_data = data_shuffled[i : i + self.batch_size]
                 batch_dates = dates_shuffled[i : i + self.batch_size]
                 batch_cultivars = (
-                    cultivars_shuffled[i : i + self.batch_size]
-                    if cultivars_shuffled is not None
-                    else None
+                    cultivars_shuffled[i : i + self.batch_size] if cultivars_shuffled is not None else None
                 )
-                batch_regions = (
-                    regions_shuffled[i : i + self.batch_size]
-                    if regions_shuffled is not None
-                    else None
-                )
-                batch_stations = (
-                    stations_shuffled[i : i + self.batch_size]
-                    if stations_shuffled is not None
-                    else None
-                )
-                batch_sites = (
-                    sites_shuffled[i : i + self.batch_size]
-                    if sites_shuffled is not None
-                    else None
-                )
+                batch_regions = regions_shuffled[i : i + self.batch_size] if regions_shuffled is not None else None
+                batch_stations = stations_shuffled[i : i + self.batch_size] if stations_shuffled is not None else None
+                batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
 
                 output, _, model_output = self.forward(
@@ -147,23 +125,14 @@ class BaseRNN(BaseModel):
                     if "CrossEntropyLoss" in self.config.DConfig.loss_func:
                         output_loss = self.loss_func(
                             output.view(-1, output.size(-1)),
-                            target.nan_to_num(nan=0.0)
-                            .squeeze()
-                            .view(-1)
-                            .to(torch.long),
+                            target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                         )
-                        output_loss = output_loss.reshape(output.size(0), -1).unsqueeze(
-                            -1
-                        )
+                        output_loss = output_loss.reshape(output.size(0), -1).unsqueeze(-1)
 
-                        model_loss = self.loss_func_mse(
-                            model_output, target.nan_to_num(nan=0.0)
-                        )
+                        model_loss = self.loss_func_mse(model_output, target.nan_to_num(nan=0.0))
                     else:
                         output_loss = self.loss_func(output, target.nan_to_num(nan=0.0))
-                        model_loss = self.loss_func(
-                            model_output, target.nan_to_num(nan=0.0)
-                        )
+                        model_loss = self.loss_func(model_output, target.nan_to_num(nan=0.0))
 
                     mask = ~torch.isnan(target)
                     output_loss = (output_loss * mask).sum() / mask.sum()
@@ -175,10 +144,7 @@ class BaseRNN(BaseModel):
                     if "CrossEntropyLoss" in self.config.DConfig.loss_func:
                         loss = self.loss_func(
                             output.view(-1, output.size(-1)),
-                            target.nan_to_num(nan=0.0)
-                            .squeeze()
-                            .view(-1)
-                            .to(torch.long),
+                            target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                         )
                         loss = loss.reshape(output.size(0), -1).unsqueeze(-1)
                     else:
@@ -206,25 +172,15 @@ class BaseRNN(BaseModel):
                     batch_data = self.data[test_name][j : j + self.batch_size]
                     batch_dates = self.dates[test_name][j : j + self.batch_size]
                     batch_cultivars = (
-                        self.cultivars[test_name][j : j + self.batch_size]
-                        if self.cultivars is not None
-                        else None
+                        self.cultivars[test_name][j : j + self.batch_size] if self.cultivars is not None else None
                     )
                     batch_regions = (
-                        self.regions[test_name][j : j + self.batch_size]
-                        if self.regions is not None
-                        else None
+                        self.regions[test_name][j : j + self.batch_size] if self.regions is not None else None
                     )
                     batch_stations = (
-                        self.stations[test_name][j : j + self.batch_size]
-                        if self.stations is not None
-                        else None
+                        self.stations[test_name][j : j + self.batch_size] if self.stations is not None else None
                     )
-                    batch_sites = (
-                        self.sites[test_name][j : j + self.batch_size]
-                        if self.sites is not None
-                        else None
-                    )
+                    batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
 
                     eval_target = self.val[test_name][j : j + self.batch_size]
                     test_all_ids = self.all_ids[test_name]
@@ -244,61 +200,35 @@ class BaseRNN(BaseModel):
                         if "CrossEntropyLoss" in self.config.DConfig.loss_func:
                             eval_output_loss = self.loss_func(
                                 eval_output.view(-1, output.size(-1)),
-                                eval_target.nan_to_num(nan=0.0)
-                                .squeeze()
-                                .view(-1)
-                                .to(torch.long),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                             )
-                            eval_output_loss = eval_output_loss.reshape(
-                                output.size(0), -1
-                            ).unsqueeze(-1)
+                            eval_output_loss = eval_output_loss.reshape(output.size(0), -1).unsqueeze(-1)
 
-                            eval_model_loss = self.loss_func_mse(
-                                eval_model_output, eval_target.nan_to_num(nan=0.0)
-                            )
+                            eval_model_loss = self.loss_func_mse(eval_model_output, eval_target.nan_to_num(nan=0.0))
                         else:
-                            eval_output_loss = self.loss_func(
-                                eval_output, eval_target.nan_to_num(nan=0.0)
-                            )
-                            eval_model_loss = self.loss_func(
-                                eval_model_output, eval_target.nan_to_num(nan=0.0)
-                            )
+                            eval_output_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
+                            eval_model_loss = self.loss_func(eval_model_output, eval_target.nan_to_num(nan=0.0))
 
                         eval_mask = ~torch.isnan(eval_target)
-                        eval_output_loss = (
-                            eval_output_loss * eval_mask
-                        ).sum() / eval_mask.sum()
-                        eval_model_loss = (
-                            eval_model_loss * eval_mask
-                        ).sum() / eval_mask.sum()
+                        eval_output_loss = (eval_output_loss * eval_mask).sum() / eval_mask.sum()
+                        eval_model_loss = (eval_model_loss * eval_mask).sum() / eval_mask.sum()
 
-                        eval_loss = (
-                            1 - self.p
-                        ) * eval_output_loss + self.p * eval_model_loss
+                        eval_loss = (1 - self.p) * eval_output_loss + self.p * eval_model_loss
                     else:
                         # Handle Cross Entropy Loss by flattening series
                         if "CrossEntropyLoss" in self.config.DConfig.loss_func:
                             eval_loss = self.loss_func(
                                 eval_output.view(-1, eval_output.size(-1)),
-                                eval_target.nan_to_num(nan=0.0)
-                                .squeeze()
-                                .view(-1)
-                                .to(torch.long),
+                                eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                             )
-                            eval_loss = eval_loss.reshape(
-                                eval_output.size(0), -1
-                            ).unsqueeze(-1)
+                            eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
                         else:
-                            eval_loss = self.loss_func(
-                                eval_output, eval_target.nan_to_num(nan=0.0)
-                            )
+                            eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
                         eval_mask = ~torch.isnan(eval_target)
                         eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
                     test_loss += eval_loss.item()
 
-                    avg_ = cumulative_error(
-                        eval_target, eval_output, eval_mask, device=self.device
-                    )
+                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
                     eval_avg[:3] += avg_[1:-1]
                     eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
                 eval_loss = eval_loss if j == 0 else eval_loss / j
@@ -315,9 +245,7 @@ class BaseRNN(BaseModel):
                 st,
             )
 
-        self.scheduler.step(
-            float(eval_loss if self.config.DataConfig.val_set else train_loss)
-        )
+        self.scheduler.step(float(eval_loss if self.config.DataConfig.val_set else train_loss))
 
 
 class DeepTransferRNN(BaseRNN):
@@ -404,15 +332,9 @@ class ParamTransferRNN(BaseRNN):
         output_tens, param_tens, _ = self.setup_storage(b_size, dlen)
 
         # Hidden state
-        hn_cn = (
-            self.nn.get_init_state(batch_size=data.shape[0])
-            if hasattr(self.nn, "get_init_state")
-            else None
-        )
+        hn_cn = self.nn.get_init_state(batch_size=data.shape[0]) if hasattr(self.nn, "get_init_state") else None
         batch_params = (
-            self.task_params[cultivars.to(torch.long).squeeze()]
-            if cultivars is not None
-            else self.task_params[0]
+            self.task_params[cultivars.to(torch.long).squeeze()] if cultivars is not None else self.task_params[0]
         )
         self.model.set_model_params(batch_params, self.params)
         output = self.model.reset(b_size)
@@ -420,9 +342,7 @@ class ParamTransferRNN(BaseRNN):
         # Run through entirety of time series predicting params
         for i in range(dlen):
             params_predict, hn_cn = self.nn(
-                torch.cat(
-                    (output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1
-                ),
+                torch.cat((output.view(output.shape[0], -1).detach(), data[:, i]), dim=-1),
                 hn=hn_cn,
                 cultivars=cultivars,
                 regions=regions,

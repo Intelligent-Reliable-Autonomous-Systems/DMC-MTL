@@ -8,21 +8,22 @@ Written by Will Solow, 2025
 """
 
 import datetime
-import numpy as np
-import pandas as pd
-import torch
-from torch import nn
-from torch.nn.utils.rnn import pad_sequence
-from omegaconf import DictConfig, ListConfig
-import copy
 import os
 import pickle as pkl
 
-from model_engine.util import EPS, CROP_NAMES, REGIONS, STATIONS, SITES
+import numpy as np
+import pandas as pd
+import torch
 from model_engine.inputs.input_providers import (
     MultiTensorWeatherDataProvider,
     WeatherDataProvider,
 )
+from model_engine.util import EPS
+from omegaconf import DictConfig, ListConfig
+from torch import nn
+from torch.nn.utils.rnn import pad_sequence
+
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 
 
 def withold_checker(model: nn.Module, wd: dict, c: int, si: int, s: int, r: int) -> bool:

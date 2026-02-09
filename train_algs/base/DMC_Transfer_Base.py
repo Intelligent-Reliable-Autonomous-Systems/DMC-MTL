@@ -5,9 +5,9 @@ Written by Will Solow, 2025"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from model_engine.util import CROP_NAMES, REGIONS, SITES, STATIONS
 from omegaconf import DictConfig
 
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from train_algs.base.util import set_embedding_op
 
 
@@ -178,7 +178,6 @@ class EmbeddingTransferGRU(BaseModule):
                 )
                 transfer_preds.append(pred)
         transfer_pred_orig = torch.stack(transfer_preds, dim=0).detach()
-        # transfer_pred_orig = transfer_pred_orig.reshape(B, M - 1, T, -1)
 
         transfer_cult_embed = (
             self.cult_embedding_layer(self.cult_mapping[transfer_ids[:, :, 3].flatten().to(torch.int)])
@@ -246,10 +245,6 @@ class EmbeddingTransferGRU(BaseModule):
 
         softm_attn = self.softmax(transfer_output)
 
-        # self_attn = nn.MultiheadAttention(embed_dim=176, num_heads=4, batch_first=True)
-        # attn_out, attn_weights = self_attn(x, x, x)  # attn_weights: (B, T, T)
-
-        # transfer_pred = transfer_pred_orig.reshape(B, -1, T, self.output_dim)
         transfer_pred = torch.sum(softm_attn * transfer_pred_orig, dim=1)
 
         return (

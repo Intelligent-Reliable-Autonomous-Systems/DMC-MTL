@@ -6,13 +6,12 @@ Loads data from pickle and prints statistics
 Written by Will Solow, 2025
 """
 
-from pathlib import Path
-import pickle
 import argparse
+import pickle
 from argparse import Namespace
-import numpy as np
+from pathlib import Path
 
-from model_engine.util import CROP_NAMES
+import numpy as np
 
 
 def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespace):
@@ -43,7 +42,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                 print(pkl_file)
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
-            except Exception as e:
+            except Exception:
                 pass
     return results
 
@@ -76,21 +75,21 @@ def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
                         continue
                     all_str += "        "
                     for i in range(mean.shape[4]):
-                        all_str += f"{mean[j,k,l,m,i]} +/- {std[j,k,l,m,i]}, "
+                        all_str += f"{mean[j, k, l, m, i]} +/- {std[j, k, l, m, i]}, "
                     all_str += "\n"
                 all_str += "      "
                 for i in range(mean.shape[4]):
-                    all_str += f"{cult_mean[j,k,l,i]} +/- {cult_std[j,k,l,i]}, "
+                    all_str += f"{cult_mean[j, k, l, i]} +/- {cult_std[j, k, l, i]}, "
                 all_str += "\n"
                 all_str += "\n"
             all_str += "    "
             for i in range(mean.shape[4]):
-                all_str += f"{site_mean[j,k,i]} +/- {site_std[j,k,i]}, "
+                all_str += f"{site_mean[j, k, i]} +/- {site_std[j, k, i]}, "
             all_str += "\n"
             all_str += "\n"
         all_str += "  "
         for i in range(mean.shape[4]):
-            all_str += f"{stat_mean[j,i]} +/- {stat_std[j,i]}, "
+            all_str += f"{stat_mean[j, i]} +/- {stat_std[j, i]}, "
         all_str += "\n"
         all_str += "\n"
     for i in range(mean.shape[4]):
@@ -118,7 +117,7 @@ def compute_str_ndim5_rtmc(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarra
                     if (np.isnan(mean[j, k, l, :, m])).all():
                         continue
                     for i in range(mean.shape[3]):
-                        all_str += f"{mean[j,k,l,i,m]} +/- {std[j,k,l,i,m]}, "
+                        all_str += f"{mean[j, k, l, i, m]} +/- {std[j, k, l, i, m]}, "
                     all_str += "\n"
     return all_str
 
@@ -157,13 +156,13 @@ def compute_str_stl_ndim3(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray
             if (np.isnan(mean[i, j])).all():
                 continue
             for k in range(mean.shape[2]):
-                all_str += f"{mean[i,j,k]} +/- {std[i,j,k]}, "
+                all_str += f"{mean[i, j, k]} +/- {std[i, j, k]}, "
             all_str += "\n"
     all_mean = np.round(np.nanmean(mtl_arr, axis=(0, 1)), decimals=2)
     all_std = np.round(np.nanstd(mtl_arr, axis=(0, 1)), decimals=2)
     for j in range(all_mean.shape[1]):
         for i in range(all_mean.shape[0]):
-            all_str += f"{all_mean[i,j]} +/- {all_std[i,j]}, "
+            all_str += f"{all_mean[i, j]} +/- {all_std[i, j]}, "
         all_str += "\n"
 
     return all - str
@@ -176,7 +175,7 @@ def compute_str_stl_ndim2(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray
         if (np.isnan(mean[i])).all():
             continue
         for j in range(mean.shape[1]):
-            all_str += f"{mean[i,j]} +/- {std[i,j]}, "
+            all_str += f"{mean[i, j]} +/- {std[i, j]}, "
         all_str += "\n"
     all_mean = np.round(np.nanmean(mtl_arr, axis=(0, -1)), decimals=2)
     all_std = np.round(np.nanstd(mtl_arr, axis=(0, -1)), decimals=2)
@@ -252,7 +251,7 @@ def main():
                 for k in range(mean.shape[0]):
                     for j in range(mean.shape[2]):
                         for i in range(mean.shape[1]):
-                            all_str += f"{mean[k,i,j]} +/- {std[k,i,j]}, "
+                            all_str += f"{mean[k, i, j]} +/- {std[k, i, j]}, "
                         all_str += "\n"
             else:  # For when we are printing a single task cultivar model
                 all_str = compute_str_stl_ndim2(mtl_arr, mean, std)
@@ -267,7 +266,7 @@ def main():
                         if (np.isnan(mean[j, k, l])).all():
                             continue
                         for i in range(mean.shape[3]):
-                            all_str += f"{mean[j,k,l,i]} +/- {std[j,k,l,i]}, "
+                            all_str += f"{mean[j, k, l, i]} +/- {std[j, k, l, i]}, "
                         all_str += "\n"
                     all_str += "\n"
                 all_str += "\n"
@@ -277,13 +276,13 @@ def main():
                     if (np.isnan(mean[j, k])).all():
                         continue
                     for i in range(mean.shape[2]):
-                        all_str += f"{mean[j,k,i]} +/- {std[j,k,i]}, "
+                        all_str += f"{mean[j, k, i]} +/- {std[j, k, i]}, "
                     all_str += "\n"
                 all_str += "\n"
         elif mean.ndim == 2 and args.stl:  # For when we have multiple stl models
             for j in range(mean.shape[0]):
                 for i in range(mean.shape[1]):
-                    all_str += f"{mean[j,i]} +/- {std[j,i]}, "
+                    all_str += f"{mean[j, i]} +/- {std[j, i]}, "
                 all_str += "\n"
             all_mean = np.round(np.nanmean(mtl_arr, axis=(0, 1, -1)), decimals=2)
             all_std = np.round(np.nanstd(mtl_arr, axis=(0, 1, -1)), decimals=2)

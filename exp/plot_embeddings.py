@@ -6,19 +6,19 @@ Plots a variation over the embeddings for trained models
 Written by Will Solow, 2025
 """
 
-import os
-import numpy as np
 import argparse
-import torch
+import os
 from argparse import Namespace
-from omegaconf import DictConfig
-import torch.nn as nn
+
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn as nn
+from omegaconf import DictConfig
 
 import utils
-
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from plotters.plot_utils import gen_batch_data
-from model_engine.util import CROP_NAMES, REGIONS, STATIONS, SITES
 
 
 def plot(
@@ -126,7 +126,6 @@ def gen_embeddings_and_plot(
     all_stations = torch.unique(calibrator.stations[name]).unsqueeze(1)
     all_sites = torch.unique(calibrator.sites[name]).unsqueeze(1)
     for i in range(0, len(calibrator.data[name])):
-
         data = calibrator.data[name][i, None]
         dates = calibrator.dates[name][i, None]
         val = calibrator.val[name][i, None]

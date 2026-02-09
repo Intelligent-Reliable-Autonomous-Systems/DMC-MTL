@@ -12,9 +12,9 @@ import os
 import pickle as pkl
 
 import numpy as np
-from model_engine.util import CROP_NAMES, REGIONS, SITES, STATIONS
 
 import utils
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot
 from plotters.plotting_functions import compute_rmse_plot
 
@@ -23,21 +23,13 @@ def main():
 
     argparser = argparse.ArgumentParser(description="Plotting script for model")
     argparser.add_argument("--start_dir", type=str, default="_runs/")
-    argparser.add_argument(
-        "--break_early", action="store_true", help="If to break early when making data"
-    )
+    argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
     argparser.add_argument("--save", action="store_true", help="If to save the plots")
-    argparser.add_argument(
-        "--config", type=str, default="", help="To be filled in at runtime"
-    )
-    argparser.add_argument(
-        "--prefix", type=str, default=None, help="Prefix of files to search for"
-    )
+    argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
+    argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")
     argparser.add_argument("--num_runs", type=int, default=5)
     argparser.add_argument("--data_fname", type=str, default="rmse.txt")
-    argparser.add_argument(
-        "--synth_test", type=str, default=None, help="Prefix of synthetic testing data"
-    )
+    argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
@@ -70,9 +62,7 @@ def main():
             args.num_runs,
         )
     )
-    all_cultivar_avg_wf = np.zeros(
-        (len(CROP_NAMES[config0.DataConfig.dtype]), 3, args.num_runs)
-    )
+    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[config0.DataConfig.dtype]), 3, args.num_runs))
 
     for i, config in enumerate(config_dirs):
         print(config)
@@ -96,20 +86,14 @@ def main():
         output_data = [[], [], []]
         true_cultivar_data = [
             [
-                [
-                    [[[], [], []] for _ in range(calibrator.num_cultivars)]
-                    for _ in range(calibrator.num_sites)
-                ]
+                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
                 for _ in range(calibrator.num_stations)
             ]
             for _ in range(calibrator.num_regions)
         ]
         output_cultivar_data = [
             [
-                [
-                    [[[], [], []] for _ in range(calibrator.num_cultivars)]
-                    for _ in range(calibrator.num_sites)
-                ]
+                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
                 for _ in range(calibrator.num_stations)
             ]
             for _ in range(calibrator.num_regions)
@@ -145,15 +129,9 @@ def main():
 
         # Store data for averaging
         if "phenology" in config.DataConfig.dtype:
-            train_avg, _ = compute_rmse_plot(
-                config, true_data[0], output_data[0], fpath, save=False
-            )
-            test_avg, _ = compute_rmse_plot(
-                config, true_data[2], output_data[2], fpath, name="test", save=False
-            )
-            val_avg, _ = compute_rmse_plot(
-                config, true_data[1], output_data[1], fpath, name="val", save=False
-            )
+            train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
+            test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
+            val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
             all_avg_pheno[:, i] = np.concatenate(
                 (
                     train_avg[1:-1],
@@ -182,10 +160,7 @@ def main():
                         if (
                             len(true_cultivar_data[r][s][si][k][0]) == 0
                             and len(true_cultivar_data[r][s][si][k][2]) == 0
-                            and (
-                                len(true_cultivar_data[r][s][si][k][1]) == 0
-                                and config.DataConfig.val_set
-                            )
+                            and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
                         ):
                             continue
                         if "phenology" in config.DataConfig.dtype:

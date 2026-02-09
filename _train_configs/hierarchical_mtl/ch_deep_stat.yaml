@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/MTLHierarchy/GrapeColdhardiness/DeepMTLStat/
+log_path: /_runs/TextEmbedder/GrapeColdhardiness/DeepStat/
 run_name: deep_mtl
 seed: 0
 #
@@ -25,11 +25,11 @@ params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "E
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]
 DConfig: 
     type: Deep
-    arch: EmbedFCGRU
+    arch: DeepEmbedGRU
     hidden_dim: 2048
     embed_op: concat_stat
     loss_func: MSELoss
     learning_rate: .0002
     lr_factor: 0.95
-    batch_size: 12
+    batch_size: 36
     epochs: 400

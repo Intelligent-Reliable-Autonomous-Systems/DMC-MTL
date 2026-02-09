@@ -8,11 +8,13 @@ Written by, Will Solow 2025
 """
 
 import argparse
-import numpy as np
+
 import matplotlib.pyplot as plt
-from model_engine.util import CROP_NAMES
-from plotters.plotting_functions import C_AGG, C_PER
+import numpy as np
+
 import utils
+from assets import CROP_NAMES
+from plotters.plotting_functions import C_AGG, C_PER
 
 
 def main():

@@ -24,6 +24,7 @@ from train_algs.base.DMC_Base import (
     DeepEmbeddingGRU,
     EmbeddingFCFF,
     EmbeddingFCGRU,
+    EmbeddingTextGRU,
     FFTempResponse,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
@@ -71,6 +72,8 @@ class BaseRNN(BaseModel):
             nn = FFTempResponse(config, model)
         elif config.DConfig.arch == "ParamModel":
             nn = ParamModel(config, model)
+        elif config.DConfig.arch == "EmbedTextGRU":
+            nn = EmbeddingTextGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 
@@ -476,16 +479,15 @@ class DeepRNN(BaseRNN):
         hn_cn = self.nn.get_init_state(batch_size=b_size)
 
         # Run through entirety of time series predicting output for each step
-        for i in range(dlen):
-            output_predict, hn_cn = self.nn(
-                data[:, i],
-                hn_cn,
-                cultivars=cultivars,
-                regions=regions,
-                stations=stations,
-                sites=sites,
-            )
-            output_tens[:, i] = output_predict
+        output_predict, hn_cn = self.nn(
+            data,
+            hn_cn,
+            cultivars=cultivars,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+        )
+        output_tens = output_predict
 
         return output_tens, None, None
 
@@ -666,5 +668,47 @@ class HybridModel(BaseRNN):
             output = self.model.run(dates=dates[:, i], cultivars=cultivars, TRESP=temp_response)
 
             output_tens[:, i] = output
+
+        return output_tens, None, None
+
+
+class DeepTextRNN(BaseRNN):
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+        super(DeepTextRNN, self).__init__(config, data)
+
+        from sentence_transformers import SentenceTransformer
+
+        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+
+    def forward(
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        hn_cn = self.nn.get_init_state(batch_size=b_size)
+
+        # Run through entirety of time series predicting output for each step
+
+        output_predict, hn_cn = self.nn(
+            data,
+            hn_cn,
+            cultivars=cultivars,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+            text_embedder=self.text_model,
+        )
+        output_tens = output_predict
 
         return output_tens, None, None

@@ -1,9 +1,11 @@
-from concurrent.futures import ProcessPoolExecutor, as_completed
-import subprocess
 import argparse
 import os
-from model_engine.util import CROP_NAMES
+import subprocess
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
 import numpy as np
+
+from assets import CROP_NAMES
 
 
 def run_module(job: list[str]) -> None:

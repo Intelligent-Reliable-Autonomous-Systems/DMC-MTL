@@ -6,19 +6,19 @@ Utility Files for training algorithms and data processing
 Written by Will Solow, 2025
 """
 
-import time
 import os
+import time
 from argparse import Namespace
+
+import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
-from torch.nn import _reduction as _Reduction
 import torch.nn.functional as F
-import numpy as np
 from huggingface_hub import upload_folder
-from omegaconf import OmegaConf, DictConfig
-
 from model_engine.util import PHENOLOGY_INT
+from omegaconf import DictConfig, OmegaConf
+from torch.nn import _reduction as _Reduction
+from torch.utils.tensorboard import SummaryWriter
 
 
 def set_embedding_op(model: nn.Module, embed_op: str) -> int:
@@ -237,7 +237,7 @@ def log_training(
     else:
         raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
-    calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
+    # calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
 
     p_str = f"############### Epoch {epoch} ###############\n"
     p_str += f"Epoch Time: {time.time() - st:0.2f}s\n"

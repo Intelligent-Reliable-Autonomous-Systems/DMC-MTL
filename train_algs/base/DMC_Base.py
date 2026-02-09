@@ -204,7 +204,7 @@ class EmbeddingTextGRU(BaseModule):
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
-        self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
+        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
 
@@ -267,14 +267,20 @@ class EmbeddingTextGRU(BaseModule):
         elif self.embed_op_str == "concat":
             gru_input = self.embed_op(cult_embed, input)
 
-        x = self.fc1(gru_input)
+        """x = self.fc1(gru_input)
         x = self.fc2(x)
         output, hn = self.rnn(x, hn)
         out = F.relu(output)
         out = F.relu(self.fc3(out))
-        params = self.hidden_to_params(out)
+        output = self.hidden_to_params(out)"""
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x, hn)
 
-        return params, hn
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out)
+
+        return output, hn
 
 
 class DeepEmbeddingGRU(BaseModule):
@@ -346,14 +352,20 @@ class DeepEmbeddingGRU(BaseModule):
         elif self.embed_op_str == "concat":
             gru_input = self.embed_op(cult_embed, input)
 
-        x = self.fc1(gru_input)
+        """x = self.fc1(gru_input)
         x = self.fc2(x)
         output, hn = self.rnn(x, hn)
         out = F.relu(output)
         out = F.relu(self.fc3(out))
-        params = self.hidden_to_output(out)
+        output = self.hidden_to_output(out)"""
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x, hn)
 
-        return params, hn
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out)
+
+        return output, hn
 
 
 class EmbeddingFCFF(BaseModule):

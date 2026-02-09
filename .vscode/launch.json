@@ -24,7 +24,7 @@
             "request": "launch",
             "module": "trainers.train_model",
             "console": "integratedTerminal",
-            "args": "--config hierarchical_mtl/ch_deep_stat"
+            "args": "--config mthl/ch_deep_reg_text_verb --seed 0"
         },
     ]
 }

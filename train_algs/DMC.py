@@ -25,6 +25,7 @@ from train_algs.base.DMC_Base import (
     EmbeddingFCFF,
     EmbeddingFCGRU,
     EmbeddingTextGRU,
+    EmbeddingVerboseTextGRU,
     FFTempResponse,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
@@ -74,6 +75,8 @@ class BaseRNN(BaseModel):
             nn = ParamModel(config, model)
         elif config.DConfig.arch == "EmbedTextGRU":
             nn = EmbeddingTextGRU(config, model)
+        elif config.DConfig.arch == "EmbedTextVerbGRU":
+            nn = EmbeddingVerboseTextGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 

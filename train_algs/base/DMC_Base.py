@@ -7,7 +7,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 from omegaconf import DictConfig
 
-from assets import CROP_NAMES, CULT_STR, REGION_STR, REGIONS, SITE_STR, SITES, STATION_STR, STATIONS
+from assets import (
+    CROP_NAMES,
+    CULT_STR,
+    CULT_STR_VERB,
+    REGION_STR,
+    REGION_STR_VERB,
+    REGIONS,
+    SITE_STR,
+    SITE_STR_VERB,
+    SITES,
+    STATION_STR,
+    STATION_STR_VERB,
+    STATIONS,
+)
 from train_algs.base.util import set_embedding_op
 
 
@@ -267,12 +280,120 @@ class EmbeddingTextGRU(BaseModule):
         elif self.embed_op_str == "concat":
             gru_input = self.embed_op(cult_embed, input)
 
-        """x = self.fc1(gru_input)
-        x = self.fc2(x)
-        output, hn = self.rnn(x, hn)
-        out = F.relu(output)
-        out = F.relu(self.fc3(out))
-        output = self.hidden_to_params(out)"""
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x, hn)
+
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out)
+
+        return output, hn
+
+
+class EmbeddingVerboseTextGRU(BaseModule):
+    """
+    Multi Task GRU
+    """
+
+    def __init__(self, c: DictConfig, model: nn.Module) -> None:
+        super(EmbeddingVerboseTextGRU, self).__init__(c, model)
+
+        self.cult_embedder = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, self.input_dim),
+        )
+        self.site_embedder = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, self.input_dim),
+        )
+
+        self.stat_embedder = nn.Sequential(
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, self.input_dim),
+        )
+
+        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
+        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
+        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
+        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+
+    def forward(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        text_embedder: nn.Module = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        with torch.no_grad():
+            cult_embed_text = text_embedder.encode(
+                CULT_STR_VERB[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=input.device,
+            ).clone()
+            site_embed_text = text_embedder.encode(
+                SITE_STR_VERB[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=input.device,
+            ).clone()
+            stat_embed_text = text_embedder.encode(
+                STATION_STR_VERB[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=input.device,
+            ).clone()
+            reg_embed_text = text_embedder.encode(
+                REGION_STR_VERB[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=input.device,
+            ).clone()
+        cult_embed = self.cult_embedder(site_embed_text)
+        site_embed = self.site_embedder(cult_embed_text)
+        stat_embed = self.stat_embedder(stat_embed_text)
+        reg_embed = self.stat_embedder(reg_embed_text)
+
+        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
+        site_embed = site_embed.unsqueeze(1).expand_as(input)
+        stat_embed = stat_embed.unsqueeze(1).expand_as(input)
+        reg_embed = reg_embed.unsqueeze(1).expand_as(input)
+
+        if self.embed_op_str == "concat_reg":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
+        elif self.embed_op_str == "concat_stat":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
+        elif self.embed_op_str == "concat_site":
+            gru_input = self.embed_op(cult_embed, site_embed, input)
+        elif self.embed_op_str == "concat":
+            gru_input = self.embed_op(cult_embed, input)
+
         x = self.fc1(gru_input).relu()
         x = self.fc2(x).relu()
         gru_out, hn = self.rnn(x, hn)

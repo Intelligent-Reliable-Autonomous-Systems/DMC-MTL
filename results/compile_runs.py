@@ -75,7 +75,7 @@ def main():
 
         config, data, fpath = utils.load_config_data_fpath(args)
         args.cultivar = config.DataConfig.cultivar
-        config.DConfig.batch_size = 128
+        config.DConfig.batch_size = 72
         calibrator = utils.load_model_from_config(config, data)
 
         calibrator.load_model(f"{fpath}", name=args.rnn_name)

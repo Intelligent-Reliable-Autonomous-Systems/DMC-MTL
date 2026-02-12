@@ -1,35 +1,83 @@
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text --region WA --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text --region WA --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text --region WA --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text --region WA --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text --region WA --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
 
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OliverEast], Cultivar: [Cabernet_Franc]}"
 
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region BCOV --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region BCOV --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region BCOV --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region BCOV --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region BCOV --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
 
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region ONNP --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region ONNP --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region ONNP --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region ONNP --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region ONNP --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
 
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region WA --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region WA --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region WA --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region WA --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_stat_text_verb --region WA --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
 
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text_verb --seed 0
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text_verb --seed 1
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text_verb --seed 2
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text_verb --seed 3
-python3 -m trainers.train_model --config mthl/ch_deep_reg_text_verb --seed 4
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 0 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 1 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 2 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 3 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station --seed 4 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Franc]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Cabernet_Sauvignon]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Chardonnay]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosSoutheast], Cultivar: [Syrah]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OKFallsWest], Cultivar: [Gewurztraminer]}"

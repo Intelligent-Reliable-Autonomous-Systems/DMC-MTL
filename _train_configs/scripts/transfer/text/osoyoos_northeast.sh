@@ -30,3 +30,9 @@ python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_stati
 python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Syrah]}"
 python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Syrah]}"
 python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Syrah]}"
+
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 0 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 1 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 2 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 3 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"
+python3 -m trainers.train_model --config mthl/transfer/ch_deep_withold_mtl_station_text --seed 4 --region BCOV --withold "{Site: [OsoyoosNortheast], Cultivar: [Pinot_Noir]}"

@@ -7,22 +7,21 @@ Written by Will Solow, 2025
 """
 
 from argparse import Namespace
-from omegaconf import DictConfig
+
 import numpy as np
 import torch
-import torch.nn.functional as F
 import torch.nn as nn
-import matplotlib.pyplot as plt
-
+import torch.nn.functional as F
 from model_engine.util import PHENOLOGY_INT
+from omegaconf import DictConfig
+
 from plotters.plotting_functions import (
-    plot_output_phenology,
     plot_output_coldhardiness,
-    plot_output_wofost,
     plot_output_coldhardiness_error,
     plot_output_coldhardiness_transfer,
+    plot_output_phenology,
+    plot_output_wofost,
 )
-from train_algs.base.process_data import unnormalize
 
 
 def compute_obs_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
@@ -103,6 +102,8 @@ def gen_batch_data(
     stations: torch.Tensor,
     sites: torch.Tensor,
     days: int = None,
+    name: str = None,
+    transfer_rate: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Generates model output from a single batch
@@ -117,6 +118,8 @@ def gen_batch_data(
             stations=stations,
             sites=sites,
             days=days,
+            transfer_rate=transfer_rate,
+            name=name,
         )
 
     true_data = val_data.cpu().squeeze().numpy()
@@ -141,6 +144,7 @@ def gen_batch_transfer_data(
     sites: torch.Tensor,
     all_ids: torch.Tensor,
     days: int = None,
+    name: str = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Generates model output from a single batch
@@ -158,6 +162,7 @@ def gen_batch_transfer_data(
             days=days,
             transfer_rate=1.0,
             all_ids=all_ids,
+            name=name,
         )
 
     true_data = val_data.cpu().squeeze().numpy()
@@ -181,6 +186,7 @@ def gen_all_data_and_plot(
     days: int = None,
     all_inds: list[np.ndarray] = None,
     cult_inds: list[np.ndarray] = None,
+    transfer_rate: float = 0.0,
 ) -> None:
     """
     Generates data for train and testing data and plots accordingly for RNNs
@@ -212,6 +218,8 @@ def gen_all_data_and_plot(
             stations,
             sites,
             days=days,
+            name=name,
+            transfer_rate=transfer_rate,
         )
         true_arr.append(true)
         output_arr.append(output)
@@ -401,6 +409,7 @@ def gen_all_data_and_plot_transfer(
     days: int = None,
     all_inds: list[np.ndarray] = None,
     cult_inds: list[np.ndarray] = None,
+    transfer_rate: float = 0.0,
 ) -> None:
     """
     Generates data for train and testing data and plots accordingly for RNNs
@@ -433,6 +442,7 @@ def gen_all_data_and_plot_transfer(
             sites,
             calibrator.all_ids[name],
             days=days,
+            name=name,
         )
         true_arr.append(true)
         output_arr.append(output)

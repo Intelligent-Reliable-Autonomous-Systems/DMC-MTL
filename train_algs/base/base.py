@@ -17,7 +17,7 @@ from model_engine.util import PHENOLOGY_INT
 from omegaconf import DictConfig
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from train_algs.base.process_data import process_data_novalset, process_data_valset
+from train_algs.base.process_data import process_data_novalset
 from train_algs.base.util import ScaledMSELoss, StageCrossEntropyLoss, StageMSELoss
 
 
@@ -31,7 +31,7 @@ class BaseModel(nn.Module):
         self.config = config
         self.target_mask = np.nan
 
-        process_data_valset(self, data) if config.DataConfig.val_set else process_data_novalset(self, data)
+        process_data_novalset(self, data)
 
     def make_optimizer(self, model: nn.Module) -> None:
         self.learning_rate = self.config.DConfig.learning_rate
@@ -164,8 +164,14 @@ class BaseModel(nn.Module):
         """
         extra_feat = (
             0
-            if config.DConfig.type
-            in ["Deep", "Hybrid", "NoObsParam", "Residual", "WindowParam", "TransferDeep", "DeepText"]
+            if "Deep" in config.DConfig.type
+            or config.DConfig.type
+            in [
+                "Hybrid",
+                "NoObsParam",
+                "Residual",
+                "WindowParam",
+            ]
             else len(config.PConfig.output_vars)
         )
         extra_feat = (

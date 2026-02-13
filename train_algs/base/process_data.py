@@ -290,6 +290,15 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
         else None
     )
 
+    model.all_inds = {
+        "train": torch.cat(
+            (model.regions["train"], model.stations["train"], model.sites["train"], model.cultivars["train"]), dim=1
+        ),
+        "test": torch.cat(
+            (model.regions["test"], model.stations["test"], model.sites["test"], model.cultivars["test"]), dim=1
+        ),
+    }
+
     model.all_ids = {
         "train": torch.unique(
             torch.cat(
@@ -303,108 +312,6 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
             ),
             dim=0,
         ),
-    }
-
-    if len(model.data["test"]) < 1:
-        raise Exception("Insuffient per-cultivar data to build test set")
-
-
-def process_data_valset(model: nn.Module, data: list[pd.DataFrame]) -> None:
-    """Process all of the initial data"""
-
-    model.output_vars = model.config.PConfig.output_vars
-    model.input_vars = model.config.PConfig.input_vars
-
-    model.params = model.config.params
-    model.params_range = torch.tensor(np.array(model.config.params_range, dtype=np.float32)).to(model.device)
-
-    # Get normalized (weather) data
-    normalized_input_data, model.drange = embed_and_normalize_zscore([d.loc[:, model.input_vars] for d in data])
-
-    normalized_input_data = pad_sequence(normalized_input_data, batch_first=True, padding_value=0).to(model.device)
-    model.drange = model.drange.to(torch.float32).to(model.device)
-
-    # Get input data for use with model to avoid unnormalizing
-    if "CULTIVAR" in data[0].columns:
-        extra_feats = ["CULTIVAR"]
-        extra_feats = extra_feats + ["DAY"] if "DAY" not in model.input_vars else extra_feats
-        model.input_data = make_tensor_inputs(model.config, [d.loc[:, model.input_vars + extra_feats] for d in data])
-    else:
-        extra_feats = ["DAY"] if "DAY" not in model.input_vars else []
-        model.input_data = make_tensor_inputs(model.config, [d.loc[:, model.input_vars + extra_feats] for d in data])
-    # Get validation data
-    output_data, output_range = embed_output([d.loc[:, model.output_vars] for d in data])
-    output_data = pad_sequence(output_data, batch_first=True, padding_value=model.target_mask).to(model.device)
-    model.output_range = output_range.to(torch.float32).to(model.device)
-
-    # Get the dates
-    dates = [d.loc[:, "DAY"].to_numpy().astype("datetime64[D]") for d in data]
-    max_len = max(len(arr) for arr in dates)
-    # Pad each array to the maximum length
-    dates = [np.pad(arr, (0, max_len - len(arr)), mode="maximum") for arr in dates]
-    model.max_dlen = max_len
-
-    # Shuffle to get train and test splits for data
-
-    train_inds = np.empty(shape=(0,), dtype=np.int32)
-    test_inds = np.empty(shape=(0,), dtype=np.int32)
-    val_inds = np.empty(shape=(0,), dtype=np.int32)
-    cultivar_data = np.array([d.loc[0, "CULTIVAR"] for d in data])
-    x = 2
-    v = 1
-    for c in range(len(CROP_NAMES[model.config.DataConfig.dtype])):
-        if len(cultivar_inds) < 4:
-            continue
-        else:
-            print(f"Insufficient Data: {CROP_NAMES[model.config.DataConfig.dtype][c]}: {len(cultivar_inds)}")
-        cultivar_inds = np.argwhere(c == cultivar_data).flatten()
-        np.random.shuffle(cultivar_inds)
-        test_inds = np.concatenate((test_inds, cultivar_inds[:x]))
-        val_cultivar_inds = np.asarray(list(set(cultivar_inds) - set(test_inds)))
-        np.random.shuffle(val_cultivar_inds)
-        val_inds = np.concatenate((val_inds, val_cultivar_inds[:v])).astype(np.int32)
-
-    train_inds = np.array(list(set(np.arange(len(cultivar_data))) - set(test_inds) - set(val_inds)))
-    np.random.shuffle(train_inds)
-    np.random.shuffle(val_inds)
-    np.random.shuffle(test_inds)
-
-    model.data = {
-        "train": torch.stack([normalized_input_data[i] for i in train_inds]).to(torch.float32),
-        "val": (
-            torch.stack([normalized_input_data[i] for i in val_inds]).to(torch.float32)
-            if len(val_inds) > 0
-            else torch.tensor([])
-        ),
-        "test": (
-            torch.stack([normalized_input_data[i] for i in test_inds]).to(torch.float32)
-            if len(test_inds) > 0
-            else torch.tensor([])
-        ),
-    }
-    model.val = {
-        "train": torch.stack([output_data[i] for i in train_inds]).to(torch.float32),
-        "val": (
-            torch.stack([output_data[i] for i in val_inds]).to(torch.float32) if len(val_inds) > 0 else torch.tensor([])
-        ),
-        "test": (
-            torch.stack([output_data[i] for i in test_inds]).to(torch.float32)
-            if len(test_inds) > 0
-            else torch.tensor([])
-        ),
-    }
-    model.dates = {
-        "train": np.array([dates[i] for i in train_inds]),
-        "val": (np.array([dates[i] for i in val_inds]) if len(val_inds) > 0 else np.array([])),
-        "test": (np.array([dates[i] for i in test_inds]) if len(test_inds) > 0 else np.array([])),
-    }
-
-    cultivar_data = torch.tensor([d.loc[0, "CULTIVAR"] for d in data]).to(torch.float32).to(model.device).unsqueeze(1)
-    model.num_cultivars = len(torch.unique(cultivar_data))
-    model.cultivars = {
-        "train": torch.stack([cultivar_data[i] for i in train_inds]).to(torch.float32),
-        "val": torch.stack([cultivar_data[i] for i in val_inds]).to(torch.float32),
-        "test": torch.stack([cultivar_data[i] for i in test_inds]).to(torch.float32),
     }
 
     if len(model.data["test"]) < 1:

@@ -1,0 +1,9 @@
+
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_CreekShores-Cultivar_Riesling-
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_CreekShores-Cultivar_Syrah-
+
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_LincolnLakeshore-Cultivar_Pinot_Noir-
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_LincolnLakeshore-Cultivar_Riesling-
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_LincolnLakeshore-Cultivar_Sauvignon_Blanc-
+
+python3 -m results.compile_runs --start_dir _runs/MTHLTransfer/GrapeColdHardiness/DeepTextStat/ONNP/All/All/All/Site_NiagaraRiver-Cultivar_Syrah-

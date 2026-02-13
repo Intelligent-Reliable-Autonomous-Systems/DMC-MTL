@@ -29,6 +29,7 @@ def main():
     argparser.add_argument("--save", action="store_false", help="If to save the plots")
     argparser.add_argument("--fname", type=str, default="data.txt", help="File to save data to")
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
+    argparser.add_argument("--transfer_rate", type=float, default=0.0)
     argparser.add_argument(
         "--mode",
         default="default",
@@ -41,7 +42,7 @@ def main():
     fpath = f"{os.getcwd()}/{args.config}"
 
     config, data, fpath = utils.load_config_data_fpath(args)
-
+    config.DConfig.batch_size = 12
     # Plot tensorboard outputs
     try:
         plot_loss(fpath, config)
@@ -89,6 +90,7 @@ def main():
         true_cultivar_data,
         output_cultivar_data,
         name="train",
+        transfer_rate=args.transfer_rate,
     )
 
     plot_func(
@@ -101,6 +103,7 @@ def main():
         true_cultivar_data,
         output_cultivar_data,
         name="test",
+        transfer_rate=args.transfer_rate,
     )
     if config.DataConfig.val_set:
         plot_func(
@@ -113,6 +116,7 @@ def main():
             true_cultivar_data,
             output_cultivar_data,
             name="val",
+            transfer_rate=args.transfer_rate,
         )
 
 

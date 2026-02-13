@@ -229,6 +229,7 @@ def log_training(
     elif "coldhardiness" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
+            print("##### SAVING BEST MODEL#####")
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
     elif "wofost" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
@@ -237,7 +238,7 @@ def log_training(
     else:
         raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
 
-    # calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
+    calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
 
     p_str = f"############### Epoch {epoch} ###############\n"
     p_str += f"Epoch Time: {time.time() - st:0.2f}s\n"
@@ -283,8 +284,6 @@ def log_error_training(
     if calibrator.best_eval_loss > eval_loss:
         calibrator.best_eval_loss = eval_loss
         calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
-
-    # calibrator.save_model(f"{fpath}", name="rnn_model_current.pt")
 
     p_str = f"############### Epoch {epoch} ###############\n"
     p_str += f"Train loss: {train_loss}\n"

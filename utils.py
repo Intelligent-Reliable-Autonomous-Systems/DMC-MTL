@@ -337,6 +337,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC_Transfer.ParamTransferRNN(config, data)
     elif config.DConfig.type == "TransferDeep":
         calibrator = DMC_Transfer.DeepTransferRNN(config, data)
+    elif config.DConfig.type == "AdaptDeep":
+        calibrator = DMC_Transfer.DeepAdaptRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 

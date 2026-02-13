@@ -31,6 +31,7 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     ParamModel,
 )
+from train_algs.base.DMC_Transfer_Base import DeepAdaptTransferGRU, DeepEmbeddingTransferGRU, EmbeddingTransferGRU
 from train_algs.base.util import (
     cumulative_error,
     get_grad_norm,
@@ -77,6 +78,12 @@ class BaseRNN(BaseModel):
             nn = EmbeddingTextGRU(config, model)
         elif config.DConfig.arch == "EmbedTextVerbGRU":
             nn = EmbeddingVerboseTextGRU(config, model)
+        elif config.DConfig.arch == "EmbedTransferGRU":
+            nn = EmbeddingTransferGRU(config, model)
+        elif config.DConfig.arch == "DeepEmbedTransferGRU":
+            nn = DeepEmbeddingTransferGRU(config, model)
+        elif config.DConfig.arch == "DeepAdaptGRU":
+            nn = DeepAdaptTransferGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 
@@ -90,7 +97,6 @@ class BaseRNN(BaseModel):
         with open(f"{log_path}/config.yaml", "w", encoding="utf-8") as fp:
             OmegaConf.save(config=self.config, f=fp.name)
         fp.close()
-        # torch.save(self.drange, f"{log_path}/model_drange.pt")
 
         self.best_cum_rmse = float("inf")
         self.best_eval_loss = float("inf")
@@ -117,8 +123,18 @@ class BaseRNN(BaseModel):
             stations_shuffled = self.stations[train_name][inds] if self.stations is not None else None
             sites_shuffled = self.sites[train_name][inds] if self.sites is not None else None
             train_avg = torch.zeros(size=(4,)).to(self.device)
+            all_ids = self.all_ids[train_name]
 
             # Training
+            transfer_start = 50
+            train_transfer = 0 if epoch < transfer_start else 1
+            if train_transfer == 1:
+                for name, param in self.nn.named_parameters():
+                    if any(name.startswith(p) for p in ["transfer"]):
+                        param.requires_grad = True
+                    else:
+                        param.requires_grad = False
+
             for i in range(0, len(self.data[train_name]), self.batch_size):
                 self.optimizer.zero_grad()
 
@@ -131,6 +147,7 @@ class BaseRNN(BaseModel):
                 batch_stations = stations_shuffled[i : i + self.batch_size] if stations_shuffled is not None else None
                 batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
+
                 output, _, model_output = self.forward(
                     batch_data,
                     batch_dates,
@@ -138,6 +155,10 @@ class BaseRNN(BaseModel):
                     regions=batch_regions,
                     stations=batch_stations,
                     sites=batch_sites,
+                    all_ids=all_ids,
+                    transfer_rate=train_transfer,
+                    ch=target,
+                    name=train_name,
                 )
 
                 # Compute PINN Loss
@@ -173,8 +194,16 @@ class BaseRNN(BaseModel):
                     mask = ~torch.isnan(target)
                     loss = (loss * mask).sum() / mask.sum()
                     loss.backward()
+                before = {name: p.detach().clone() for name, p in self.nn.named_parameters()}
+                (
+                    self.embed_optimizer.step()
+                    if train_transfer == 1 and hasattr(self, "embed_optimizer")
+                    else self.optimizer.step()
+                )
+                for name, p in self.nn.named_parameters():
+                    delta = (p - before[name]).abs().max()
+                    print(name, delta.item())
 
-                self.optimizer.step()
                 train_loss += loss.item()
                 grad += get_grad_norm(self.nn)
 
@@ -182,11 +211,12 @@ class BaseRNN(BaseModel):
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
             train_loss = train_loss if i == 0 else train_loss / i
+
             # Evaluation
             test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
-
-            with torch.no_grad():
+            test_transfer = 0 if epoch < transfer_start else 1
+            with torch.inference_mode():
                 for j in range(0, len(self.data[test_name]), self.batch_size):
                     self.optimizer.zero_grad()
                     batch_data = self.data[test_name][j : j + self.batch_size]
@@ -203,6 +233,7 @@ class BaseRNN(BaseModel):
                     batch_sites = self.sites[test_name][j : j + self.batch_size] if self.sites is not None else None
 
                     eval_target = self.val[test_name][j : j + self.batch_size]
+                    test_all_ids = self.all_ids[test_name]
                     eval_output, _, eval_model_output = self.forward(
                         batch_data,
                         batch_dates,
@@ -210,6 +241,10 @@ class BaseRNN(BaseModel):
                         regions=batch_regions,
                         stations=batch_stations,
                         sites=batch_sites,
+                        all_ids=test_all_ids,
+                        transfer_rate=test_transfer,
+                        ch=eval_target,
+                        name=test_name,
                     )
 
                     # Compute PINN Loss

@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J lincoln_lakeshore
-#SBATCH -o output/lincoln_lakeshore.out
-#SBATCH -e output/lincoln_lakeshore.err
+#SBATCH -J text_lincoln_lakeshore
+#SBATCH -o output/text_lincoln_lakeshore.out
+#SBATCH -e output/text_lincoln_lakeshore.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

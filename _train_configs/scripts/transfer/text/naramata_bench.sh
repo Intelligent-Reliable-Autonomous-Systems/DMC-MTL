@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J naramata_bench
-#SBATCH -o output/naramata_bench.out
-#SBATCH -e output/naramata_bench.err
+#SBATCH -J text_naramata_bench
+#SBATCH -o output/text_naramata_bench.out
+#SBATCH -e output/text_naramata_bench.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

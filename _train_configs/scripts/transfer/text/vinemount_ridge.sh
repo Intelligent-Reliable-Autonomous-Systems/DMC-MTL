@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J vinemount_ridge
-#SBATCH -o output/vinemount_ridge.out
-#SBATCH -e output/vinemount_ridge.err
+#SBATCH -J text_vinemount_ridge
+#SBATCH -o output/text_vinemount_ridge.out
+#SBATCH -e output/text_vinemount_ridge.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J ok_falls_west
-#SBATCH -o output/ok_falls_west.out
-#SBATCH -e output/ok_falls_west.err
+#SBATCH -J text_ok_falls_west
+#SBATCH -o output/text_ok_falls_west.out
+#SBATCH -e output/text_ok_falls_west.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

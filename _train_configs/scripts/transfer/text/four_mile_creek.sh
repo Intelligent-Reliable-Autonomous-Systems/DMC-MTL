@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J four_mile_creek
-#SBATCH -o output/four_mile_creek.out
-#SBATCH -e output/four_mile_creek.err
+#SBATCH -J text_four_mile_creek
+#SBATCH -o output/text_four_mile_creek.out
+#SBATCH -e output/text_four_mile_creek.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

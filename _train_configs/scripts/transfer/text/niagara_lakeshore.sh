@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J niagara_lakeshore
-#SBATCH -o output/niagara_lakeshore.out
-#SBATCH -e output/niagara_lakeshore.err
+#SBATCH -J text_niagara_lakeshore
+#SBATCH -o output/text_niagara_lakeshore.out
+#SBATCH -e output/text_niagara_lakeshore.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

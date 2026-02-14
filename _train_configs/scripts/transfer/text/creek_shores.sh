@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J creek_shores
-#SBATCH -o output/creek_shores.out
-#SBATCH -e output/creek_shores.err
+#SBATCH -J text_creek_shores
+#SBATCH -o output/text_creek_shores.out
+#SBATCH -e output/text_creek_shores.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

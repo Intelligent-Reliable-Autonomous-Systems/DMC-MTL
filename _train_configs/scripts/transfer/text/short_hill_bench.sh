@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J short_hill_bench
-#SBATCH -o output/short_hill_bench.out
-#SBATCH -e output/short_hill_bench.err
+#SBATCH -J text_short_hill_bench
+#SBATCH -o output/text_short_hill_bench.out
+#SBATCH -e output/text_short_hill_bench.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

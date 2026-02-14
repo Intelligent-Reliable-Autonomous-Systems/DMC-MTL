@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J twenty_mile_bench
-#SBATCH -o output/twenty_mile_bench.out
-#SBATCH -e output/twenty_mile_bench.err
+#SBATCH -J text_twenty_mile_bench
+#SBATCH -o output/text_twenty_mile_bench.out
+#SBATCH -e output/text_twenty_mile_bench.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

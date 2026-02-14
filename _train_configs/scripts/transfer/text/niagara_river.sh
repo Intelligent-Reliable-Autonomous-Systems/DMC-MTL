@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J niagara_river
-#SBATCH -o output/niagara_river.out
-#SBATCH -e output/niagara_river.err
+#SBATCH -J text_niagara_river
+#SBATCH -o output/text_niagara_river.out
+#SBATCH -e output/text_niagara_river.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

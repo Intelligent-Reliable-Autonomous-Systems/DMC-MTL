@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J blacksage
-#SBATCH -o output/blacksage.out
-#SBATCH -e output/blacksage.err
+#SBATCH -J text_blacksage
+#SBATCH -o output/text_blacksage.out
+#SBATCH -e output/text_blacksage.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

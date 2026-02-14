@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J stdavid_bench
-#SBATCH -o output/stdavid_bench.out
-#SBATCH -e output/stdavid_bench.err
+#SBATCH -J text_stdavid_bench
+#SBATCH -o output/text_stdavid_bench.out
+#SBATCH -e output/text_stdavid_bench.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

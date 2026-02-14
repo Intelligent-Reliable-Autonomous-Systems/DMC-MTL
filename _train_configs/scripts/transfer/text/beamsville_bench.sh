@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J beamsville_bench
-#SBATCH -o output/beamsville_bench.out
-#SBATCH -e output/beamsville_bench.err
+#SBATCH -J text_beamsville_bench
+#SBATCH -o output/text_beamsville_bench.out
+#SBATCH -e output/text_beamsville_bench.err
 #SBATCH -p eecs,gpu
 #SBATCH -t 2-00:00:00
 #SBATCH --gres=gpu:1

@@ -38,6 +38,7 @@ from train_algs.base.util import (
     log_training,
     setup_logging,
 )
+from utils import CROP_NAMES
 
 
 class BaseRNN(BaseModel):
@@ -126,8 +127,7 @@ class BaseRNN(BaseModel):
             all_ids = self.all_ids[train_name]
 
             # Training
-            transfer_start = 50
-            train_transfer = 0 if epoch < transfer_start else 1
+            train_transfer = 0 if epoch < self.config.DConfig.transfer_start else 1
             if train_transfer == 1:
                 for name, param in self.nn.named_parameters():
                     if any(name.startswith(p) for p in ["transfer"]):
@@ -194,15 +194,11 @@ class BaseRNN(BaseModel):
                     mask = ~torch.isnan(target)
                     loss = (loss * mask).sum() / mask.sum()
                     loss.backward()
-                before = {name: p.detach().clone() for name, p in self.nn.named_parameters()}
                 (
                     self.embed_optimizer.step()
                     if train_transfer == 1 and hasattr(self, "embed_optimizer")
                     else self.optimizer.step()
                 )
-                for name, p in self.nn.named_parameters():
-                    delta = (p - before[name]).abs().max()
-                    print(name, delta.item())
 
                 train_loss += loss.item()
                 grad += get_grad_norm(self.nn)
@@ -215,7 +211,7 @@ class BaseRNN(BaseModel):
             # Evaluation
             test_loss = 0
             eval_avg = torch.zeros(size=(4,)).to(self.device)
-            test_transfer = 0 if epoch < transfer_start else 1
+            test_transfer = 0 if epoch < self.config.DConfig.transfer_start else 1
             with torch.inference_mode():
                 for j in range(0, len(self.data[test_name]), self.batch_size):
                     self.optimizer.zero_grad()
@@ -312,7 +308,7 @@ class ParamRNN(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -540,7 +536,7 @@ class PINNRNN(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -596,7 +592,7 @@ class ResidualRNN(BaseRNN):
             inputprovider=self.input_data,
             device=self.device,
         )
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -639,7 +635,7 @@ class StationaryModel(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -679,7 +675,7 @@ class HybridModel(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,

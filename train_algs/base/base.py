@@ -7,6 +7,7 @@ Written by Will Solow, 2025
 """
 
 import random
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -125,16 +126,28 @@ class BaseModel(nn.Module):
         """
         torch.save(self.nn.state_dict(), f"{path}/{name}")
 
+    def grow_embedding(self, nn: nn.Module, ckpt: OrderedDict, name: str):
+        old = ckpt[name]  # [old_n, d]
+        new = nn.state_dict()[name]  # [new_n, d]
+
+        new[: old.shape[0]] = old
+        new[old.shape[0] :].zero_()
+        ckpt[name] = new
+
+    # remaining rows stay randomly initialized
+
     def load_model(self, path: str, name: str = "rnn_model.pt") -> None:
         """
         Load Model
         """
-        self.nn.load_state_dict(torch.load(f"{path}/{name}", weights_only=True, map_location=self.device), strict=False)
+        ckpt = torch.load(f"{path}/{name}", weights_only=True, map_location=self.device)
+        self.grow_embedding(self.nn, ckpt, "reg_embedding_layer.weight")
+        self.grow_embedding(self.nn, ckpt, "stat_embedding_layer.weight")
+        self.grow_embedding(self.nn, ckpt, "site_embedding_layer.weight")
+        self.grow_embedding(self.nn, ckpt, "cult_embedding_layer.weight")
 
         try:
-            self.nn.load_state_dict(
-                torch.load(f"{path}/{name}", weights_only=True, map_location=self.device), strict=False
-            )
+            self.nn.load_state_dict(ckpt, strict=False)
         except:
             print("Unable to load NN model..")
 

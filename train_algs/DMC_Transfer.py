@@ -15,6 +15,7 @@ from model_engine.util import per_task_param_loader
 from omegaconf import DictConfig
 
 from train_algs.DMC import BaseRNN
+from utils import CROP_NAMES
 
 
 class DeepTransferRNN(BaseRNN):
@@ -158,7 +159,7 @@ class ParamTransferRNN(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,

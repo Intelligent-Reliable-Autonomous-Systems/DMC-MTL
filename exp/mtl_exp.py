@@ -3,10 +3,6 @@ import os
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-import numpy as np
-
-from assets import CROP_NAMES
-
 
 def run_module(job: list[str]) -> None:
     mod, args = job
@@ -48,16 +44,10 @@ def main():
     args = parser.parse_args()
 
     jobs = []
-    cultivars = CROP_NAMES[args.dtype]
-    cultivars = np.append(cultivars, ["All"], axis=0)
-    for seed in range(5):
-        if seed < 1:
-            continue
-        for cult in cultivars:
-            if seed < 3:
-                if cult not in ["Cabernet_Franc", "Cabernet_Sauvignon"]:
-                    continue
-            for region in ["BCOV", "ONNP", "WA"]:
+    config = ["mthl/ch_deep"]
+    for c in config:
+        for seed in range(5):
+            for region in ["MI", "NS", "NY"]:
                 stations = get_subfolders(f"{args.dpath}/{region}/")
                 for station in stations:
                     sites = get_subfolders(f"{args.dpath}/{region}/{station}")
@@ -67,7 +57,7 @@ def main():
                                 args.file,
                                 [
                                     "--config",
-                                    args.config,
+                                    c,
                                     "--region",
                                     region,
                                     "--station",
@@ -75,18 +65,18 @@ def main():
                                     "--site",
                                     site,
                                     "--cultivar",
-                                    cult,
+                                    "All",
                                     "--seed",
                                     str(seed),
                                 ],
                             )
                         )
-                    jobs.append(
+                    """jobs.append(
                         (
                             args.file,
                             [
                                 "--config",
-                                args.config,
+                                c,
                                 "--region",
                                 region,
                                 "--station",
@@ -94,7 +84,7 @@ def main():
                                 "--site",
                                 "All",
                                 "--cultivar",
-                                cult,
+                                "All",
                                 "--seed",
                                 str(seed),
                             ],
@@ -105,7 +95,7 @@ def main():
                         args.file,
                         [
                             "--config",
-                            args.config,
+                            c,
                             "--region",
                             region,
                             "--station",
@@ -113,7 +103,7 @@ def main():
                             "--site",
                             "All",
                             "--cultivar",
-                            cult,
+                            "All",
                             "--seed",
                             str(seed),
                         ],
@@ -124,7 +114,7 @@ def main():
                     args.file,
                     [
                         "--config",
-                        args.config,
+                        c,
                         "--region",
                         "All",
                         "--station",
@@ -132,12 +122,12 @@ def main():
                         "--site",
                         "All",
                         "--cultivar",
-                        cult,
+                        "All",
                         "--seed",
                         str(seed),
                     ],
                 )
-            )
+            )"""
 
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]

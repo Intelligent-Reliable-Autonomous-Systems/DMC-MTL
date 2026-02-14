@@ -3,6 +3,10 @@ import os
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
+import numpy as np
+
+from assets import CROP_NAMES
+
 
 def run_module(job: list[str]) -> None:
     mod, args = job
@@ -37,17 +41,18 @@ def get_subfolders(path: str) -> list[str]:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--file", type=str, default="trainers.train_model")
-    parser.add_argument("--config", type=str, default="hierarchical_mtl/ch_gd")
+    parser.add_argument("--config", type=str, default="mthl/ch_gd")
     parser.add_argument("--dpath", type=str, default="_data/processed_data/grape_coldhardiness")
     parser.add_argument("--dtype", type=str, default="grape_coldhardiness_reg")
 
     args = parser.parse_args()
 
     jobs = []
-    config = ["hierarchical_mtl/ch_deep", "hierarchical_mtl/ch_param"]
-    for c in config:
-        for seed in range(5):
-            for region in ["BCOV", "ONNP", "WA"]:
+    cultivars = CROP_NAMES[args.dtype]
+    cultivars = np.append(cultivars, ["All"], axis=0)
+    for seed in range(5):
+        for cult in cultivars:
+            for region in ["MI", "NS", "NY"]:
                 stations = get_subfolders(f"{args.dpath}/{region}/")
                 for station in stations:
                     sites = get_subfolders(f"{args.dpath}/{region}/{station}")
@@ -57,7 +62,7 @@ def main():
                                 args.file,
                                 [
                                     "--config",
-                                    c,
+                                    args.config,
                                     "--region",
                                     region,
                                     "--station",
@@ -65,7 +70,7 @@ def main():
                                     "--site",
                                     site,
                                     "--cultivar",
-                                    "All",
+                                    cult,
                                     "--seed",
                                     str(seed),
                                 ],
@@ -76,7 +81,7 @@ def main():
                             args.file,
                             [
                                 "--config",
-                                c,
+                                args.config,
                                 "--region",
                                 region,
                                 "--station",
@@ -84,7 +89,7 @@ def main():
                                 "--site",
                                 "All",
                                 "--cultivar",
-                                "All",
+                                cult,
                                 "--seed",
                                 str(seed),
                             ],
@@ -95,7 +100,7 @@ def main():
                         args.file,
                         [
                             "--config",
-                            c,
+                            args.config,
                             "--region",
                             region,
                             "--station",
@@ -103,7 +108,7 @@ def main():
                             "--site",
                             "All",
                             "--cultivar",
-                            "All",
+                            cult,
                             "--seed",
                             str(seed),
                         ],
@@ -114,7 +119,7 @@ def main():
                     args.file,
                     [
                         "--config",
-                        c,
+                        args.config,
                         "--region",
                         "All",
                         "--station",
@@ -122,7 +127,7 @@ def main():
                         "--site",
                         "All",
                         "--cultivar",
-                        "All",
+                        cult,
                         "--seed",
                         str(seed),
                     ],

@@ -9,36 +9,36 @@ Written by Will Solow, 2025
 """
 
 import os
-import torch
-import torch.nn as nn
+
 import numpy as np
 import pandas as pd
-from omegaconf import OmegaConf, DictConfig
+import torch
+import torch.nn as nn
 import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-from train_algs.base.util import ScaledMSELoss
-
-
 from model_engine.engine import get_engine
-from train_algs.base.util import (
-    setup_logging,
-    cumulative_error,
-    get_grad_norm,
-    log_training,
-)
-
 from model_engine.util import per_task_param_loader
-from train_algs.DMC import BaseRNN
+from omegaconf import DictConfig, OmegaConf
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 from train_algs.base.base import BaseModel
 from train_algs.base.FineTuner_Base import (
-    ErrorFCTuner,
     EmbedErrorFCTuner,
+    ErrorFCTuner,
 )
-from train_algs.base.util import load_config, load_model_fpath
+from train_algs.base.util import (
+    ScaledMSELoss,
+    cumulative_error,
+    get_grad_norm,
+    load_config,
+    load_model_fpath,
+    log_training,
+    setup_logging,
+)
+from train_algs.DMC import BaseRNN
+from utils import CROP_NAMES
 
 
 class BaseFineTuner(BaseModel):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
         """
         Initialize a LSTM Model
@@ -50,7 +50,7 @@ class BaseFineTuner(BaseModel):
         if rnn_fpath is not None:
             try:
                 self.nn = BaseRNN.make_rnn(self, load_config(rnn_fpath)).to(self.device)
-                self.load_rnn_model(f"{load_model_fpath(rnn_fpath, name="rnn_model_best.pt")}")
+                self.load_rnn_model(f"{load_model_fpath(rnn_fpath, name='rnn_model_best.pt')}")
             except:
                 self.nn = BaseRNN.make_rnn(self, config).to(self.device)
                 print("Failure in model loading. Loading untrained model...")
@@ -146,7 +146,6 @@ class BaseFineTuner(BaseModel):
         train_name = "val" if self.config.DataConfig.val_set else "train"
         test_name = "test"
         for epoch in range(self.epochs):
-
             train_loss = 0
             grad = 0
             inds = np.arange(len(self.data[train_name]))
@@ -282,7 +281,6 @@ class BaseFineTuner(BaseModel):
 
 
 class FineTuner(BaseFineTuner):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
 
         super(FineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)
@@ -293,7 +291,7 @@ class FineTuner(BaseFineTuner):
             inputprovider=self.input_data,
             device=self.device,
         )
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -363,7 +361,6 @@ class FineTuner(BaseFineTuner):
 
 
 class DeepFineTuner(BaseFineTuner):
-
     def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
 
         super(DeepFineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)

@@ -229,7 +229,6 @@ def log_training(
     elif "coldhardiness" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
-            print("##### SAVING BEST MODEL#####")
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
     elif "wofost" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:

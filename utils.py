@@ -70,6 +70,8 @@ class DConfig:
     hidden_dim: Optional[int] = None
     """Window size for RNN"""
     window_size: Optional[int] = None
+    """Epoch to start transfer"""
+    transfer_start: Optional[int] = 1000
 
 
 @dataclass

@@ -48,7 +48,7 @@ def param_loader(config: dict) -> dict:
     return cv
 
 
-def per_task_param_loader(config: dict, params: list) -> torch.Tensor:
+def per_task_param_loader(crop_names: dict, config: dict, params: list) -> torch.Tensor:
     """
     Load the available configurations of a model from dictionary and put them on tensor
     """
@@ -60,7 +60,7 @@ def per_task_param_loader(config: dict, params: list) -> torch.Tensor:
     except:
         raise Exception(f"Unable to load file: {fname}. Check that file exists")
     init_params = []
-    for n in CROP_NAMES[config.DataConfig.dtype]:
+    for n in crop_names[config.DataConfig.dtype]:
         try:
             cv = model["ModelParameters"]["Sets"][n]
         except:

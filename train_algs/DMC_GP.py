@@ -28,6 +28,7 @@ from train_algs.base.util import (
     setup_logging,
 )
 from train_algs.DMC import BaseRNN
+from utils import CROP_NAMES
 
 
 class BaseGP(BaseRNN):
@@ -266,7 +267,7 @@ class ParamRNN(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -494,7 +495,7 @@ class PINNRNN(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -550,7 +551,7 @@ class ResidualRNN(BaseRNN):
             inputprovider=self.input_data,
             device=self.device,
         )
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -593,7 +594,7 @@ class StationaryModel(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,
@@ -633,7 +634,7 @@ class HybridModel(BaseRNN):
             device=self.device,
         )
 
-        self.task_params = per_task_param_loader(config, self.params).to(self.device)
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
     def forward(
         self,

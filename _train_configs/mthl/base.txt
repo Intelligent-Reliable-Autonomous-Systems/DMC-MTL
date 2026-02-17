@@ -1,7 +1,4 @@
-python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 0 --region NY 
-python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 1 --region NY 
-python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 2 --region NY 
-python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 3 --region NY 
+
 python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 4 --region NY 
 
 python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 0 --region NS 
@@ -15,3 +12,28 @@ python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 1 --region MI
 python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 2 --region MI 
 python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 3 --region MI 
 python3 -m trainers.train_model --config mthl/ch_deep_stat --seed 4 --region MI 
+
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 0 --region BCOV
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 1 --region BCOV 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 2 --region BCOV 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 3 --region BCOV
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 4 --region BCOV 
+
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 0 --region ONNP
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 1 --region ONNP 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 2 --region ONNP 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 3 --region ONNP
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_stat --seed 4 --region ONNP 
+
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_reg --seed 0 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_reg --seed 1 --withold "{Region: [NY, MI, NS]}" 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_reg --seed 2 --withold "{Region: [NY, MI, NS]}" 
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_reg --seed 3 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/adapt_transfer/ch_adapt_reg --seed 4 --withold "{Region: [NY, MI, NS]}" 
+
+
+python3 -m trainers.train_model --config mthl/ch_deep --seed 0 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config mthl/ch_deep --seed 1 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config mthl/ch_deep --seed 2 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config mthl/ch_deep --seed 3 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config mthl/ch_deep --seed 4 --region NY --station Hudson --site Hudson

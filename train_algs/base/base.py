@@ -141,11 +141,14 @@ class BaseModel(nn.Module):
         Load Model
         """
         ckpt = torch.load(f"{path}/{name}", weights_only=True, map_location=self.device)
-        self.grow_embedding(self.nn, ckpt, "reg_embedding_layer.weight")
-        self.grow_embedding(self.nn, ckpt, "stat_embedding_layer.weight")
-        self.grow_embedding(self.nn, ckpt, "site_embedding_layer.weight")
-        self.grow_embedding(self.nn, ckpt, "cult_embedding_layer.weight")
-
+        if hasattr(self.nn, "reg_embedding_layer"):
+            self.grow_embedding(self.nn, ckpt, "reg_embedding_layer.weight")
+        if hasattr(self.nn, "stat_embedding_layer"):
+            self.grow_embedding(self.nn, ckpt, "stat_embedding_layer.weight")
+        if hasattr(self.nn, "site_embedding_layer"):
+            self.grow_embedding(self.nn, ckpt, "site_embedding_layer.weight")
+        if hasattr(self.nn, "cult_embedding_layer"):
+            self.grow_embedding(self.nn, ckpt, "cult_embedding_layer.weight")
         try:
             self.nn.load_state_dict(ckpt, strict=False)
         except:

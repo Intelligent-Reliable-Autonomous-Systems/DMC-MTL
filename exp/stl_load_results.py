@@ -39,7 +39,7 @@ def get_subfolders(path: str) -> list[str]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--file", type=str, default="plotters.load_results")
+    parser.add_argument("--file", type=str, default="results.load_results")
     parser.add_argument("--config", type=str, default="hierarchical_mtl/ch_gd")
     parser.add_argument("--dpath", type=str, default="_data/processed_data/grape_coldhardiness")
     parser.add_argument("--dtype", type=str, default="grape_coldhardiness_reg")
@@ -50,7 +50,7 @@ def main():
     cultivars = CROP_NAMES[args.dtype]
     cultivars = np.append(cultivars, ["All"], axis=0)
     for cult in cultivars:
-        for region in ["BCOV", "ONNP", "WA"]:
+        for region in ["NY", "NS"]:
             stations = get_subfolders(f"{args.dpath}/{region}/")
             for station in stations:
                 sites = get_subfolders(f"{args.dpath}/{region}/{station}")
@@ -60,37 +60,11 @@ def main():
                             args.file,
                             [
                                 "--config",
-                                f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/{station}/{site}/{cult}/",
+                                f"_runs/MTHL/GrapeColdhardiness/GradientDescent/{region}/{station}/{site}/{cult}/",
                                 "--per",
                             ],
                         )
                     )
-                jobs.append(
-                    (
-                        args.file,
-                        [
-                            "--start_dir",
-                            f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/{station}/All/{cult}/",
-                            "--per",
-                        ],
-                    )
-                )
-            jobs.append(
-                (
-                    args.file,
-                    [
-                        "--start_dir",
-                        f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/{region}/All/All/{cult}/",
-                        "--per",
-                    ],
-                )
-            )
-        jobs.append(
-            (
-                args.file,
-                ["--start_dir", f"_runs/MTLHierarchy/GrapeColdhardiness/GradientDescent/All/All/All/{cult}/", "--per"],
-            )
-        )
 
     with ProcessPoolExecutor(max_workers=2) as executor:
         futures = [executor.submit(run_module, job) for job in jobs]

@@ -179,18 +179,19 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
                         cultivar_inds = np.argwhere(
                             (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
                         ).flatten()
+                        if REGIONS[r] == "NY" and STATIONS[s] == "Portland" and SITES[si] == "Portland":
+                            print(f"{CROP_NAMES[model.config.DataConfig.dtype][c]} {cultivar_inds}")
                         if len(cultivar_inds) < 2:
                             continue
-
-                        np.random.shuffle(cultivar_inds)
-                        test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
-
                         if model.config.DataConfig.withold is not None:
                             if withold_checker(model, model.config.DataConfig.withold, c, si, s, r):
                                 print(
                                     f"Witholding: {REGIONS[r]}, {STATIONS[s]}, {SITES[si]}, {CROP_NAMES[model.config.DataConfig.dtype][c]}"
                                 )
                                 continue
+
+                        np.random.shuffle(cultivar_inds)
+                        test_inds = np.concatenate((test_inds, cultivar_inds[:x])).astype(np.int32)
 
                         if model.config.DataConfig.data_cap is None or c in c_inds:
                             train_inds = np.concatenate((train_inds, cultivar_inds[x:][:])).astype(np.int32)

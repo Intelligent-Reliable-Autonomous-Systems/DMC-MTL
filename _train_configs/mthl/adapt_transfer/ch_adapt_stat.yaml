@@ -6,10 +6,10 @@ PConfig:
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
-    input_vars: [DAY, TEMP, TMIN, TMAX, RAIN]
+    input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/MTLAdaptTransfer/GrapeColdhardiness/DeepMTLAdapt/
+log_path: /_runs/MTLAdaptTransfer/GrapeColdhardiness/AdaptStat/
 run_name: deep_mtl
 seed: 0
 #
@@ -33,3 +33,4 @@ DConfig:
     lr_factor: 0.95
     batch_size: 72
     epochs: 400
+    transfer_start: 200

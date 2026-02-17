@@ -176,7 +176,7 @@ STATIONS = np.array(
         "Grimbsy_Mtn",
         "Vineland_Station",
         "Roza2",
-        "SMREC",
+        "SWMREC",
         "Beaver",
         "Bejo",
         "Geneva",

@@ -59,9 +59,8 @@ def main():
                         (
                             args.file,
                             [
-                                "--config",
+                                "--start_dir",
                                 f"_runs/MTHL/GrapeColdhardiness/GradientDescent/{region}/{station}/{site}/{cult}/",
-                                "--per",
                             ],
                         )
                     )

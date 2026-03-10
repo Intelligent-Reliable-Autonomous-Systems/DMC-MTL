@@ -179,8 +179,6 @@ def process_data_novalset(model: nn.Module, data: list[pd.DataFrame]) -> None:
                         cultivar_inds = np.argwhere(
                             (c == cultivar_data) & (r == region_data) & (s == station_data) & (si == site_data)
                         ).flatten()
-                        if REGIONS[r] == "NY" and STATIONS[s] == "Portland" and SITES[si] == "Portland":
-                            print(f"{CROP_NAMES[model.config.DataConfig.dtype][c]} {cultivar_inds}")
                         if len(cultivar_inds) < 2:
                             continue
                         if model.config.DataConfig.withold is not None:

@@ -439,7 +439,9 @@ class DeepAdaptTransferGRU(BaseModule):
         )
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
         self.transfer_weather_rnn = nn.GRU(self.input_dim, self.weather_output_dim, batch_first=True)
-        self.transfer_ch_rnn = nn.GRU(self.output_dim, self.weather_output_dim, batch_first=True)
+        self.transfer_ch_rnn = nn.GRU(
+            self.output_dim + 2, self.weather_output_dim, batch_first=True
+        )  # Sine/Cosine embedding
         self.transfer_pool_attn = nn.Linear(self.weather_output_dim, 1)
         self.transfer_embed_attn = nn.Linear(self.weather_output_dim, self.embed_dim - self.input_dim)
 
@@ -508,25 +510,29 @@ class DeepAdaptTransferGRU(BaseModule):
         w_encode, _ = self.transfer_weather_rnn(weather_input)  # (T,d)
 
         B, T, d = ch.shape
+        # Create mask for CH
         ch_mask = ~torch.isnan(ch)
-        ch_clean = torch.where(ch_mask, ch, torch.zeros_like(ch))
+        # Create sine/cosine embedding
+        ch_inds = torch.arange(T, device=ch.device).unsqueeze(1).repeat(1, 2) * (2 * torch.pi) / 365
+        ch_inds[:, 0] = torch.sin(ch_inds[:, 0])
+        ch_inds[:, 1] = torch.cos(ch_inds[:, 1])
+        ch_inds = ch_inds.unsqueeze(0).repeat(B, 1, 1)
+        ch_clean = torch.where(ch_mask, torch.cat((ch, ch_inds), dim=-1), torch.zeros_like(ch))
+
         ch_lengths = ch_mask.sum(dim=(1, 2))
         max_len = ch_lengths.max().item()
-        if max_len == 0:  # All Empty
+        if max_len == 0:
             return torch.zeros(B, self.embed_dim, device=ch.device, requires_grad=True)
         ch_arr = torch.zeros(size=(B, max_len), device=ch.device, requires_grad=True)
 
-        # for i, c in enumerate(ch):
-        #    ch_arr[i, : ch_mask[i].sum().item()] = c[ch_mask[i]]
-
         ch_arr_list = []
+        # Go through batch and pad data, loop avoids breaking gradient flow via masking
         for i in range(B):
-            mask_i = ch_mask[i].any(dim=-1)  # (T_ch,) which timesteps have any valid data
-            valid_data = ch_clean[i][mask_i]  # (valid_len, ch_dim)
-            # Pad to max_len
+            mask_i = ch_mask[i].any(dim=-1)
+            valid_data = ch_clean[i][mask_i]
             valid_len = valid_data.shape[0]
             if valid_len < max_len:
-                pad = torch.zeros(max_len - valid_len, d, device=ch.device, dtype=ch.dtype)
+                pad = torch.zeros((max_len - valid_len, d + 2), device=ch.device, dtype=ch.dtype)
                 valid_data = torch.cat([valid_data, pad], dim=0)
             ch_arr_list.append(valid_data)
         ch_arr = torch.stack(ch_arr_list)
@@ -570,3 +576,147 @@ class DeepAdaptTransferGRU(BaseModule):
         output = self.fc2(gru_out)
 
         return output, hn
+
+
+class DeepTransferAttnGRU(BaseModule):
+    """
+    DeepRNN Adapt Transfer GRU. Learns a weather and cold-hardiness encoding
+    and uses this to condition embedding
+    """
+
+    def __init__(self, c: DictConfig, model: nn.Module) -> None:
+        super(DeepTransferAttnGRU, self).__init__(c, model)
+
+        self.weather_output_dim = 128
+
+        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
+        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
+        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
+        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
+        self.fc1 = nn.Sequential(
+            nn.Linear(self.embed_dim, self.dim2), nn.ReLU(), nn.Linear(self.dim2, self.hidden_dim), nn.ReLU()
+        )
+        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc2 = nn.Sequential(
+            nn.Linear(self.hidden_dim, self.dim2), nn.ReLU(), nn.Linear(self.dim2, self.output_dim)
+        )
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+        self.transfer_rnn = nn.GRU(self.input_dim + self.output_dim, self.weather_output_dim, batch_first=True)
+        self.transfer_pool_attn = nn.Linear(self.weather_output_dim, 1)
+        self.transfer_embed_attn = nn.Linear(self.weather_output_dim, self.embed_dim - self.input_dim)
+
+        self.init_state = self.h0
+
+    def forward(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        reg_embed = (
+            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        stat_embed = (
+            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        site_embed = (
+            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
+        reg_embed = reg_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+        stat_embed = stat_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+        site_embed = site_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+
+        if self.embed_op_str == "concat_reg":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
+        elif self.embed_op_str == "concat_stat":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
+        elif self.embed_op_str == "concat_site":
+            gru_input = self.embed_op(cult_embed, site_embed, input)
+        elif self.embed_op_str == "concat":
+            gru_input = self.embed_op(cult_embed, input)
+
+        x = self.fc1(gru_input)
+        gru_out, hn = self.rnn(x, hn)
+        output = self.fc2(gru_out)
+
+        return output, hn
+
+    def compute_embed(
+        self,
+        weather_input: torch.Tensor = None,
+        ch: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        if weather_input.ndim == 2:
+            weather_input = weather_input.unsqueeze(1)
+        if ch.ndim == 2:
+            ch = ch.unsqueeze(1)
+        ch = torch.nan_to_num(ch, nan=0.0)
+        ch_w_input = torch.cat((weather_input, ch), dim=-1)
+        ch_w_encode, _ = self.transfer_rnn(ch_w_input)  # (T,d)
+
+        attn_weights = self.transfer_pool_attn(ch_w_encode).softmax(dim=1)  # (B, T, 1)
+        attn_pooled = (ch_w_encode * attn_weights).sum(dim=1)  # (B, d)
+        embed = self.transfer_embed_attn(attn_pooled)  # (B,embed_dim)
+
+        return embed
+
+    def forward_embed(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        embed: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        embed = embed.unsqueeze(1).expand(-1, input.shape[1], -1)
+
+        gru_input = torch.cat((embed, input), dim=-1)
+
+        x = self.fc1(gru_input)
+        gru_out, hn = self.rnn(x, hn)
+        output = self.fc2(gru_out)
+
+        return output, hn
+
+
+class DeepTransferGRU(DeepTransferAttnGRU):
+    def __init__(self, c, model):
+        super().__init__(c, model)
+
+    def compute_embed(
+        self,
+        weather_input: torch.Tensor = None,
+        ch: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        if weather_input.ndim == 2:
+            weather_input = weather_input.unsqueeze(1)
+        if ch.ndim == 2:
+            ch = ch.unsqueeze(1)
+        ch = torch.nan_to_num(ch, nan=0.0)
+        ch_w_input = torch.cat((weather_input, ch), dim=-1)
+        ch_w_encode, _ = self.transfer_rnn(ch_w_input)  # (T,d)
+
+        embed = self.transfer_embed_attn(ch_w_encode[:, -1])  # (B,embed_dim)
+
+        return embed

@@ -137,13 +137,16 @@ class DeepAdaptRNN(BaseRNN):
     def make_optimizer(self, model):
         super().make_optimizer(model)
 
+        embed_param_groups = [
+            {"params": model.transfer_weather_rnn.parameters()} if hasattr(model, "transfer_weather_rnn") else None,
+            {"params": model.transfer_rnn.parameters()} if hasattr(model, "transfer_rnn") else None,
+            {"params": model.transfer_ch_rnn.parameters()} if hasattr(model, "transfer_ch_rnn") else None,
+            {"params": model.transfer_pool_attn.parameters()} if hasattr(model, "transfer_pool_attn") else None,
+            {"params": model.transfer_embed_attn.parameters()} if hasattr(model, "transfer_embed_attn") else None,
+        ]
+
         self.embed_optimizer = torch.optim.Adam(
-            [
-                {"params": model.transfer_weather_rnn.parameters()},
-                {"params": model.transfer_ch_rnn.parameters()},
-                {"params": model.transfer_pool_attn.parameters()},
-                {"params": model.transfer_embed_attn.parameters()},
-            ],
+            [pg for pg in embed_param_groups if pg is not None],
             lr=self.learning_rate,
         )
 

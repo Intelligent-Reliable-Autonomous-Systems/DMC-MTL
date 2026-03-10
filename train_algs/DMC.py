@@ -22,6 +22,7 @@ from train_algs.base.base import BaseModel
 from train_algs.base.DMC_Base import (
     FCGRU,
     DeepEmbeddingGRU,
+    DeepEmbeddingMuSigmaGRU,
     EmbeddingFCFF,
     EmbeddingFCGRU,
     EmbeddingTextGRU,
@@ -31,7 +32,13 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     ParamModel,
 )
-from train_algs.base.DMC_Transfer_Base import DeepAdaptTransferGRU, DeepEmbeddingTransferGRU, EmbeddingTransferGRU
+from train_algs.base.DMC_Transfer_Base import (
+    DeepAdaptTransferGRU,
+    DeepEmbeddingTransferGRU,
+    DeepTransferAttnGRU,
+    DeepTransferGRU,
+    EmbeddingTransferGRU,
+)
 from train_algs.base.util import (
     cumulative_error,
     get_grad_norm,
@@ -85,6 +92,12 @@ class BaseRNN(BaseModel):
             nn = DeepEmbeddingTransferGRU(config, model)
         elif config.DConfig.arch == "DeepAdaptGRU":
             nn = DeepAdaptTransferGRU(config, model)
+        elif config.DConfig.arch == "DeepTransferGRU":
+            nn = DeepTransferGRU(config, model)
+        elif config.DConfig.arch == "DeepTransferAttnGRU":
+            nn = DeepTransferAttnGRU(config, model)
+        elif config.DConfig.arch == "DeepMuSigmaGRU":
+            nn = DeepEmbeddingMuSigmaGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 
@@ -162,6 +175,7 @@ class BaseRNN(BaseModel):
                 )
 
                 # Compute PINN Loss
+                odim = self.get_output_dim(self.config)
                 if self.config.DConfig.type == "PINN":
                     if "CrossEntropyLoss" in self.config.DConfig.loss_func:
                         output_loss = self.loss_func(
@@ -188,9 +202,10 @@ class BaseRNN(BaseModel):
                             target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                         )
                         loss = loss.reshape(output.size(0), -1).unsqueeze(-1)
+                    elif "Gaussian" in self.config.DConfig.loss_func:
+                        loss = self.loss_func(output[:, :, :odim], target.nan_to_num(nan=0.0), output[:, :, odim:])
                     else:
                         loss = self.loss_func(output, target.nan_to_num(nan=0.0))
-
                     mask = ~torch.isnan(target)
                     loss = (loss * mask).sum() / mask.sum()
                     loss.backward()
@@ -202,7 +217,7 @@ class BaseRNN(BaseModel):
 
                 train_loss += loss.item()
                 grad += get_grad_norm(self.nn)
-
+                output = output[:, :, :odim] if output.shape[-1] != odim else output
                 avg_ = cumulative_error(target, output, mask, device=self.device)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
@@ -270,12 +285,17 @@ class BaseRNN(BaseModel):
                                 eval_target.nan_to_num(nan=0.0).squeeze().view(-1).to(torch.long),
                             )
                             eval_loss = eval_loss.reshape(eval_output.size(0), -1).unsqueeze(-1)
+                        elif "Gaussian" in self.config.DConfig.loss_func:
+                            eval_loss = self.loss_func(
+                                eval_output[:, :, :odim], eval_target.nan_to_num(nan=0.0), eval_output[:, :, odim:]
+                            )
                         else:
                             eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
                         eval_mask = ~torch.isnan(eval_target)
                         eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
                     test_loss += eval_loss.item()
 
+                    eval_output = eval_output[:, :, :odim] if eval_output.shape[-1] != odim else eval_output
                     avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
                     eval_avg[:3] += avg_[1:-1]
                     eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)

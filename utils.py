@@ -177,7 +177,7 @@ def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
             OmegaConf.create(yaml.safe_load(args.withold)) if args.withold is not None else config.DataConfig.withold
         )
 
-    return config, load_data_from_config(config)
+    return config, load_data_from_config(config, args)
 
 
 def load_config_data_fpath(
@@ -197,12 +197,16 @@ def load_config_data_fpath(
         if args.synth_test is not None:
             config.DataConfig.synth_data = args.synth_test
 
-    return config, load_data_from_config(config), fpath
+    return config, load_data_from_config(config, args), fpath
 
 
-def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
+def load_data_from_config(config: DictConfig, args: Namespace) -> list[pd.DataFrame]:
     """
     Loads data from a OmegaConf configuration file
+
+    Args:
+        config: Configuration loaded
+        args: Args
     """
 
     def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = None):
@@ -237,6 +241,13 @@ def load_data_from_config(config: DictConfig) -> list[pd.DataFrame]:
         return pickle_paths
 
     dtype = config.DataConfig.dtype.rsplit("_", 1)[0]
+    if hasattr(args, "all"):
+        if args.all:
+            config.DataConfig.cultivar = "All"
+            config.DataConfig.region = "All"
+            config.DataConfig.station = "All"
+            config.DataConfig.site = "All"
+            config.DataConfig.withold = None
 
     PREFIX = f"{config.DataConfig.data_fpath}{dtype}/"
     if config.DataConfig.synth_data is not None:

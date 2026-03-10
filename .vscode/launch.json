@@ -10,21 +10,24 @@
             "request": "launch",
             "program": "${file}"
         },
-            {
-            "name": "main_transfer_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "plotters.plot_results",
-            "console": "integratedTerminal",
-            "args": "--mode transfer --config _runs/MTLAttnTransfer/GrapeColdhardiness/DeepMTLAttn/BCOV/Osoyoos_CS/BlackSage/All/deep_mtl__1770244853 --rnn_name rnn_model_current.pt"
-        },
         {
-            "name": "text_debug",
+            "name": "uq_debug",
             "type": "debugpy",
             "request": "launch",
             "module": "trainers.train_model",
             "console": "integratedTerminal",
-            "args": "--config mthl/ch_deep_reg_text_verb --seed 0"
+            "args": "--config mthl/uncertainty/ch_adapt_stat --seed 0 --region BCOV"
         },
+
+        {
+            "name": "uq_debug_plot",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "plotters.plot_results",
+            "console": "integratedTerminal",
+            "args": " --config _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaStat/BCOV/All/All/All/deep_mtl__1773185063"
+        },
+
+        
     ]
 }

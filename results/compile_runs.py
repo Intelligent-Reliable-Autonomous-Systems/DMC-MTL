@@ -31,6 +31,8 @@ def main():
     argparser.add_argument("--data_fname", type=str, default="rmse.txt")
     argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
+    argparser.add_argument("--transfer_rate", type=float, default=0.0)
+    argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
@@ -110,6 +112,7 @@ def main():
                 true_cultivar_data,
                 output_cultivar_data,
                 name=n,
+                transfer_rate=args.transfer_rate,
             )
             for n in ["train", "test"]
         ]
@@ -125,6 +128,7 @@ def main():
                 true_cultivar_data,
                 output_cultivar_data,
                 name="val",
+                transfer_rate=args.transfer_rate,
             )
 
         # Store data for averaging

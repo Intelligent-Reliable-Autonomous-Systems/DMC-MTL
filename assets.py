@@ -298,12 +298,12 @@ SITE_STR_VERB = np.array(
         "query: The Short Hills Bench site in the Ontario Niagara Peninsula (approximately 43.10 N, -79.28 W) has a cool-climate, lake-moderated growing season with warm, sunny days and cool nights that extend ripening and promote acidity, and is underlain by deep, varied soils of water-stratified clay, brown silty clay and sand/gravels with good drainage and water-holding capacity that support balanced vine growth and concentrated fruit character.",  # 20
         "query: The St. David's Bench site in the Ontario Niagara Peninsula (approximately 43.158 N, -79.124 W) lies on a gently sloping bench south of Lake Ontario with a cool-climate, lake- and escarpment-influenced growing season marked by early spring warming, warm sunny days and cool nights that extend ripening, and is underlain by deep, moisture-retentive silty clay and clay-loam soils over red sandstone that drain moderately and support balanced vine growth and concentrated fruit.",  # 21
         "query: The Prosser viticultural area in Washington, United States (approximately 46.2189 N, -119.7025 W) is situated in the heart of the Yakima Valley AVA where a semi-arid, high-sunshine climate with hot, dry summers, cool nights, and low annual precipitation supports a long growing season under irrigation, and the region's soils are typically well-drained silt-loams and gravelly alluvial deposits over basalt bedrock that favor deep rooting and balanced vine growth for premium wine grapes.",  # 22
-        # "Mich1",
-        # "Beaver",
-        # "Bejo",
-        # "Geneva",
-        # "Hudson",
-        # "Portland"
+        "query: The Michigan site in the Lake Michigan Shore region of the United States (approximately 42.60 N, -86.10 W) lies along the eastern shore of Lake Michigan where a cool, lake-moderated continental climate brings warm summer days, cool nights, and a relatively long growing season, and the vineyards are underlain by well-drained glacial sandy loams and gravelly soils that provide balanced drainage and moderate fertility for steady vine growth and fruit development.",
+        "query: The Beaver site in Nova Scotia, Canada (approximately 45.10 N, -64.50 W) lies in a cool maritime region influenced by the Bay of Fundy where mild summers, cool nights, and a gradual autumn create a moderate growing season, and the vineyards are underlain by well-drained glacial and alluvial soils of sandy loams and gravels that support balanced moisture and resilient vine growth with moderate fertility and favorable heat retention",
+        "query: The Bejo site in New York State, United States (approximately 42.75 N, -76.10 W) lies within the broader Finger Lakes region where deep glacial lakes moderate a cool continental climate characterized by warm summer days, cool nights, and an extended autumn ripening period, and the vineyards are underlain by well-drained glacial till soils consisting of gravelly loams, silts, and shale-derived sediments that allow deep root penetration and balanced water availability for consistent vine growth and fruit maturation.",
+        "query: The Geneva site in New York State, United States (approximately 42.88 N, -76.98 W) sits along the northern shores of Seneca Lake in the Finger Lakes region where deep lake waters moderate winter cold and extend the growing season with warm days and cool nights, and the surrounding vineyards are typically planted on well-drained glacial till soils composed of silty loams, gravel deposits, and shale fragments over sedimentary bedrock that support deep rooting, steady moisture availability, and balanced vine growth.",
+        "query: The Hudson site in New York State, United States (approximately 42.25 N, -73.79 W) lies in the Hudson Valley along the Hudson River where a cool continental climate moderated by the river brings warm summer days, cool nights, and a moderate growing season, and the vineyards are underlain by well-drained glacial and alluvial soils of silt loam, sand, and gravel over shale and limestone that support balanced vine growth and steady fruit development.",
+        "query: The Portland site in New York State, United States (approximately 42.38 N, -79.47 W) lies along the southern shore of Lake Erie within the Lake Erie viticultural region where a cool, lake-moderated climate brings warm days, cool nights, and a relatively long growing season, and the vineyards are underlain by well-drained glacial silts, clays, and gravelly loams that retain moisture while supporting consistent vine growth and fruit ripening.",
     ]
 )
 
@@ -332,12 +332,12 @@ SITE_STR = np.array(
         "query: ShortHillsBench",  # 20
         "query: StDavidsBench",  # 21
         "query: Prosser",  # 22
-        # "Mich1",
-        # "Beaver",
-        # "Bejo",
-        # "Geneva",
-        # "Hudson",
-        # "Portland"
+        "query: Mich1",
+        "query: Beaver",
+        "query: Bejo",
+        "query: Geneva",
+        "query: Hudson",
+        "query: Portland",
     ]
 )
 
@@ -350,6 +350,12 @@ STATION_STR_VERB = np.array(
         "query: The Grimsby Mountain weather station on the Ontario Niagara Peninsula (43.187 N, -79.565 W) records a humid continental climate with warm, sometimes hot summers and cold, snowy winters influenced by nearby Lake Ontario and the Niagara Escarpment that extend the growing season and moderate extreme temperatures.",
         "query: The Vineland Station weather station on the Ontario Niagara Peninsula (43.18 N, -79.40 W) records a humid continental climate with warm, humid summers, cold winters, and significant year-round precipitation moderated by nearby Lake Ontario and local topography.",
         "query: The Roza2 weather station in Washington, United States is associated with the broader Roza/Prosser area in south-central Washington (46.78 N, -120.45 W) and records a semi-arid, continental climate with hot, dry summers, cool nights, and low annual precipitation typical of the Yakima Valley region that supports irrigated agriculture and long growing seasons",
+        "query: The SWMREC weather station in southwest Michigan, United States (approximately 42.09 N, -86.36 W) records a humid continental climate with warm, humid summers and cold winters moderated by nearby Lake Michigan, producing relatively long growing seasons with warm days, cool nights, and moderate annual precipitation typical of the Lake Michigan Shore region.",
+        "query: The Beaver weather station in Nova Scotia, Canada (approximately 45.10 N, -64.50 W) records a cool maritime climate influenced by the Bay of Fundy and the Atlantic Ocean with mild summers, cool nights, and relatively moderate winters, producing a moderate growing season with frequent moisture and modest annual precipitation.",
+        "query: The Bejo weather station in the Finger Lakes region of New York State, United States (approximately 42.75 N, -76.10 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated locally by nearby Finger Lakes, producing a moderate growing season with balanced precipitation and notable seasonal temperature variation.",
+        "query: The Geneva weather station in the Finger Lakes region of New York State, United States (approximately 42.87 N, -76.99 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Seneca Lake, producing a relatively long growing season with steady precipitation and significant diurnal temperature variation.",
+        "query: The Hudson weather station in the Hudson Valley of New York State, United States (approximately 42.25 N, -73.79 W) records a humid continental climate with warm, humid summers and cold winters influenced by the Hudson River valley, producing a moderate growing season with consistent precipitation and seasonal temperature variability.",
+        "query: The Portland weather station along the Lake Erie shoreline of New York State, United States (approximately 42.38 N, -79.47 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Lake Erie, producing a relatively long growing season with lake-influenced temperatures and moderate annual precipitation.",
     ]
 )
 
@@ -358,12 +364,22 @@ REGION_STR_VERB = np.array(
         "query: The Okanagan Valley in British Columbia is a semi-arid, continental-influenced wine region with long, warm, sunny summers, cool nights, and low annual precipitation, where well-drained soils and pronounced diurnal temperature swings create ideal conditions for ripening a wide range of vinifera grapes while preserving acidity and flavor concentration.",
         "query: The Ontario Niagara Peninsula is a cool-climate, lake-moderated wine region with warm, sunny summers, cool nights, and fertile, well-drained soils over limestone and glacial deposits, creating an extended growing season that supports balanced ripening and high-quality vinifera grape production.",
         "query: Washington State is a semi-arid, continental-influenced wine region with hot, sunny days, cool nights, and low annual precipitation in the rain-shadow of the Cascade Mountains, where well-drained alluvial and volcanic soils combined with irrigation allow precise control of vine vigor and high-quality vinifera grape production.",
+        "query: New York State in the United States is a cool- to moderate-climate wine region strongly influenced by large lakes and river valleys, with warm summers, cool nights, and cold winters moderated locally by the Finger Lakes, Lake Erie, and Lake Ontario, where glacially derived soils of shale, silt, and gravel support balanced vine growth and high-quality vinifera grape production.",
+        "query: Nova Scotia in Canada is a cool maritime wine region influenced by the Atlantic Ocean and the Bay of Fundy, with mild summers, cool nights, and relatively moderate winters, where well-drained glacial and coastal soils and a long, cool growing season support the production of fresh, aromatic vinifera and hybrid grape varieties.",
+        "query: Michigan in the United States is a cool-climate, lake-moderated wine region surrounding Lake Michigan where warm summer days, cool nights, and long autumns extend the growing season, and well-drained glacial sandy loams and gravelly soils support balanced vine growth and high-quality vinifera grape production.",
     ]
 )
 
 REGION_STR = np.array(
-    ["query: British Colubmia Okanagan Valley", "query: Ontario Niagara Peninsula", "query: Washington, United States"]
-)  # "NY", "NS", "MI"])
+    [
+        "query: British Colubmia Okanagan Valley",
+        "query: Ontario Niagara Peninsula",
+        "query: Washington, United States",
+        "query: New York State, United States",
+        "query: Nova Scotia, Canada",
+        "query: Michigan, United States",
+    ]
+)
 STATION_STR = np.array(
     [
         "query: Kelowna",
@@ -373,5 +389,11 @@ STATION_STR = np.array(
         "query: Grimbsy Mountain",
         "query: Vineland Station",
         "query: Roza2",
+        "query: SWMREC",
+        "query: Beaver",
+        "query: Bejo",
+        "query: Geneva",
+        "query: Hudson",
+        "query: Portland",
     ]
-)  # "SMREC", "Beaver", "Bejo", "Geneva", "Hudson", "Portland"])
+)

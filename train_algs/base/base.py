@@ -61,6 +61,8 @@ class BaseModel(nn.Module):
             self.loss_func = StageMSELoss("Bloom", reduction="none")
         elif self.config.DConfig.loss_func == "VeraisonMSELoss":
             self.loss_func = StageMSELoss("Veraison", reduction="none")
+        elif self.config.DConfig.loss_func == "GaussianNLLLoss":
+            self.loss_func = nn.GaussianNLLLoss(reduction="none")
         else:
             msg = f"Unimplemented DConfig Loss Function {self.config.DConfig.loss_func}"
             raise NotImplementedError(msg)

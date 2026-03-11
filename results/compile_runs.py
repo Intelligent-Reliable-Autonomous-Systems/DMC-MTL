@@ -15,7 +15,7 @@ import numpy as np
 
 import utils
 from assets import CROP_NAMES, REGIONS, SITES, STATIONS
-from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot
+from plotters.plot_utils import compute_total_RMSE, compute_total_uq, gen_all_data_and_plot
 from plotters.plotting_functions import compute_rmse_plot
 
 
@@ -41,6 +41,7 @@ def main():
     # Setup total storage
     all_avg_pheno = np.zeros((12, args.num_runs))
     all_avg_ch = np.zeros((3, args.num_runs))
+    all_uq_ch = np.zeros((3, args.num_runs))
     all_avg_wf = np.zeros((3, args.num_runs))
     args.config = f"{args.start_dir}/{config_dirs[0]}"
     config0, data, fpath = utils.load_config_data_fpath(args)
@@ -55,6 +56,16 @@ def main():
         )
     )
     all_cultivar_avg_ch = np.zeros(
+        (
+            len(REGIONS),
+            len(STATIONS),
+            len(SITES),
+            len(CROP_NAMES[config0.DataConfig.dtype]),
+            3,
+            args.num_runs,
+        )
+    )
+    all_cultivar_uq_ch = np.zeros(
         (
             len(REGIONS),
             len(STATIONS),
@@ -150,7 +161,11 @@ def main():
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
             test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
+            total_uq, _ = compute_total_uq(true_data[0], output_data[0])
+            val_total_uq, _ = compute_total_uq(true_data[1], output_data[1])
+            test_total_uq, _ = compute_total_uq(true_data[2], output_data[2])
             all_avg_ch[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
+            all_uq_ch[:, i] = np.array([total_uq, val_total_uq, test_total_uq])
         elif "wofost" in config.DataConfig.dtype:
             total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
             val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
@@ -214,12 +229,25 @@ def main():
                                 true_cultivar_data[r][s][si][k][2],
                                 output_cultivar_data[r][s][si][k][2],
                             )
+                            cultivar_uq, _ = compute_total_uq(
+                                true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
+                            )
+                            val_cultivar_uq, _ = compute_total_uq(
+                                true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
+                            )
+                            test_cultivar_uq, _ = compute_total_uq(
+                                true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
+                            )
+
                             all_cultivar_avg_ch[r, s, si, k, :, i] = np.array(
                                 [
                                     cultivar_train_rmse,
                                     cultivar_val_rmse,
                                     cultivar_test_rmse,
                                 ]
+                            )
+                            all_cultivar_uq_ch[r, s, si, k, :, i] = np.array(
+                                [cultivar_uq, val_cultivar_uq, test_cultivar_uq]
                             )
                         elif "wofost" in config.DataConfig.dtype:
                             cultivar_train_rmse, _ = compute_total_RMSE(
@@ -256,6 +284,12 @@ def main():
         f.close()
         with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
             pkl.dump(all_cultivar_avg_ch, f)
+        f.close()
+        with open(f"{args.start_dir}/{prefix}uq_agg_cultivars.pkl", "wb") as f:
+            pkl.dump(all_uq_ch, f)
+        f.close()
+        with open(f"{args.start_dir}/{prefix}uq_per_cultivars.pkl", "wb") as f:
+            pkl.dump(all_cultivar_uq_ch, f)
         f.close()
     elif "wofost" in config.DataConfig.dtype:
         with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:

@@ -9,6 +9,7 @@ Written by Will Solow, 2025
 import random
 from collections import OrderedDict
 
+import gpytorch
 import numpy as np
 import pandas as pd
 import torch
@@ -63,6 +64,11 @@ class BaseModel(nn.Module):
             self.loss_func = StageMSELoss("Veraison", reduction="none")
         elif self.config.DConfig.loss_func == "GaussianNLLLoss":
             self.loss_func = nn.GaussianNLLLoss(reduction="none")
+        elif self.config.DConfig.loss_func == "VELBOLoss":
+            self.loss_func = gpytorch.mlls.VariationalELBO(
+                model.likelihood, model.gp_head, num_data=len(self.data["train"])
+            )
+
         else:
             msg = f"Unimplemented DConfig Loss Function {self.config.DConfig.loss_func}"
             raise NotImplementedError(msg)

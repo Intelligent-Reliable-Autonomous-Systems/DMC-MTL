@@ -71,7 +71,7 @@ class DConfig:
     """Window size for RNN"""
     window_size: Optional[int] = None
     """Epoch to start transfer"""
-    transfer_start: Optional[int] = 1000
+    transfer_start: Optional[int] = 1000000
 
 
 @dataclass

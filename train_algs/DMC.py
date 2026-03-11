@@ -32,6 +32,7 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     ParamModel,
 )
+from train_algs.base.DMC_GP_Base import DeepEmbedGP
 from train_algs.base.DMC_Transfer_Base import (
     DeepAdaptTransferGRU,
     DeepEmbeddingTransferGRU,
@@ -98,6 +99,8 @@ class BaseRNN(BaseModel):
             nn = DeepTransferAttnGRU(config, model)
         elif config.DConfig.arch == "DeepMuSigmaGRU":
             nn = DeepEmbeddingMuSigmaGRU(config, model)
+        elif config.DConfig.arch == "DeepGPGRU":
+            nn = DeepEmbedGP(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 
@@ -204,10 +207,25 @@ class BaseRNN(BaseModel):
                         loss = loss.reshape(output.size(0), -1).unsqueeze(-1)
                     elif "Gaussian" in self.config.DConfig.loss_func:
                         loss = self.loss_func(output[:, :, :odim], target.nan_to_num(nan=0.0), output[:, :, odim:])
+                    elif "VELBO" in self.config.DConfig.loss_func:
+                        # Filter both gp_output and target to valid points only
+                        mask = ~torch.isnan(target.squeeze())
+                        loss = -self.loss_func(output, target.nan_to_num(nan=0.0).squeeze()).mean()
+
+                        # log_prob = (
+                        #     self.loss_func.likelihood.expected_log_prob(target.nan_to_num(nan=0.0).squeeze(), output)
+                        #     * mask
+                        # ) / (mask.sum())
+                        # log_likelihood = log_prob
+                        # kl_divergence = self.loss_func.model.variational_strategy.kl_divergence().div(
+                        #     self.loss_func.num_data / self.loss_func.beta
+                        # )
+                        # loss = -(log_likelihood - kl_divergence).mean()
                     else:
                         loss = self.loss_func(output, target.nan_to_num(nan=0.0))
-                    mask = ~torch.isnan(target)
-                    loss = (loss * mask).sum() / mask.sum()
+                    if "VELBO" not in self.config.DConfig.loss_func:
+                        mask = ~torch.isnan(target)
+                        loss = (loss * mask).sum() / mask.sum()
                     loss.backward()
                 (
                     self.embed_optimizer.step()
@@ -217,7 +235,10 @@ class BaseRNN(BaseModel):
 
                 train_loss += loss.item()
                 grad += get_grad_norm(self.nn)
-                output = output[:, :, :odim] if output.shape[-1] != odim else output
+                if "VELBO" in self.config.DConfig.loss_func:
+                    output = output.mean
+                else:
+                    output = output[:, :, :odim] if output.shape[-1] != odim else output
                 avg_ = cumulative_error(target, output, mask, device=self.device)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
@@ -289,13 +310,33 @@ class BaseRNN(BaseModel):
                             eval_loss = self.loss_func(
                                 eval_output[:, :, :odim], eval_target.nan_to_num(nan=0.0), eval_output[:, :, odim:]
                             )
+                        elif "VELBO" in self.config.DConfig.loss_func:
+                            # Filter both gp_output and target to valid points only
+                            eval_mask = ~torch.isnan(eval_target.squeeze())
+                            eval_loss = -self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0).squeeze()).mean()
+
+                            # log_prob = (
+                            #     self.loss_func.likelihood.expected_log_prob(
+                            #         eval_target.nan_to_num(nan=0.0).squeeze(), eval_output
+                            #     )
+                            #     * eval_mask
+                            # ) / (eval_mask.sum())
+                            # log_likelihood = log_prob.div(eval_target.shape[1])
+                            # kl_divergence = self.loss_func.model.variational_strategy.kl_divergence().div(
+                            #     self.loss_func.num_data / self.loss_func.beta
+                            # )
+                            # eval_loss = -(log_likelihood - kl_divergence).mean()
                         else:
                             eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
-                        eval_mask = ~torch.isnan(eval_target)
-                        eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
+                        if "VELBO" not in self.config.DConfig.loss_func:
+                            eval_mask = ~torch.isnan(eval_target)
+                            eval_loss = (eval_loss * eval_mask).sum() / eval_mask.sum()
                     test_loss += eval_loss.item()
 
-                    eval_output = eval_output[:, :, :odim] if eval_output.shape[-1] != odim else eval_output
+                    if "VELBO" in self.config.DConfig.loss_func:
+                        eval_output = eval_output.mean
+                    else:
+                        eval_output = eval_output[:, :, :odim] if eval_output.shape[-1] != odim else eval_output
                     avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
                     eval_avg[:3] += avg_[1:-1]
                     eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)

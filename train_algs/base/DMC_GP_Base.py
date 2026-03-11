@@ -248,7 +248,7 @@ class DeepEmbedGP(BaseModule):
         self.fc2 = nn.Sequential(
             nn.Linear(self.hidden_dim, self.dim2), nn.ReLU(), nn.Linear(self.dim2, self.latent_dim)
         )
-        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+        self.hidden_to_output = nn.Linear(self.latent_dim, self.output_dim)
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
 
@@ -296,7 +296,7 @@ class DeepEmbedGP(BaseModule):
         output = self.hidden_to_output(features)
         gp_output = self.gp_head(features)
 
-        return output, hn, gp_output
+        return gp_output, hn
 
     def forward_embed(
         self,

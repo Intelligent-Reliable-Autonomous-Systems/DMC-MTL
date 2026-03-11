@@ -8,6 +8,7 @@ Written by Will Solow, 2025
 
 from argparse import Namespace
 
+import gpytorch
 import numpy as np
 import torch
 import torch.nn as nn
@@ -49,6 +50,28 @@ def compute_obs_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[n
     return np.sqrt(avgs / samples), None
 
 
+def compute_total_uq(true: list[np.ndarray], model: list[np.ndarray], z: float = 1.96) -> tuple[np.ndarray, np.ndarray]:
+    """Compute the calibration and sharpness for uncertainty"""
+    if isinstance(true, np.ndarray):
+        true = [true]
+        model = [model]
+    avgs = 0
+    samples = 0
+    for i in range(len(true)):
+        if model[i].shape[-1] == 2:
+            lower = model[i][:, 0] - z * model[i][:, 1]
+            upper = model[i][:, 0] + z * model[i][:, 1]
+            coverage = np.mean((true[i] >= lower) & (true[i] <= upper))
+            avgs += coverage
+        else:
+            continue
+        samples += 1
+    if samples == 0:
+        return 0, None
+    else:
+        return avgs / samples, None
+
+
 def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
     """
     Computes total RMSE across entire dataset
@@ -61,7 +84,10 @@ def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple
         model = [model]
 
     for i in range(len(true)):
-        avgs += np.sum((true[i] - model[i]) ** 2)
+        if model[i].shape[-1] == 2:
+            avgs += np.sum((true[i] - model[i][:, 0]) ** 2)
+        else:
+            avgs += np.sum((true[i] - model[i]) ** 2)
         samples += len(true[i])
     if samples == 0:
         return 0, None
@@ -123,6 +149,8 @@ def gen_batch_data(
         )
 
     true_data = val_data.cpu().squeeze().numpy()
+    if isinstance(output, gpytorch.distributions.MultivariateNormal):
+        output = output.mean
     if output.size(-1) == len(PHENOLOGY_INT):
         probs = F.softmax(output, dim=-1)
         output = torch.argmax(probs, dim=-1)

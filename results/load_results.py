@@ -208,9 +208,11 @@ def main():
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
     parser.add_argument("--per_cult", action="store_false", help="If to print per cultivar results")
     parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
+    parser.add_argument("--uq", action="store_true", help="If to print calibration data")
     args = parser.parse_args()
 
-    fpath = args.prefix + "results_agg_cultivars.pkl"
+    fname = "results_agg_cultivars.pkl" if not args.uq else "uq_agg_cultivars.pkl"
+    fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
     mtl_models = load_named_pickles([args.start_dir], fpath, args)
 

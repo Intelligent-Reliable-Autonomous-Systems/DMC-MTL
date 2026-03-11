@@ -429,6 +429,7 @@ def plot_output_coldhardiness(
     val_data = val_data.cpu().numpy()
     val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
     output = output[:, :, 0] if output.shape[-1] == 3 else output
+    uq_flag = output.shape[-1] == 2
 
     # Handle when a batch size of 1 is passed
     if len(inds.shape) != 2:
@@ -445,7 +446,17 @@ def plot_output_coldhardiness(
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
-            ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
+            if uq_flag:
+                ax[0].plot(output[k, :, 0], label=f"Model {target}", color=colors[0])
+                ax[0].fill_between(
+                    np.arange(len(output[k])),
+                    output[k, :, 0] - output[k, :, 1],
+                    output[k, :, 0] + output[k, :, 1],
+                    alpha=0.5,
+                    color=colors[0],
+                )
+            else:
+                ax[0].plot(output[k], label=f"Model {target}", color=colors[0])
             ax[0].scatter(
                 np.where(inds[k]),
                 val_data[k][inds[k]],

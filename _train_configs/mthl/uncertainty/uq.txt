@@ -18,3 +18,25 @@ python3 -m trainers.train_model --config mthl/uncertainty/ch_uq_stat --seed 2 --
 python3 -m trainers.train_model --config mthl/uncertainty/ch_uq_stat --seed 3 --region ONNP
 python3 -m trainers.train_model --config mthl/uncertainty/ch_uq_stat --seed 4 --region ONNP
 
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 0 --region BCOV
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 1 --region BCOV
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 2 --region BCOV
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 3 --region BCOV
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 4 --region BCOV
+
+
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 0 --region ONNP
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 1 --region ONNP
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 2 --region ONNP
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 3 --region ONNP
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_stat --seed 4 --region ONNP
+
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_reg --seed 0 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_reg --seed 1 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_reg --seed 2 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_reg --seed 3 --withold "{Region: [NY, MI, NS]}"
+python3 -m trainers.train_model --config mthl/uncertainty/ch_gp_reg --seed 4 --withold "{Region: [NY, MI, NS]}"
+
+
+
+

@@ -16,7 +16,8 @@
             "request": "launch",
             "module": "trainers.train_model",
             "console": "integratedTerminal",
-            "args": "--config mthl/uncertainty/ch_adapt_stat --seed 0 --region BCOV"
+            "args": "--config mthl/uncertainty/ch_gp_stat --seed 0",
+            "justMyCode": false
         },
 
         {
@@ -25,7 +26,16 @@
             "request": "launch",
             "module": "plotters.plot_results",
             "console": "integratedTerminal",
-            "args": " --config _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaStat/BCOV/All/All/All/deep_mtl__1773185063"
+            "args": " --config _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaReg/All/All/All/All/Region_NYMINS-/deep_mtl__1773185567"
+        },
+
+        {
+            "name": "uq_run_plot",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "results.compile_runs",
+            "console": "integratedTerminal",
+            "args": " --start_dir _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaStat/BCOV/All/All/All"
         },
 
         

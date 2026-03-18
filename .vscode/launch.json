@@ -4,12 +4,28 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "Python Debugger: Python File",
+            "name": "foundation_debug",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}"
+            "module": "trainers.train_model",
+            "console": "integratedTerminal",
+            "args": "--config mthl/foundation/ch_foundation_transfer_reg --seed 0 --withold '{Region: [NY, MI, NS]}'",
+            "justMyCode": false
         },
+
+        {
+            "name": "attn_adapt",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "trainers.train_model",
+            "console": "integratedTerminal",
+            "args": "--config mthl/foundation/ch_foundation_transfer_reg --seed 0",
+            "justMyCode": false
+        },
+
+
         {
             "name": "uq_debug",
             "type": "debugpy",

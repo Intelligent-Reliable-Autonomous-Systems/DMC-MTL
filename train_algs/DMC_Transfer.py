@@ -120,14 +120,26 @@ class DeepAdaptRNN(BaseRNN):
         if transfer_inds.sum() != 0:
             b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
             all_inds = self.all_inds[name]
-            adapt_inds = torch.zeros(size=(data.shape[0],), device=self.device, dtype=torch.int32)
+            adapt_inds = []
+            map_idx = []
             for i, ind in enumerate(b_all_inds):
                 ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
-                adapt_inds[i] = ids[torch.randint(0, ids.shape[0], (1,)).item()]
-
+                idx = ids[
+                    torch.randperm(ids.shape[0])[
+                        : torch.randint(
+                            1, min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1), (1,)
+                        ).item()
+                    ]
+                ]
+                adapt_inds.append(idx)
+                map_idx.append(torch.ones_like(idx, device=idx.device) * i)
+            adapt_inds = torch.cat(adapt_inds)
+            map_idx = torch.cat(map_idx)
             embed = self.nn.compute_embed(
                 self.data[name][adapt_inds],
                 ch=self.val[name][adapt_inds],
+                map_idx=map_idx,
+                bsize=(transfer_inds).sum().item(),
             )
             transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn)
             output_tens[transfer_inds, :] = transfer_predict
@@ -221,3 +233,95 @@ class ParamTransferRNN(BaseRNN):
             ],
             lr=self.learning_rate,
         )
+
+
+class DeepFoundationRNN(BaseRNN):
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+        super(DeepFoundationRNN, self).__init__(config, data)
+
+        from sentence_transformers import SentenceTransformer
+
+        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+
+    def forward(
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        transfer_rate: float = 0.0,
+        ch: torch.Tensor = None,
+        name: str = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+        attn_map = None
+        orig_pred = None
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        hn = self.nn.get_init_state(batch_size=b_size)
+
+        map_idx = torch.randint(0, 2, size=cultivars.shape)
+
+        transfer_inds = torch.rand(data.shape[0]) < transfer_rate
+        if (~transfer_inds).sum() != 0:
+            output_predict, _ = self.nn(
+                data[~transfer_inds],
+                cultivars=cultivars[~transfer_inds],
+                regions=regions[~transfer_inds],
+                stations=stations[~transfer_inds],
+                sites=sites[~transfer_inds],
+                hn=hn[:, ~transfer_inds],
+                text_embedder=self.text_model,
+                map_idx=map_idx[~transfer_inds],
+            )
+            output_tens[~transfer_inds, :] = output_predict
+
+        if transfer_inds.sum() != 0:
+            b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
+            all_inds = self.all_inds[name]
+            adapt_inds = []
+            map_idx = []
+            for i, ind in enumerate(b_all_inds):
+                ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
+                idx = ids[
+                    torch.randperm(ids.shape[0])[
+                        : torch.randint(
+                            1, min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1), (1,)
+                        ).item()
+                    ]
+                ]
+                adapt_inds.append(idx)
+                map_idx.append(torch.ones_like(idx, device=idx.device) * i)
+            adapt_inds = torch.cat(adapt_inds)
+            map_idx = torch.cat(map_idx)
+            embed = self.nn.compute_embed(
+                self.data[name][adapt_inds],
+                ch=self.val[name][adapt_inds],
+                map_idx=map_idx,
+                bsize=(transfer_inds).sum().item(),
+            )
+            transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn)
+            output_tens[transfer_inds, :] = transfer_predict
+
+        return output_tens, attn_map, orig_pred
+
+    def make_optimizer(self, model):
+        super().make_optimizer(model)
+
+        embed_param_groups = [
+            {"params": model.transfer_weather_rnn.parameters()} if hasattr(model, "transfer_weather_rnn") else None,
+            {"params": model.transfer_rnn.parameters()} if hasattr(model, "transfer_rnn") else None,
+            {"params": model.transfer_ch_rnn.parameters()} if hasattr(model, "transfer_ch_rnn") else None,
+            {"params": model.transfer_pool_attn.parameters()} if hasattr(model, "transfer_pool_attn") else None,
+            {"params": model.transfer_embed_attn.parameters()} if hasattr(model, "transfer_embed_attn") else None,
+        ]
+
+        if all(p is not None for p in embed_param_groups):
+            self.embed_optimizer = torch.optim.Adam(
+                [pg for pg in embed_param_groups if pg is not None],
+                lr=self.learning_rate,
+            )

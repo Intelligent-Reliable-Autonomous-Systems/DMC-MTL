@@ -28,6 +28,7 @@ from train_algs.base.DMC_Base import (
     EmbeddingTextGRU,
     EmbeddingVerboseTextGRU,
     FFTempResponse,
+    FoundationEmbeddingGRU,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
     ParamModel,
@@ -101,6 +102,8 @@ class BaseRNN(BaseModel):
             nn = DeepEmbeddingMuSigmaGRU(config, model)
         elif config.DConfig.arch == "DeepGPGRU":
             nn = DeepEmbedGP(config, model)
+        elif config.DConfig.arch == "FoundationGRU":
+            nn = FoundationEmbeddingGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 

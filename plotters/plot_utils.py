@@ -58,7 +58,7 @@ def compute_total_uq(true: list[np.ndarray], model: list[np.ndarray], z: float =
     avgs = 0
     samples = 0
     for i in range(len(true)):
-        if model[i].shape[-1] == 2:
+        if model[i].shape[-1] == 2 and model[i].ndim > 1:
             lower = model[i][:, 0] - z * model[i][:, 1]
             upper = model[i][:, 0] + z * model[i][:, 1]
             coverage = np.mean((true[i] >= lower) & (true[i] <= upper))
@@ -85,7 +85,10 @@ def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple
 
     for i in range(len(true)):
         if model[i].shape[-1] == 2:
-            avgs += np.sum((true[i] - model[i][:, 0]) ** 2)
+            try:
+                avgs += np.sum((true[i] - model[i][:, 0]) ** 2)
+            except:
+                avgs += np.sum((true[i] - model[i][0]) ** 2)
         else:
             avgs += np.sum((true[i] - model[i]) ** 2)
         samples += len(true[i])

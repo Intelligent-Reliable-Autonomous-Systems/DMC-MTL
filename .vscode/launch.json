@@ -6,6 +6,25 @@
     "configurations": [
 
         {
+            "name": "data",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "data.py",
+            "console": "integratedTerminal",
+            "args": [],
+            "justMyCode": false
+        },
+        {
+            "name": "nyus_data",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "NYUS_2.data_processer",
+            "console": "integratedTerminal",
+            "args": "",
+            "justMyCode": false
+        },
+
+        {
             "name": "foundation_debug",
             "type": "debugpy",
             "request": "launch",
@@ -25,35 +44,15 @@
             "justMyCode": false
         },
 
-
         {
-            "name": "uq_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "trainers.train_model",
-            "console": "integratedTerminal",
-            "args": "--config mthl/uncertainty/ch_gp_stat --seed 0",
-            "justMyCode": false
-        },
-
-        {
-            "name": "uq_debug_plot",
+            "name": "attn_plot_debug",
             "type": "debugpy",
             "request": "launch",
             "module": "plotters.plot_results",
             "console": "integratedTerminal",
-            "args": " --config _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaReg/All/All/All/All/Region_NYMINS-/deep_mtl__1773185567"
+            "args": "--config _runs/MTHLTransfer/GrapeColdHardiness/Foundation/FoundationAdaptTransfer_1/All/All/All/All/Region_NYMINS-/deep_mtl__1773860943 --rnn_name rnn_model_current.pt --transfer_rate 1.0",
+            "justMyCode": false
         },
-
-        {
-            "name": "uq_run_plot",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "results.compile_runs",
-            "console": "integratedTerminal",
-            "args": " --start_dir _runs/UQ_MTHL/GrapeColdhardiness/UQ/MuSigmaStat/BCOV/All/All/All"
-        },
-
         
     ]
 }

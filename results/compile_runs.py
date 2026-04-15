@@ -33,6 +33,7 @@ def main():
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     argparser.add_argument("--transfer_rate", type=float, default=0.0)
     argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
+    argparser.add_argument("--num_transfer_years", type=int, default=0, help="If to compute over all region data")
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
@@ -89,6 +90,7 @@ def main():
         config, data, fpath = utils.load_config_data_fpath(args)
         args.cultivar = config.DataConfig.cultivar
         config.DConfig.batch_size = 72
+        config.DConfig.num_transfer_years = args.num_transfer_years
         calibrator = utils.load_model_from_config(config, data)
 
         calibrator.load_model(f"{fpath}", name=args.rnn_name)

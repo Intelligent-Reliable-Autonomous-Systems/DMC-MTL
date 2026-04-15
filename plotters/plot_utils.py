@@ -138,7 +138,7 @@ def gen_batch_data(
     Generates model output from a single batch
     """
     with torch.no_grad():
-        (output, params, _) = calibrator.forward(
+        output, params, _ = calibrator.forward(
             input_data,
             dates,
             cultivars=cultivars,
@@ -182,7 +182,7 @@ def gen_batch_transfer_data(
     """
     with torch.no_grad():
         # Output in shape (B, L, 1), Attn Map in shape (B, num_transfers, L, 1), Orig pred in shape (B, num_transfers, L, 1)
-        (output, attn_map, orig_pred) = calibrator.forward(
+        output, attn_map, orig_pred = calibrator.forward(
             input_data,
             dates,
             cultivars=cultivars,

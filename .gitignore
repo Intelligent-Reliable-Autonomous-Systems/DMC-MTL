@@ -10,3 +10,6 @@
 data.txt
 *.DS_Store
 *_runs/
+*nyus/
+*.csv
+*.pkl

@@ -288,7 +288,7 @@ class MultiTensorWeatherDataProvider(WeatherDataProvider):
         from cache_fname and also sets the self.first_date, self.last_date
         """
         with open(cache_fname, "rb") as fp:
-            (self.keys, self.values, self.attrs) = pickle.load(fp)
+            self.keys, self.values, self.attrs = pickle.load(fp)
             self.values = torch.tensor(self.values).to(DEVICE)
 
     def check_keydate(self, key: dt.datetime | dt.date | np.datetime64 | np.ndarray | list) -> str:

@@ -119,25 +119,28 @@ class DeepAdaptRNN(BaseRNN):
 
         if transfer_inds.sum() != 0:
             b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
-            all_inds = self.all_inds[name]
+            all_inds = self.all_inds["train"]
             adapt_inds = []
             map_idx = []
             for i, ind in enumerate(b_all_inds):
                 ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
-                idx = ids[
+                """idx = ids[
                     torch.randperm(ids.shape[0])[
                         : torch.randint(
                             1, min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1), (1,)
                         ).item()
                     ]
+                ]"""
+                idx = ids[
+                    torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]
                 ]
                 adapt_inds.append(idx)
                 map_idx.append(torch.ones_like(idx, device=idx.device) * i)
             adapt_inds = torch.cat(adapt_inds)
             map_idx = torch.cat(map_idx)
             embed = self.nn.compute_embed(
-                self.data[name][adapt_inds],
-                ch=self.val[name][adapt_inds],
+                self.data["train"][adapt_inds],
+                ch=self.val["train"][adapt_inds],
                 map_idx=map_idx,
                 bsize=(transfer_inds).sum().item(),
             )
@@ -264,7 +267,8 @@ class DeepFoundationRNN(BaseRNN):
         self.nn.zero_grad()
         hn = self.nn.get_init_state(batch_size=b_size)
 
-        map_idx = torch.randint(0, 2, size=cultivars.shape)
+        # map_idx = torch.randint(0, 2, size=cultivars.shape)
+        map_idx = torch.zeros_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
         if (~transfer_inds).sum() != 0:
@@ -282,25 +286,28 @@ class DeepFoundationRNN(BaseRNN):
 
         if transfer_inds.sum() != 0:
             b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
-            all_inds = self.all_inds[name]
+            all_inds = self.all_inds["train"]
             adapt_inds = []
             map_idx = []
             for i, ind in enumerate(b_all_inds):
                 ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
-                idx = ids[
+                """idx = ids[
                     torch.randperm(ids.shape[0])[
                         : torch.randint(
                             1, min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1), (1,)
                         ).item()
                     ]
+                ]"""
+                idx = ids[
+                    torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]
                 ]
                 adapt_inds.append(idx)
                 map_idx.append(torch.ones_like(idx, device=idx.device) * i)
             adapt_inds = torch.cat(adapt_inds)
             map_idx = torch.cat(map_idx)
             embed = self.nn.compute_embed(
-                self.data[name][adapt_inds],
-                ch=self.val[name][adapt_inds],
+                self.data["train"][adapt_inds],
+                ch=self.val["train"][adapt_inds],
                 map_idx=map_idx,
                 bsize=(transfer_inds).sum().item(),
             )

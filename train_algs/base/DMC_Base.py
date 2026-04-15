@@ -944,28 +944,33 @@ class FoundationEmbeddingGRU(BaseModule):
         text_mask = map_idx == 1
         transfer_mask = map_idx == 2
 
-        reg_embed_text, stat_embed_text, site_embed_text, cult_embed_text = self.forward_embed_text(
-            cultivars[text_mask], regions[text_mask], stations[text_mask], sites[text_mask], text_embedder=text_embedder
-        )
+        reg_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
+        stat_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
+        site_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
+        cult_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
 
-        reg_embed_direct, stat_embed_direct, site_embed_direct, cult_embed_direct = self.forward_embed_direct(
-            cultivars[direct_mask], regions[direct_mask], stations[direct_mask], sites[direct_mask]
-        )
+        if text_mask.sum() != 0:
+            reg_embed_text, stat_embed_text, site_embed_text, cult_embed_text = self.forward_embed_text(
+                cultivars[text_mask],
+                regions[text_mask],
+                stations[text_mask],
+                sites[text_mask],
+                text_embedder=text_embedder,
+            )
+            reg_embed[text_mask.flatten()] = reg_embed_text
+            stat_embed[text_mask.flatten()] = stat_embed_text
+            site_embed[text_mask.flatten()] = site_embed_text
+            cult_embed[text_mask.flatten()] = cult_embed_text
 
-        reg_embed = torch.zeros(size=(input.shape[0], reg_embed_text.shape[-1]), device=input.device)
-        stat_embed = torch.zeros(size=(input.shape[0], stat_embed_text.shape[-1]), device=input.device)
-        site_embed = torch.zeros(size=(input.shape[0], site_embed_text.shape[-1]), device=input.device)
-        cult_embed = torch.zeros(size=(input.shape[0], cult_embed_text.shape[-1]), device=input.device)
+        if direct_mask.sum() != 0:
+            reg_embed_direct, stat_embed_direct, site_embed_direct, cult_embed_direct = self.forward_embed_direct(
+                cultivars[direct_mask], regions[direct_mask], stations[direct_mask], sites[direct_mask]
+            )
 
-        reg_embed[text_mask.flatten()] = reg_embed_text
-        stat_embed[text_mask.flatten()] = stat_embed_text
-        site_embed[text_mask.flatten()] = site_embed_text
-        cult_embed[text_mask.flatten()] = cult_embed_text
-
-        reg_embed[direct_mask.flatten()] = reg_embed_direct
-        stat_embed[direct_mask.flatten()] = stat_embed_direct
-        site_embed[direct_mask.flatten()] = site_embed_direct
-        cult_embed[direct_mask.flatten()] = cult_embed_direct
+            reg_embed[direct_mask.flatten()] = reg_embed_direct
+            stat_embed[direct_mask.flatten()] = stat_embed_direct
+            site_embed[direct_mask.flatten()] = site_embed_direct
+            cult_embed[direct_mask.flatten()] = cult_embed_direct
 
         cult_embed = cult_embed.unsqueeze(1).expand_as(input)
         site_embed = site_embed.unsqueeze(1).expand_as(input)

@@ -1,0 +1,210 @@
+"""
+compile_runs.py
+
+Compiles RNN data across multiple runs and takes the average RMSE,
+saving data to file
+
+Written by Will Solow, 2025
+"""
+
+import argparse
+import os
+import pickle as pkl
+
+import numpy as np
+
+import utils
+from assets import CROP_NAMES, REGIONS, SITES, STATIONS
+from plotters.plot_utils import compute_total_RMSE, gen_all_data_and_plot_nyus
+from plotters.plotting_functions import compute_rmse_plot
+
+
+def main():
+
+    argparser = argparse.ArgumentParser(description="Plotting script for model")
+    argparser.add_argument("--start_dir", type=str, default="_runs/")
+    argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
+    argparser.add_argument("--save", action="store_true", help="If to save the plots")
+    argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
+    argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")
+    argparser.add_argument("--num_runs", type=int, default=5)
+    argparser.add_argument("--data_fname", type=str, default="rmse.txt")
+    argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
+    argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
+    argparser.add_argument("--transfer_rate", type=float, default=0.0)
+    argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
+    argparser.add_argument("--num_transfer_years", type=int, default=0, help="If to compute over all region data")
+    np.set_printoptions(precision=2)
+    args = argparser.parse_args()
+
+    config_dirs = utils.find_config_yaml_dirs(start_dir=args.start_dir)
+
+    # Setup total storage
+    all_avg_ch = np.zeros((3, args.num_runs))
+    args.config = f"{args.start_dir}/{config_dirs[0]}"
+    config0, data, fpath = utils.load_config_data_fpath(args)
+
+    all_cultivar_avg_ch = np.zeros(
+        (
+            len(REGIONS),
+            len(STATIONS),
+            len(SITES),
+            len(CROP_NAMES[config0.DataConfig.dtype]),
+            3,
+            args.num_runs,
+        )
+    )
+
+    for i, config in enumerate(config_dirs):
+        print(config)
+        if args.prefix is not None:
+            if args.prefix not in config:
+                continue
+
+        args.config = f"{args.start_dir}/{config}"
+        fpath = f"{os.getcwd()}/{args.config}"
+
+        config, data, fpath = utils.load_config_data_fpath(args)
+        args.cultivar = config.DataConfig.cultivar
+        config.DConfig.batch_size = 72
+        config.DConfig.num_transfer_years = args.num_transfer_years
+        calibrator = utils.load_model_from_config(config, data)
+
+        calibrator.load_model(f"{fpath}", name=args.rnn_name)
+        calibrator.eval()
+
+        # Setup per run storage
+        true_data = [[], [], []]
+        output_data = [[], [], []]
+        true_cultivar_data = [
+            [
+                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+                for _ in range(calibrator.num_stations)
+            ]
+            for _ in range(calibrator.num_regions)
+        ]
+        output_cultivar_data = [
+            [
+                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
+                for _ in range(calibrator.num_stations)
+            ]
+            for _ in range(calibrator.num_regions)
+        ]
+        # Generate all data
+        [
+            gen_all_data_and_plot_nyus(
+                config,
+                fpath,
+                args,
+                calibrator,
+                true_data,
+                output_data,
+                true_cultivar_data,
+                output_cultivar_data,
+                name=n,
+                transfer_rate=args.transfer_rate,
+            )
+            for n in ["train", "test"]
+        ]
+
+        if config.DataConfig.val_set:
+            gen_all_data_and_plot_nyus(
+                config,
+                fpath,
+                args,
+                calibrator,
+                true_data,
+                output_data,
+                true_cultivar_data,
+                output_cultivar_data,
+                name="val",
+                transfer_rate=args.transfer_rate,
+            )
+
+        # Store data for averaging
+
+        if "coldhardiness" in config.DataConfig.dtype:
+            total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
+            val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
+            test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
+            all_avg_ch[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
+
+        for r in range(calibrator.num_regions):
+            for s in range(calibrator.num_stations):
+                for si in range(calibrator.num_sites):
+                    for k in range(calibrator.num_cultivars):
+                        if (
+                            len(true_cultivar_data[r][s][si][k][0]) == 0
+                            and len(true_cultivar_data[r][s][si][k][2]) == 0
+                            and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
+                        ):
+                            continue
+                            cultivar_train_avg_pheno, _ = compute_rmse_plot(
+                                config,
+                                true_cultivar_data[r][s][si][k][0],
+                                output_cultivar_data[r][s][si][k][0],
+                                fpath,
+                                save=False,
+                            )
+                            cultivar_val_avg_pheno, _ = compute_rmse_plot(
+                                config,
+                                true_cultivar_data[r][s][si][k][1],
+                                output_cultivar_data[r][s][si][k][1],
+                                fpath,
+                                name="val",
+                                save=False,
+                            )
+                            cultivar_test_avg_pheno, _ = compute_rmse_plot(
+                                config,
+                                true_cultivar_data[r][s][si][k][2],
+                                output_cultivar_data[r][s][si][k][2],
+                                fpath,
+                                name="test",
+                                save=False,
+                            )
+                            all_cultivar_avg_pheno[r, s, si, k, :, i] = np.concatenate(
+                                (
+                                    cultivar_train_avg_pheno[1:-1],
+                                    [np.sum(cultivar_train_avg_pheno[1:-1])],
+                                    cultivar_val_avg_pheno[1:-1],
+                                    [np.sum(cultivar_val_avg_pheno[1:-1])],
+                                    cultivar_test_avg_pheno[1:-1],
+                                    [np.sum(cultivar_test_avg_pheno[1:-1])],
+                                )
+                            )
+                        if "coldhardiness" in config.DataConfig.dtype:
+                            cultivar_train_rmse, _ = compute_total_RMSE(
+                                true_cultivar_data[r][s][si][k][0],
+                                output_cultivar_data[r][s][si][k][0],
+                            )
+                            cultivar_val_rmse, _ = compute_total_RMSE(
+                                true_cultivar_data[r][s][si][k][1],
+                                output_cultivar_data[r][s][si][k][1],
+                            )
+                            cultivar_test_rmse, _ = compute_total_RMSE(
+                                true_cultivar_data[r][s][si][k][2],
+                                output_cultivar_data[r][s][si][k][2],
+                            )
+
+                            all_cultivar_avg_ch[r, s, si, k, :, i] = np.array(
+                                [
+                                    cultivar_train_rmse,
+                                    cultivar_val_rmse,
+                                    cultivar_test_rmse,
+                                ]
+                            )
+
+    # Save Data
+    prefix = args.synth_test + "_" if args.synth_test is not None else ""
+
+    if "coldhardiness" in config.DataConfig.dtype:
+        with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
+            pkl.dump(all_avg_ch, f)
+        f.close()
+        with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
+            pkl.dump(all_cultivar_avg_ch, f)
+        f.close()
+
+
+if __name__ == "__main__":
+    main()

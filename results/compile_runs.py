@@ -95,7 +95,6 @@ def main():
 
         calibrator.load_model(f"{fpath}", name=args.rnn_name)
         calibrator.eval()
-
         # Setup per run storage
         true_data = [[], [], []]
         output_data = [[], [], []]

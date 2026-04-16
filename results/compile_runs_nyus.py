@@ -120,7 +120,7 @@ def main():
 
     argparser = argparse.ArgumentParser(description="Plotting script for model")
     argparser.add_argument("--start_dir", type=str, default="_runs/")
-    argparser.add_argument("--break_early", action="store_false", help="If to break early when making data")
+    argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
     argparser.add_argument("--save", action="store_true", help="If to save the plots")
     argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
     argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")

@@ -196,7 +196,6 @@ def load_config_data_fpath(args: Namespace, includes: str = None) -> tuple[DictC
     if hasattr(args, "synth_test"):
         if args.synth_test is not None:
             config.DataConfig.synth_data = args.synth_test
-
     return config, load_data_from_config(config, args, includes=includes), fpath
 
 
@@ -209,7 +208,6 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
         args: Args
         includes: sting that must be included in filename
     """
-
     def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = None):
         """
         Recursively find all pickle files in root_dir and subdirectories
@@ -281,9 +279,9 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
                         exclude="synth",
                     )
     data = []
-
     for p in paths:
-        if includes is not None and includes not in p:
+        #if includes is not None and includes not in p:
+        if "nyus" in p:
             continue
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "").removesuffix("_nyus")
         if cultivar not in CROP_NAMES[config.DataConfig.dtype]:

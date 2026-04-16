@@ -5,15 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
-        {
-            "name": "data",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "data.py",
-            "console": "integratedTerminal",
-            "args": [],
-            "justMyCode": false
-        },
+
         {
             "name": "nyus_data",
             "type": "debugpy",
@@ -23,7 +15,15 @@
             "args": "",
             "justMyCode": false
         },
-
+        {
+            "name": "nyus_runs",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "results.compile_runs_nyus",
+            "console": "integratedTerminal",
+            "args": ["--start_dir", "_runs/MTHL/GrapeColdhardiness/NYUS2"],
+            "justMyCode": false
+        },
         {
             "name": "foundation_debug",
             "type": "debugpy",

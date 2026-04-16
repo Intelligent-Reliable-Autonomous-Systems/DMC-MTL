@@ -25,7 +25,15 @@ RENAME_COLUMN_MAP = {
 
 
 for p in pkl_files:
-    if "synth" in str(p) or "nyus" in str(p):
+    if (
+        "synth" in str(p)
+        or "nyus" in str(p)
+        or "BCOV" in str(p)
+        or "Beaver" in str(p)
+        or "Bejo" in str(p)
+        or "Geneva" in str(p)
+        or "Hudson" in str(p)
+    ):
         continue
     with open(p, "rb") as f:
         df = pickle.load(f)

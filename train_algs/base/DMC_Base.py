@@ -924,6 +924,86 @@ class FoundationEmbeddingGRU(BaseModule):
 
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
 
+    def get_embeds(
+        self,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        text_embedder: nn.Module = None,
+        map_idx: torch.Tensor = None,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        direct_mask = map_idx == 0
+        text_mask = map_idx == 1
+        transfer_mask = map_idx == 2
+
+        reg_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
+        stat_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
+        site_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
+        cult_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
+
+        if text_mask.sum() != 0:
+            reg_embed_text, stat_embed_text, site_embed_text, cult_embed_text = self.forward_embed_text(
+                cultivars[text_mask],
+                regions[text_mask],
+                stations[text_mask],
+                sites[text_mask],
+                text_embedder=text_embedder,
+            )
+            reg_embed[text_mask.flatten()] = reg_embed_text
+            stat_embed[text_mask.flatten()] = stat_embed_text
+            site_embed[text_mask.flatten()] = site_embed_text
+            cult_embed[text_mask.flatten()] = cult_embed_text
+
+        if direct_mask.sum() != 0:
+            reg_embed_direct, stat_embed_direct, site_embed_direct, cult_embed_direct = self.forward_embed_direct(
+                cultivars[direct_mask], regions[direct_mask], stations[direct_mask], sites[direct_mask]
+            )
+
+            reg_embed[direct_mask.flatten()] = reg_embed_direct
+            stat_embed[direct_mask.flatten()] = stat_embed_direct
+            site_embed[direct_mask.flatten()] = site_embed_direct
+            cult_embed[direct_mask.flatten()] = cult_embed_direct
+
+        return reg_embed, stat_embed, site_embed, cult_embed
+
+    def forward_with_embed(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        reg_embed: torch.Tensor = None,
+        stat_embed: torch.Tensor = None,
+        site_embed: torch.Tensor = None,
+        cult_embed: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+
+        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
+        site_embed = site_embed.unsqueeze(1).expand_as(input)
+        stat_embed = stat_embed.unsqueeze(1).expand_as(input)
+        reg_embed = reg_embed.unsqueeze(1).expand_as(input)
+
+        if self.embed_op_str == "concat_reg":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
+        elif self.embed_op_str == "concat_stat":
+            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
+        elif self.embed_op_str == "concat_site":
+            gru_input = self.embed_op(cult_embed, site_embed, input)
+        elif self.embed_op_str == "concat":
+            gru_input = self.embed_op(cult_embed, input)
+
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x, hn)
+
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out)
+
+        return output, hn
+
     def forward(
         self,
         input: torch.Tensor = None,

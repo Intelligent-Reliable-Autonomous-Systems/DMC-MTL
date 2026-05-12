@@ -208,6 +208,7 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
         args: Args
         includes: sting that must be included in filename
     """
+
     def find_pickle_files(root_dir: str, prefix: str = "", contains: str = "", exclude: str = None):
         """
         Recursively find all pickle files in root_dir and subdirectories
@@ -280,7 +281,7 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
                     )
     data = []
     for p in paths:
-        #if includes is not None and includes not in p:
+        # if includes is not None and includes not in p:
         if "nyus" in p:
             continue
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "").removesuffix("_nyus")
@@ -358,6 +359,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC_Transfer.DeepAdaptRNN(config, data)
     elif config.DConfig.type == "FoundationDeep":
         calibrator = DMC_Transfer.DeepFoundationRNN(config, data)
+    elif config.DConfig.type == "FoundationParam":
+        calibrator = DMC_Transfer.ParamFoundationRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 

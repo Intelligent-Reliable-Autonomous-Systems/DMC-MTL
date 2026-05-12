@@ -8,6 +8,7 @@ Written by Will Solow, 2025
 """
 
 import argparse
+
 import _data.process_data_real as ld
 
 
@@ -19,12 +20,14 @@ def main():
     parser.add_argument("--station", default="Roza2", type=str)
     args = parser.parse_args()
 
-    region = ["WA", "BCOV", "ONNP"]
+    region = ["ONNP"]
     station = {
         "WA": ["Roza2"],
         "BCOV": ["Osoyoos_CS", "Summerland", "Kelowna", "Kelowna_UBC"],
         "ONNP": ["Vineland_Station", "Grimbsy_Mtn"],
         "NY": ["Bejo", "Geneva", "Hudson", "Portland"],
+        "MI": ["SWMREC"],
+        "NS": ["Beaver"],
     }
     site = {
         "Roza2": ["Prosser"],
@@ -45,6 +48,8 @@ def main():
         "Geneva": ["Geneva"],
         "Hudson": ["Hudson"],
         "Portland": ["Portland"],
+        "SWMREC": ["Mich1"],
+        "Beaver": ["Beaver"],
     }
 
     # cultivars = ["Barbera","Cabernet_Franc", "Cabernet_Sauvignon","Chardonnay","Chenin_Blanc","Concord","Gewurztraminer","Grenache", "Lemberger","Malbec","Merlot","Mourvedre","Nebbiolo",  "Pinot_Gris","Riesling", "Sangiovese","Sauvignon_Blanc","Semillon","Syrah", "Viognier","Zinfandel",]
@@ -84,9 +89,8 @@ def main():
     ]
     lte_all = 0
     print_str = ""
+    max_len = float("-inf")
     for r in region:
-        if r == "WA":
-            continue
         print_str += f"Region: {r}\n"
         lte_region = 0
         for s in station[r]:
@@ -98,9 +102,12 @@ def main():
                 for c in cultivars:
                     try:
                         data, _ = ld.load_and_process_ca_data_coldhardiness(r, si, c, s)
-                    except FileNotFoundError as e:
+                        # data, _ = ld.load_and_process_data_coldhardiness(c, si)
+                        # data, _ = ld.load_and_process_mi_data_coldhardiness(r, si, c, s)
+                    except FileNotFoundError:
                         continue
                     lte_cultivar = 0
+                    max_len = len(data) if len(data) > max_len else max_len
                     for d in data:
                         lte_cultivar += d.loc[:, "LTE50"].notna().sum()
                     print_str += f"\t\t\tLTE {c}: {len(data)}, {lte_cultivar}\n"
@@ -114,6 +121,7 @@ def main():
     print_str += f"LTE All: {lte_all}\n"
 
     print(print_str)
+    print(max_len)
 
 
 if __name__ == "__main__":

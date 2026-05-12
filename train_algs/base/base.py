@@ -208,7 +208,7 @@ class BaseModel(nn.Module):
         """
         Get the output dimension of the model
         """
-        if config.DConfig.type in ["Param", "NoObsParam", "TransferParam"]:
+        if config.DConfig.type in ["Param", "NoObsParam", "TransferParam", "FoundationParam"]:
             return len(config.params)
         else:
             if "CrossEntropyLoss" in config.DConfig.loss_func:

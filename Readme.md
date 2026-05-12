@@ -7,7 +7,7 @@ Correspondance to Will Solow, soloww@oregonstate.edu
 ### Installation
 
 1. Create a virtual environment 
-* `conda create -n pcalib python=3.12`
+* `conda create -n pcalib python=3.13`
 * `conda activate pcalib`
 
 2. Clone this repository
@@ -15,7 +15,7 @@ Correspondance to Will Solow, soloww@oregonstate.edu
 
 3. Install dependencies with pip
 * `pip install -e model_engine`
-* `pip install numpy pandas omegaconf matplotlib requests tensorboard huggingface_hub` 
+* `pip install numpy pandas omegaconf matplotlib requests tensorboard huggingface_hub gpytorch sentence-transformers` 
 
 ### Running experiments
 1. See available data in _data/processed_data/

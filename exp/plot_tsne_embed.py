@@ -20,7 +20,7 @@ from matplotlib.patches import Patch
 from omegaconf import DictConfig
 
 import utils
-from assets import CROP_NAMES, REGIONS, SITES, STATIONS
+from assets import SITES
 
 markers = ["o", "s", "^", "v", "D", "d", "P", "X", "*", "p", "h"]
 
@@ -40,22 +40,22 @@ def plot(
     cmap = [cmap(i / n) for i in range(n)]
     plt.figure(figsize=(10, 10))
     for i, xy in enumerate(tsne_embed):
-        if type == "cult":
-            plt.annotate(
-                CROP_NAMES[dtype][idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left"
-            )
-            plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        elif type == "site":
-            plt.annotate(SITES[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-            plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        elif type == "stat":
-            plt.annotate(STATIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-            plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        elif type == "reg":
-            plt.annotate(REGIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-            plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
+        # if type == "cult":
+        #     plt.annotate(
+        #         CROP_NAMES[dtype][idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left"
+        #     )
+        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
+        # elif type == "site":
+        #     plt.annotate(SITES[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
+        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
+        # elif type == "stat":
+        #     plt.annotate(STATIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
+        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
+        # elif type == "reg":
+        #     plt.annotate(REGIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
+        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
 
-        elif type == "all":
+        if type == "all":
             plt.tight_layout()
             # plt.annotate(
             #     f"{SITES[idx[i, 2]]}/{CROP_NAMES[dtype][idx[i, 3]]}",
@@ -110,13 +110,30 @@ def gen_embeddings_and_plot(
 
     text_emb = calibrator.text_model if hasattr(calibrator, "text_model") else None
     with torch.no_grad():
-        reg_embed, stat_embed, site_embed, cult_embed = calibrator.nn.forward_embed(
-            regions=all_inds[:, 0:1],
-            stations=all_inds[:, 1:2],
-            sites=all_inds[:, 2:3],
-            cultivars=all_inds[:, 3:],
-            text_embedder=text_emb,
-        )
+        if args.e_mode == "direct":
+            reg_embed, stat_embed, site_embed, cult_embed = calibrator.nn.forward_embed_direct(
+                regions=all_inds[:, 0:1],
+                stations=all_inds[:, 1:2],
+                sites=all_inds[:, 2:3],
+                cultivars=all_inds[:, 3:],
+                text_embedder=text_emb,
+            )
+        elif args.e_mode == "text":
+            reg_embed, stat_embed, site_embed, cult_embed = calibrator.nn.forward_embed_text(
+                regions=all_inds[:, 0:1],
+                stations=all_inds[:, 1:2],
+                sites=all_inds[:, 2:3],
+                cultivars=all_inds[:, 3:],
+                text_embedder=text_emb,
+            )
+        elif args.e_mode == "adapt":
+            reg_embed, stat_embed, site_embed, cult_embed = calibrator.nn.forward_embed_adapt(
+                regions=all_inds[:, 0:1],
+                stations=all_inds[:, 1:2],
+                sites=all_inds[:, 2:3],
+                cultivars=all_inds[:, 3:],
+                calibrator=calibrator,
+            )
 
     tsne = sklearn.manifold.TSNE(n_components=args.n_tsne, perplexity=5.0)
     all_emds = torch.cat((reg_embed, stat_embed, site_embed, cult_embed), dim=1).cpu().numpy()
@@ -143,6 +160,7 @@ def main():
     argparser.add_argument("--fname", type=str, default="data.txt", help="File to save data to")
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     argparser.add_argument("--n_tsne", type=int, default=2, help="Number of PCA components")
+    argparser.add_argument("--e_mode", type=str, default="direct", help="Type of embedding")
     argparser.add_argument(
         "--mode",
         default="default",

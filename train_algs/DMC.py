@@ -29,6 +29,7 @@ from train_algs.base.DMC_Base import (
     EmbeddingVerboseTextGRU,
     FFTempResponse,
     FoundationEmbeddingGRU,
+    FoundationParamEmbeddingGRU,
     GHCNDeepEmbeddingGRU,
     OneHotEmbeddingFCGRU,
     ParamModel,
@@ -104,6 +105,8 @@ class BaseRNN(BaseModel):
             nn = DeepEmbedGP(config, model)
         elif config.DConfig.arch == "FoundationGRU":
             nn = FoundationEmbeddingGRU(config, model)
+        elif config.DConfig.arch == "FoundationParamGRU":
+            nn = FoundationParamEmbeddingGRU(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 

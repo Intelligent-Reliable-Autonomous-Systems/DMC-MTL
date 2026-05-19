@@ -228,7 +228,11 @@ class DeepEmbeddingTransferGRU(BaseModule):
             nn.Linear(self.hidden_dim, self.dim2), nn.ReLU(), nn.Linear(self.dim2, self.output_dim)
         )
 
-        self.transfer_weather_rnn = nn.GRU(self.input_dim, self.weather_output_dim, batch_first=True)
+        self.transfer_weather_rnn = nn.GRU(
+            self.input_dim if "Deep" in c.DConfig.type else (self.input_dim - len(c.PConfig.output_vars)),
+            self.weather_output_dim,
+            batch_first=True,
+        )
         self.transfer_attn_fc = nn.Sequential(
             nn.Linear(
                 self.weather_output_dim + (2 * self.embed_dim - 2 * self.input_dim),

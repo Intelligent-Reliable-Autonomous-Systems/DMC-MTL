@@ -33,7 +33,7 @@ def main():
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     argparser.add_argument("--transfer_rate", type=float, default=0.0)
     argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
-    argparser.add_argument("--num_transfer_years", type=int, default=0, help="If to compute over all region data")
+    argparser.add_argument("--num_transfer_years", type=int, default=5, help="If to compute over all region data")
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 

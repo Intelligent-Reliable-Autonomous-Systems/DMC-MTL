@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/Journal/AllDMCText/
+log_path: /_runs/Journal/AllDMC/
 run_name: deep_mtl
 seed: 0
 #

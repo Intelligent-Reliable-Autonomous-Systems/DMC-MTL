@@ -1,14 +1,14 @@
 
 
-python3 -m trainers.train_model --config journal/dmc_foundation --seed 0
-python3 -m trainers.train_model --config journal/dmc_foundation --seed 1
-python3 -m trainers.train_model --config journal/dmc_foundation --seed 2 
-python3 -m trainers.train_model --config journal/dmc_foundation --seed 3 
-python3 -m trainers.train_model --config journal/dmc_foundation --seed 4
+python3 -m trainers.train_model --config journal/dmc_reg --seed 0
+python3 -m trainers.train_model --config journal/dmc_reg --seed 1
+python3 -m trainers.train_model --config journal/dmc_reg --seed 2 
+python3 -m trainers.train_model --config journal/dmc_reg --seed 3 
+python3 -m trainers.train_model --config journal/dmc_reg --seed 4
 
-python3 -m trainers.train_model --config journal/dmc_all --seed 0
-python3 -m trainers.train_model --config journal/dmc_all --seed 1
-python3 -m trainers.train_model --config journal/dmc_all --seed 2
-python3 -m trainers.train_model --config journal/dmc_all --seed 3
-python3 -m trainers.train_model --config journal/dmc_all --seed 4
+python3 -m trainers.train_model --config journal/dmc_reg --seed 0 --withold "{Region: [MI, NS]}"
+python3 -m trainers.train_model --config journal/dmc_reg --seed 1 --withold "{Region: [MI, NS]}"
+python3 -m trainers.train_model --config journal/dmc_reg --seed 2 --withold "{Region: [MI, NS]}"
+python3 -m trainers.train_model --config journal/dmc_reg --seed 3 --withold "{Region: [MI, NS]}"
+python3 -m trainers.train_model --config journal/dmc_reg --seed 4 --withold "{Region: [MI, NS]}"
 

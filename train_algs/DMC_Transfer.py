@@ -267,8 +267,8 @@ class DeepFoundationRNN(BaseRNN):
         self.nn.zero_grad()
         hn = self.nn.get_init_state(batch_size=b_size)
 
-        # map_idx = torch.randint(0, 2, size=cultivars.shape)
-        map_idx = torch.zeros_like(cultivars, device=self.device)
+        map_idx = torch.randint(0, 2, size=cultivars.shape)
+        # map_idx = torch.ones_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
         if (~transfer_inds).sum() != 0:
@@ -376,8 +376,8 @@ class ParamFoundationRNN(BaseRNN):
         self.nn.zero_grad()
         hn = self.nn.get_init_state(batch_size=b_size)
 
-        map_idx = torch.randint(0, 2, size=cultivars.shape)
-        # map_idx = torch.zeros_like(cultivars, device=self.device)
+        # map_idx = torch.randint(0, 2, size=cultivars.shape)
+        map_idx = torch.zeros_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
 
@@ -424,18 +424,38 @@ class ParamFoundationRNN(BaseRNN):
                 )
 
                 params_predict = self.param_cast(params_predict, prev_params=batch_params)
-                # param_tens[~transfer_inds, i] = params_predict.squeeze().clone()
-                param_tens[:, i] = params_predict.squeeze().clone()
-                # hn[:, ~transfer_inds] = hn_nt
-                hn = hn_nt
 
             if transfer_inds.sum() != 0:
-                transfer_params_predict, hn_t = self.nn.forward_embed(data[transfer_inds, i], embed=embed, hn=hn)
-                param_tens[transfer_inds, i] = transfer_params_predict.squeeze().clone()
-                hn[:, transfer_inds] = hn_t
+                transfer_params_predict, hn_t = self.nn.forward_embed(
+                    torch.cat(
+                        (output.view(output.shape[0], -1).detach()[transfer_inds], data[transfer_inds, i]), dim=-1
+                    ),
+                    embed=embed,
+                    hn=hn,
+                )
 
-            # self.model.set_model_params(param_tens[:, i], self.params)
-            self.model.set_model_params(params_predict.squeeze(), self.params)
+            step_params = torch.zeros(b_size, param_tens.shape[-1], device=self.device)
+
+            if (~transfer_inds).sum() != 0 and transfer_inds.sum() != 0:
+                # Expand masks to match param shape
+                mask = transfer_inds.unsqueeze(-1).expand_as(step_params)
+                step_params = torch.where(mask, transfer_params_predict.squeeze(), params_predict.squeeze())
+
+                hn_mask = transfer_inds.unsqueeze(0).unsqueeze(-1).expand_as(hn)
+                hn_next = torch.where(hn_mask, hn_t, hn_nt)
+
+            elif (~transfer_inds).sum() != 0:
+                step_params = params_predict.squeeze()
+                hn_next = hn_nt
+            else:
+                step_params = transfer_params_predict.squeeze()
+                hn_next = hn_t
+            step_params = self.param_cast(step_params, prev_params=batch_params)
+            param_tens[:, i] = step_params
+            hn = hn_next
+
+            self.model.set_model_params(step_params, self.params)
+            # self.model.set_model_params(params_predict.squeeze(), self.params)
             output = self.model.run(dates=dates[:, i], cultivars=cultivars)
             output_tens[:, i] = output
 

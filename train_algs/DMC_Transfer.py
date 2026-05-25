@@ -376,16 +376,16 @@ class ParamFoundationRNN(BaseRNN):
         self.nn.zero_grad()
         hn = self.nn.get_init_state(batch_size=b_size)
 
-        # map_idx = torch.randint(0, 2, size=cultivars.shape)
-        map_idx = torch.zeros_like(cultivars, device=self.device)
+        map_idx = torch.randint(0, 2, size=cultivars.shape)
+        # map_idx = torch.zeros_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
 
-        b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
         if transfer_inds.sum() != 0:
             all_inds = self.all_inds["train"]
             adapt_inds = []
             map_idx = []
+            b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
             for i, ind in enumerate(b_all_inds):
                 ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
                 idx = ids[
@@ -422,8 +422,6 @@ class ParamFoundationRNN(BaseRNN):
                     site_embed=site_embed,
                     cult_embed=cult_embed,
                 )
-
-                params_predict = self.param_cast(params_predict, prev_params=batch_params)
 
             if transfer_inds.sum() != 0:
                 transfer_params_predict, hn_t = self.nn.forward_embed(

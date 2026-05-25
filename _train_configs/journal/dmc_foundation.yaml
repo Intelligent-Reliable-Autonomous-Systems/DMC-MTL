@@ -29,7 +29,7 @@ DConfig:
     hidden_dim: 1024
     embed_op: concat_reg
     loss_func: MSELoss
-    learning_rate: .002
+    learning_rate: .0002
     lr_factor: 0.95
     batch_size: 72
     epochs: 600

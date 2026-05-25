@@ -1408,7 +1408,7 @@ class FoundationParamEmbeddingGRU(BaseModule):
         x = self.fc2(x)
         gru_out, hn = self.rnn(x, hn)
 
-        gru_out = self.fc3(gru_out).relu()
+        gru_out = self.fc3(gru_out.relu()).relu()
         output = self.hidden_to_output(gru_out)
 
         return output, hn
@@ -1601,11 +1601,11 @@ class FoundationParamEmbeddingGRU(BaseModule):
 
         gru_input = torch.cat((embed, input), dim=-1)
 
-        x = self.fc1(gru_input).relu()
-        x = self.fc2(x).relu()
+        x = self.fc1(gru_input)
+        x = self.fc2(x)
         gru_out, hn = self.rnn(x, hn)
 
-        gru_out = self.fc3(gru_out).relu()
+        gru_out = self.fc3(gru_out.relu()).relu()
         output = self.hidden_to_output(gru_out)
 
         return output, hn

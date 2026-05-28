@@ -1,0 +1,60 @@
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Chardonnay --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Chardonnay --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Chardonnay --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Chardonnay --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Chardonnay --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Gewurztraminer --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Gewurztraminer --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Gewurztraminer --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Gewurztraminer --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Gewurztraminer --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Merlot --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Merlot --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Merlot --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Merlot --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Merlot --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Riesling --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Riesling --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Riesling --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Riesling --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Riesling --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Syrah --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Syrah --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Syrah --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Syrah --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region WI --station Madison --site Madison --cultivar Syrah --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Chardonnay --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Chardonnay --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Chardonnay --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Chardonnay --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Chardonnay --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Gewurztraminer --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Gewurztraminer --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Gewurztraminer --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Gewurztraminer --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Gewurztraminer --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Merlot --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Merlot --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Merlot --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Merlot --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Merlot --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Riesling --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Riesling --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Riesling --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Riesling --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Riesling --seed 4
+
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Syrah --seed 0
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Syrah --seed 1
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Syrah --seed 2
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Syrah --seed 3
+python3 -m trainers.train_model --config journal/ch_ferguson --region QC --station Montreal --site Montreal --cultivar Syrah --seed 4
+

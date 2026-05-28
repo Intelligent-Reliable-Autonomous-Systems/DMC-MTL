@@ -4,31 +4,14 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "test_embed",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "exp.plot_tsne_embed",
-            "console": "integratedTerminal",
-            "args": ["--config", "_runs/Journal/FoundationDMCText/All/All/All/All/param_mtl__1778619367", "--e_mode", "adapt"],
-            "justMyCode": false
-        },
-        {
-            "name": "test_data",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "NYUS_2.data_reader",
-            "console": "integratedTerminal",
-            "args": [],
-            "justMyCode": false
-        },
+
         {
             "name": "found_param",
             "type": "debugpy",
             "request": "launch",
             "module": "trainers.train_model",
             "console": "integratedTerminal",
-            "args": ["--config", "journal/dmc_foundation"],
+            "args": "--config journal/ch_deep --region QC --station Montreal --site Montreal --cultivar All --seed 0",
             "justMyCode": false
         },
 

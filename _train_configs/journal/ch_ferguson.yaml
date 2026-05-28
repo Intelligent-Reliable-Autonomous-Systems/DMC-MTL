@@ -1,0 +1,36 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: Ferguson_ColdHardiness_TensorBatch 
+    model_parameters: grape_coldhardiness:Chardonnay 
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, TEMP]
+    output_vars: [LTE50]
+# Log configuration
+log_path: /_runs/Journal/Ferguson/
+run_name: ferg_model
+seed: 0
+# Data use
+DataConfig:
+    cultivar: Chardonnay
+    data_fpath: _data/processed_data/
+    dtype: grape_coldhardiness_reg
+    region: WI
+    station: Madison
+    site: Madison
+# Parameters to predict at each time step
+params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"] # "THETA, "LTE10M", "LTE10B", "LTE90M", "LTE90B"
+# Range of prediction for each parameter
+params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]] # [0,10], [-2,2], [-5,5], [-2,2], [-5,5]
+# DConfig Parameters
+DConfig: 
+    type: Hybrid
+    arch: ParamModel
+    loss_func: MSELoss
+    hidden_dim: 128
+    learning_rate: 0.1
+    lr_factor: 0.95
+    batch_size: 12
+    epochs: 200

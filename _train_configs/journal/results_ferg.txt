@@ -1,0 +1,11 @@
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/WI/Madison/Madison/Chardonnay
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/WI/Madison/Madison/Gewurztraminer
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/WI/Madison/Madison/Merlot
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/WI/Madison/Madison/Riesling
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/WI/Madison/Madison/Syrah
+
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/QC/Montreal/Montreal/Chardonnay
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/QC/Montreal/Montreal/Gewurztraminer
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/QC/Montreal/Montreal/Merlot
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/QC/Montreal/Montreal/Riesling
+python3 -m results.compile_runs --start_dir _runs/Journal/Ferguson/QC/Montreal/Montreal/Syrah

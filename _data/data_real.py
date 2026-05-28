@@ -8,8 +8,10 @@ Written by Will Solow, 2025
 """
 
 import argparse
-import _data.process_data_real as ld
+import os
 import pickle
+
+import _data.process_data_real as ld
 
 
 def main():
@@ -23,7 +25,6 @@ def main():
     args = parser.parse_args()
 
     if "grape_phenology" in args.name:
-
         data, _ = ld.load_and_process_data_phenology(args.cultivar, args.site)
 
         with open(
@@ -46,6 +47,10 @@ def main():
             data, _ = ld.load_and_process_mi_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
         elif args.region in ["NY"]:
             data, _ = ld.load_and_process_ny_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
+        elif args.region in ["WI", "TX", "QC", "PA"]:
+            data, _ = ld.load_and_process_noaa_data_coldhardiness(args.region, args.site, args.cultivar, args.station)
+
+        os.makedirs(f"_data/processed_data/{args.name}/{args.region}/{args.station}/{args.site}", exist_ok=True)
         with open(
             f"_data/processed_data/{args.name}/{args.region}/{args.station}/{args.site}/{args.region}_{args.site}_{args.name}_{args.cultivar.replace(' ', '_')}.pkl",
             "wb",

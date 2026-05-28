@@ -229,6 +229,7 @@ def main():
         choices=["default", "error"],
         help="Plot mode: default, rollout, error",
     )
+
     np.set_printoptions(precision=2)
 
     args = argparser.parse_args()

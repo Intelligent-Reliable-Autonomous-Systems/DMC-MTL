@@ -40,30 +40,9 @@ def plot(
     cmap = [cmap(i / n) for i in range(n)]
     plt.figure(figsize=(10, 10))
     for i, xy in enumerate(tsne_embed):
-        # if type == "cult":
-        #     plt.annotate(
-        #         CROP_NAMES[dtype][idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left"
-        #     )
-        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        # elif type == "site":
-        #     plt.annotate(SITES[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        # elif type == "stat":
-        #     plt.annotate(STATIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-        # elif type == "reg":
-        #     plt.annotate(REGIONS[idx[i]], (xy[0], xy[1]), textcoords="offset points", xytext=(5, 5), ha="left")
-        #     plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1])
-
         if type == "all":
             plt.tight_layout()
-            # plt.annotate(
-            #     f"{SITES[idx[i, 2]]}/{CROP_NAMES[dtype][idx[i, 3]]}",
-            #     (xy[0], xy[1]),
-            #     textcoords="offset points",
-            #     xytext=(5, 5),
-            #     ha="left",
-            # )
+
             c = cmap[idx[i, 2]]
             m = markers[idx[i, 3] % 11]
             plt.scatter(tsne_embed[i, 0], tsne_embed[i, 1], color=c, marker=m)

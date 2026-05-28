@@ -803,6 +803,98 @@ def load_and_process_ny_data_coldhardiness(region: str, site: str, cultivar: str
         return np_arr_df, np_arr_stages
 
 
+def load_and_process_noaa_data_coldhardiness(region: str, site: str, cultivar: str, station: str) -> None:
+    DATASET_DIRECTORY = f"{Path(os.getcwd()).parent.absolute()}/grape-datasets/ch_weather_data_noaa/"
+    if region in ["WI", "PA", "QC", "TX"]:
+        LTE_VALS = ["LTE50"]
+    else:
+        raise Exception(f"Unexpected region `{region}`")
+
+    df = pd.read_csv(f"{DATASET_DIRECTORY}" + f"ColdHardiness_Grape_{region}{site}_{cultivar}.csv")
+    df_list = []
+    stages_list = []
+
+    ys = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == 1).flatten()
+    ye = np.argwhere(np.diff(df["DORMANT_SEASON"], prepend=[0]) == -1).flatten()
+
+    for i in range(len(ys)):
+        # Get the slices of each individual year
+        if i >= len(ye):
+            year_df = df[ys[i] :].copy().reset_index(drop=True)
+        else:
+            year_df = df[ys[i] : ye[i]].copy().reset_index(drop=True)
+
+        # Interpolate passed variables
+        year_df, percent_missing = interpolate_data(
+            year_df,
+            df,
+            cols=[
+                "TEMP",
+                "TMAX",
+                "TMIN",
+            ],
+            max_days=float("inf"),
+        )
+
+        if year_df.loc[:, LTE_VALS].isnull().all().all():
+            print("Breaking from no LTE")
+            continue
+
+        # If too much missing weather data, continue
+        print(percent_missing)
+        if percent_missing >= 0.2:
+            print("BREAKING FROM MISSING")
+            continue
+
+        # If there are any nan values in the weather throw out the entire year
+        if year_df.drop(columns=LTE_VALS, inplace=False).isnull().any().any():
+            print("breaking from weather nan")
+            tmp = year_df.drop(columns=LTE_VALS, inplace=False)
+
+            nan_mask = tmp.isnull()
+
+            if nan_mask.any().any():
+                print("breaking from weather nan")
+
+                # 1) Columns that contain NaNs
+                cols_with_nan = nan_mask.any()
+                print("Columns with NaNs:")
+                print(cols_with_nan[cols_with_nan].index.tolist())
+
+                # 2) Rows that contain NaNs
+                rows_with_nan = nan_mask.any(axis=1)
+                print("Rows with NaNs:")
+                print(tmp.index[rows_with_nan])
+
+                # 3) Exact locations (row, column)
+                print("Exact NaN locations:")
+                for col in tmp.columns:
+                    nan_rows = tmp.index[tmp[col].isna()]
+                    if len(nan_rows) > 0:
+                        print(f"{col}: {list(nan_rows)}")
+            continue
+        # Otherwise append
+        df_list.append(year_df)
+
+    for yr_df in df_list:
+        yr_df.drop(columns=["DORMANT_SEASON", "Unnamed: 0"], inplace=True)
+
+    df_array = np.empty(len(df_list), dtype=object)
+    if len(df_list) != 1:
+        for i, d in enumerate(df_list):
+            df_array[i] = d
+        return df_array, np.array(stages_list, dtype=object)
+    else:
+        np_arr_df = np.empty(len(df_list), dtype=object)
+        np_arr_stages = np.empty(len(stages_list), dtype=object)
+        for i, df in enumerate(df_list):
+            np_arr_df[i] = df
+        for i, s in enumerate(stages_list):
+            np_arr_stages[i] = s
+
+        return np_arr_df, np_arr_stages
+
+
 def chunk_consecutive(arr: np.ndarray) -> list[list[int]]:
     """
     Chunks data into consecutive missing value arrays

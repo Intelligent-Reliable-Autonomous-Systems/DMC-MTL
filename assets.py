@@ -166,7 +166,7 @@ CROP_NAMES = {
     ),
 }
 
-REGIONS = np.array(["BCOV", "ONNP", "WA", "NY", "NS", "MI"])
+REGIONS = np.array(["BCOV", "ONNP", "WA", "NY", "NS", "MI", "QC", "WI", "TX", "PA"])
 STATIONS = np.array(
     [
         "Kelowna",
@@ -182,6 +182,10 @@ STATIONS = np.array(
         "Geneva",
         "Hudson",
         "Portland",
+        "Montreal",
+        "Madison",
+        "Brownfield",
+        "PennState",
     ]
 )
 SITES = np.array(
@@ -215,6 +219,10 @@ SITES = np.array(
         "Geneva",
         "Hudson",
         "Portland",
+        "Montreal",
+        "Madison",
+        "Brownfield",
+        "PennState",
     ]
 )
 
@@ -304,6 +312,10 @@ SITE_STR_VERB = np.array(
         "query: The Geneva site in New York State, United States (approximately 42.88 N, -76.98 W) sits along the northern shores of Seneca Lake in the Finger Lakes region where deep lake waters moderate winter cold and extend the growing season with warm days and cool nights, and the surrounding vineyards are typically planted on well-drained glacial till soils composed of silty loams, gravel deposits, and shale fragments over sedimentary bedrock that support deep rooting, steady moisture availability, and balanced vine growth.",
         "query: The Hudson site in New York State, United States (approximately 42.25 N, -73.79 W) lies in the Hudson Valley along the Hudson River where a cool continental climate moderated by the river brings warm summer days, cool nights, and a moderate growing season, and the vineyards are underlain by well-drained glacial and alluvial soils of silt loam, sand, and gravel over shale and limestone that support balanced vine growth and steady fruit development.",
         "query: The Portland site in New York State, United States (approximately 42.38 N, -79.47 W) lies along the southern shore of Lake Erie within the Lake Erie viticultural region where a cool, lake-moderated climate brings warm days, cool nights, and a relatively long growing season, and the vineyards are underlain by well-drained glacial silts, clays, and gravelly loams that retain moisture while supporting consistent vine growth and fruit ripening.",
+        "query: The Montreal site in Quebec, Canada (approximately 45.50 N, -73.57 W) lies in a cool continental climate strongly influenced by the St. Lawrence River, with warm, humid summers, cool nights, and a relatively short but concentrated growing season marked by moderate frost risk, and the vineyards are underlain by well-drained glacial and alluvial soils of sandy loams, silts, and clay-rich deposits over sedimentary limestone bedrock that support balanced moisture retention and moderate vine vigor for cold-hardy varieties.",
+        "query: The Madison site in Wisconsin, United States (approximately 43.07 N, -89.40 W) lies in a cool continental climate moderated by nearby lakes Mendota and Monona, with warm, sunny summers, pronounced cool nights, and a moderate growing season with meaningful frost risk, and the vineyards are underlain by well-drained glacial till and outwash soils of sandy loams, gravels, and silt-rich deposits over dolomitic limestone bedrock that encourage deep rooting and balanced drainage for cold-hardy and hybrid vine varieties.",
+        "query: The Brownfield site on the Texas High Plains, United States (approximately 33.18 N, -102.27 W) lies at high elevation on the Llano Estacado plateau in a semi-arid continental climate with intense sunshine, hot days, strong diurnal temperature swings, and very low annual precipitation that require irrigation while naturally concentrating fruit flavors and preserving acidity, and the vineyards are underlain by well-drained, calcareous sandy loams that promote deep rooting, low vigor, and concentrated berry development across a wide range of vinifera varieties.",
+        "query: The Penn State site in central Pennsylvania, United States (approximately 40.79 N, -77.86 W) lies in the Ridge and Valley physiographic region with a cool to moderate continental climate featuring warm, humid summers, cool nights, and a moderate growing season with moderate frost risk and meaningful rainfall, and the vineyards are underlain by well-drained residual and colluvial soils of shale, sandstone, and limestone-derived loams and silt-clay mixtures that offer varied drainage and moderate fertility supporting balanced vine growth.",
     ]
 )
 
@@ -338,6 +350,10 @@ SITE_STR = np.array(
         "query: Geneva",
         "query: Hudson",
         "query: Portland",
+        "query: Montreal",
+        "query: Madison",
+        "query: Brownfield",
+        "query: PennState",
     ]
 )
 
@@ -356,6 +372,10 @@ STATION_STR_VERB = np.array(
         "query: The Geneva weather station in the Finger Lakes region of New York State, United States (approximately 42.87 N, -76.99 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Seneca Lake, producing a relatively long growing season with steady precipitation and significant diurnal temperature variation.",
         "query: The Hudson weather station in the Hudson Valley of New York State, United States (approximately 42.25 N, -73.79 W) records a humid continental climate with warm, humid summers and cold winters influenced by the Hudson River valley, producing a moderate growing season with consistent precipitation and seasonal temperature variability.",
         "query: The Portland weather station along the Lake Erie shoreline of New York State, United States (approximately 42.38 N, -79.47 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Lake Erie, producing a relatively long growing season with lake-influenced temperatures and moderate annual precipitation.",
+        "query: The Montreal weather station in Quebec, Canada (approximately 45.47 N, -73.74 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters influenced by the St. Lawrence River valley, producing a moderate growing season with consistent precipitation distributed across the year and notable seasonal temperature variability."
+        "query: The Madison weather station in Wisconsin, United States (approximately 43.14 N, -89.33 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters moderated modestly by the surrounding lakes Mendota and Monona, producing a moderate growing season with fairly consistent precipitation and significant diurnal and seasonal temperature variation."
+        "query: The Brownfield weather station on the Texas High Plains, United States (approximately 33.18 N, -102.27 W) records a semi-arid continental climate with hot, intensely sunny summers, strong diurnal temperature swings, cool nights, and low annual precipitation typical of the Llano Estacado plateau that produces a long growing season with high evapotranspiration demand and occasional late spring or early autumn frost risk."
+        "query: The Penn State weather station in central Pennsylvania, United States (approximately 40.72 N, -77.93 W) records a humid continental climate with warm, humid summers, cool nights, and cold winters influenced by the Ridge and Valley terrain that channels air flow and moderates temperature extremes, producing a moderate growing season with well-distributed annual precipitation and meaningful diurnal temperature swings.",
     ]
 )
 
@@ -367,6 +387,10 @@ REGION_STR_VERB = np.array(
         "query: New York State in the United States is a cool- to moderate-climate wine region strongly influenced by large lakes and river valleys, with warm summers, cool nights, and cold winters moderated locally by the Finger Lakes, Lake Erie, and Lake Ontario, where glacially derived soils of shale, silt, and gravel support balanced vine growth and high-quality vinifera grape production.",
         "query: Nova Scotia in Canada is a cool maritime wine region influenced by the Atlantic Ocean and the Bay of Fundy, with mild summers, cool nights, and relatively moderate winters, where well-drained glacial and coastal soils and a long, cool growing season support the production of fresh, aromatic vinifera and hybrid grape varieties.",
         "query: Michigan in the United States is a cool-climate, lake-moderated wine region surrounding Lake Michigan where warm summer days, cool nights, and long autumns extend the growing season, and well-drained glacial sandy loams and gravelly soils support balanced vine growth and high-quality vinifera grape production.",
+        "query: Quebec in Canada is a cool to cold continental wine region moderated by the St. Lawrence River valley, with warm, humid summers, cool nights, and cold winters where well-drained glacial and alluvial soils of sandy loams and limestone-rich deposits support a short but concentrated growing season suited primarily to cold-hardy varieties with strong natural acidity and aromatic intensity.",
+        "query: Wisconsin in the United States is a cool continental wine region moderated locally by Lakes Mendota, Michigan, and other inland waters, with warm, sunny summers, cool nights, and cold winters where well-drained soils of sandy loams, gravels, and dolomitic limestone-derived deposits support a moderate growing season suited to cold-hardy varieties with balanced acidity and fruit character.",
+        "query: Texas in the United States is a warm to hot, semi-arid wine region with diverse growing areas ranging from the elevated, high-sunshine Texas High Plains to the Hill Country, where hot days, strong diurnal temperature swings, cool nights, and low annual precipitation combine with well-drained calcareous, sandy, and limestone-rich soils to support a long growing season.",
+        "query: Pennsylvania in the United States is a moderate cool-climate wine region influenced by the Ridge and Valley terrain, the Susquehanna River, and proximity to Lake Erie in the northwest, with warm, humid summers, cool nights, and cold winters where well-drained soils support a moderate growing season suited to grape varieties.",
     ]
 )
 
@@ -378,6 +402,10 @@ REGION_STR = np.array(
         "query: New York State, United States",
         "query: Nova Scotia, Canada",
         "query: Michigan, United States",
+        "query: Montreal, Canada",
+        "query: Wicsonsin State, United States",
+        "query: Texas State, United States",
+        "query: Pennsylvania State, United States",
     ]
 )
 STATION_STR = np.array(
@@ -395,5 +423,9 @@ STATION_STR = np.array(
         "query: Geneva",
         "query: Hudson",
         "query: Portland",
+        "query: Montreal",
+        "query: Madison",
+        "query: Brownsfield",
+        "query: PennState",
     ]
 )

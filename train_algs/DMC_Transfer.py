@@ -268,7 +268,7 @@ class DeepFoundationRNN(BaseRNN):
         hn = self.nn.get_init_state(batch_size=b_size)
 
         map_idx = torch.randint(0, 2, size=cultivars.shape)
-        # map_idx = torch.ones_like(cultivars, device=self.device)
+        map_idx = torch.ones_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
         if (~transfer_inds).sum() != 0:
@@ -376,8 +376,8 @@ class ParamFoundationRNN(BaseRNN):
         self.nn.zero_grad()
         hn = self.nn.get_init_state(batch_size=b_size)
 
-        map_idx = torch.randint(0, 2, size=cultivars.shape)
-        # map_idx = torch.zeros_like(cultivars, device=self.device)
+        # map_idx = torch.randint(0, 2, size=cultivars.shape)
+        map_idx = torch.ones_like(cultivars, device=self.device)
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
 
@@ -458,6 +458,134 @@ class ParamFoundationRNN(BaseRNN):
             output_tens[:, i] = output
 
         return output_tens, param_tens, None
+
+    def make_optimizer(self, model):
+        super().make_optimizer(model)
+
+        embed_param_groups = [
+            {"params": model.transfer_weather_rnn.parameters()} if hasattr(model, "transfer_weather_rnn") else None,
+            {"params": model.transfer_rnn.parameters()} if hasattr(model, "transfer_rnn") else None,
+            {"params": model.transfer_ch_rnn.parameters()} if hasattr(model, "transfer_ch_rnn") else None,
+            {"params": model.transfer_pool_attn.parameters()} if hasattr(model, "transfer_pool_attn") else None,
+            {"params": model.transfer_embed_attn.parameters()} if hasattr(model, "transfer_embed_attn") else None,
+        ]
+
+        if all(p is not None for p in embed_param_groups):
+            self.embed_optimizer = torch.optim.Adam(
+                [pg for pg in embed_param_groups if pg is not None],
+                lr=self.learning_rate,
+            )
+
+
+class DeepFoundationEmbedRNN(BaseRNN):
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+        super(DeepFoundationEmbedRNN, self).__init__(config, data)
+
+        from sentence_transformers import SentenceTransformer
+
+        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+
+    def forward(
+        self,
+        data: torch.Tensor = None,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        transfer_rate: float = 0.0,
+        ch: torch.Tensor = None,
+        name: str = None,
+        train_embed: bool = False,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+        attn_map = None
+        orig_pred = None
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        hn = self.nn.get_init_state(batch_size=b_size)
+
+        if transfer_rate == 0 or self.config.DConfig.transfer_type in ["direct"]:
+            map_idx = torch.zeros_like(cultivars, device=self.device)
+
+            output_predict, _ = self.nn(
+                data,
+                cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites,
+                hn=hn,
+                text_embedder=self.text_model,
+                map_idx=map_idx,
+            )
+            output_tens = output_predict
+            return output_tens, attn_map, orig_pred
+
+        elif transfer_rate == 1 or self.config.DConfig.transfer_type in ["text", "adapt"]:
+            if self.config.DConfig.transfer_type == "text":
+                map_idx = torch.ones_like(cultivars, device=self.device)
+            elif self.config.DConfig.transfer_type == "adapt":
+                map_idx = torch.ones_like(cultivars, device=self.device) + 1
+            else:
+                map_idx = torch.randint(1, 3, size=cultivars.shape)
+            map_idx = map_idx.flatten()
+            b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[map_idx == 2]
+            all_inds = self.all_inds["train"]
+            adapt_inds = []
+            adapt_idx = []
+            for i, ind in enumerate(b_all_inds):
+                ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
+                idx = ids[
+                    torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]
+                ]
+                adapt_inds.append(idx)
+                adapt_idx.append(torch.ones_like(idx, device=idx.device) * i)
+            adapt_inds = torch.cat(adapt_inds)
+            adapt_idx = torch.cat(adapt_idx)
+            adapt_embed = self.nn.compute_embed(
+                self.data["train"][adapt_inds],
+                ch=self.val["train"][adapt_inds],
+                map_idx=adapt_idx,
+                bsize=(map_idx == 2).sum().item(),
+            )
+
+            if train_embed:
+                embed_tens = torch.empty(size=(b_size, dlen, self.nn.embed_dim - self.nn.input_dim)).to(self.device)
+                embed_tens[map_idx == 2, :] = adapt_embed.unsqueeze(1).repeat(1, embed_tens.shape[1], 1)
+                text_reg, text_stat, text_site, text_cult = self.nn.forward_embed_text(
+                    cultivars=cultivars[map_idx == 1, :],
+                    regions=regions[map_idx == 1, :],
+                    stations=stations[map_idx == 1, :],
+                    sites=sites[map_idx == 1, :],
+                    text_embedder=self.text_model,
+                )
+                embed_tens[map_idx == 1, :] = (
+                    torch.cat((text_cult, text_site, text_stat, text_reg), dim=1)
+                    .unsqueeze(1)
+                    .repeat(1, embed_tens.shape[1], 1)
+                )
+
+                direct_reg, direct_stat, direct_site, direct_cult = self.nn.forward_embed_direct(
+                    cultivars=cultivars,
+                    regions=regions,
+                    stations=stations,
+                    sites=sites,
+                )
+
+                return (
+                    embed_tens,
+                    torch.cat((direct_cult, direct_site, direct_stat, direct_reg), dim=1)
+                    .unsqueeze(1)
+                    .repeat(1, embed_tens.shape[1], 1),
+                    None,
+                )
+            else:
+                transfer_predict, hn = self.nn.forward_embed(data[map_idx == 2], embed=adapt_embed, hn=hn)
+                output_tens[map_idx == 2, :] = transfer_predict
+
+                return output_tens, attn_map, orig_pred
 
     def make_optimizer(self, model):
         super().make_optimizer(model)

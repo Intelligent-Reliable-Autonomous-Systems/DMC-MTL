@@ -150,6 +150,8 @@ class BaseRNN(BaseModel):
 
             # Training
             train_transfer = 0 if epoch < self.config.DConfig.transfer_start else 1
+            train_embed = True
+            embed = train_embed and "Foundation" in self.config.DConfig.type and train_transfer == 1
             if train_transfer == 1:
                 for name, param in self.nn.named_parameters():
                     if any(name.startswith(p) for p in ["transfer"]):
@@ -170,7 +172,7 @@ class BaseRNN(BaseModel):
                 batch_sites = sites_shuffled[i : i + self.batch_size] if sites_shuffled is not None else None
                 target = val_shuffled[i : i + self.batch_size]
 
-                output, _, model_output = self.forward(
+                output, val_out, model_output = self.forward(
                     batch_data,
                     batch_dates,
                     cultivars=batch_cultivars,
@@ -181,7 +183,11 @@ class BaseRNN(BaseModel):
                     transfer_rate=train_transfer,
                     ch=target,
                     name=train_name,
+                    train_embed=train_embed,
                 )
+                # Train the embedding for foundatio models
+                if embed:
+                    target = val_out
 
                 # Compute PINN Loss
                 odim = self.get_output_dim(self.config)
@@ -217,16 +223,6 @@ class BaseRNN(BaseModel):
                         # Filter both gp_output and target to valid points only
                         mask = ~torch.isnan(target.squeeze())
                         loss = -self.loss_func(output, target.nan_to_num(nan=0.0).squeeze()).mean()
-
-                        # log_prob = (
-                        #     self.loss_func.likelihood.expected_log_prob(target.nan_to_num(nan=0.0).squeeze(), output)
-                        #     * mask
-                        # ) / (mask.sum())
-                        # log_likelihood = log_prob
-                        # kl_divergence = self.loss_func.model.variational_strategy.kl_divergence().div(
-                        #     self.loss_func.num_data / self.loss_func.beta
-                        # )
-                        # loss = -(log_likelihood - kl_divergence).mean()
                     else:
                         loss = self.loss_func(output, target.nan_to_num(nan=0.0))
                     if "VELBO" not in self.config.DConfig.loss_func:
@@ -245,7 +241,7 @@ class BaseRNN(BaseModel):
                     output = output.mean
                 else:
                     output = output[:, :, :odim] if output.shape[-1] != odim else output
-                avg_ = cumulative_error(target, output, mask, device=self.device)
+                avg_ = cumulative_error(target, output, mask, device=self.device, embed=embed)
                 train_avg[:3] += avg_[1:-1]
                 train_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
             train_loss = train_loss if i == 0 else train_loss / i
@@ -272,7 +268,7 @@ class BaseRNN(BaseModel):
 
                     eval_target = self.val[test_name][j : j + self.batch_size]
                     test_all_ids = self.all_ids[test_name]
-                    eval_output, _, eval_model_output = self.forward(
+                    eval_output, eval_val_out, eval_model_output = self.forward(
                         batch_data,
                         batch_dates,
                         cultivars=batch_cultivars,
@@ -283,7 +279,12 @@ class BaseRNN(BaseModel):
                         transfer_rate=test_transfer,
                         ch=eval_target,
                         name=test_name,
+                        train_embed=train_embed,
                     )
+
+                    # Train the embedding for foundation models
+                    if embed:
+                        eval_target = eval_val_out
 
                     # Compute PINN Loss
                     if self.config.DConfig.type == "PINN":
@@ -321,17 +322,6 @@ class BaseRNN(BaseModel):
                             eval_mask = ~torch.isnan(eval_target.squeeze())
                             eval_loss = -self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0).squeeze()).mean()
 
-                            # log_prob = (
-                            #     self.loss_func.likelihood.expected_log_prob(
-                            #         eval_target.nan_to_num(nan=0.0).squeeze(), eval_output
-                            #     )
-                            #     * eval_mask
-                            # ) / (eval_mask.sum())
-                            # log_likelihood = log_prob.div(eval_target.shape[1])
-                            # kl_divergence = self.loss_func.model.variational_strategy.kl_divergence().div(
-                            #     self.loss_func.num_data / self.loss_func.beta
-                            # )
-                            # eval_loss = -(log_likelihood - kl_divergence).mean()
                         else:
                             eval_loss = self.loss_func(eval_output, eval_target.nan_to_num(nan=0.0))
                         if "VELBO" not in self.config.DConfig.loss_func:
@@ -343,7 +333,7 @@ class BaseRNN(BaseModel):
                         eval_output = eval_output.mean
                     else:
                         eval_output = eval_output[:, :, :odim] if eval_output.shape[-1] != odim else eval_output
-                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device)
+                    avg_ = cumulative_error(eval_target, eval_output, eval_mask, device=self.device, embed=embed)
                     eval_avg[:3] += avg_[1:-1]
                     eval_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
                 eval_loss = eval_loss if j == 0 else eval_loss / j

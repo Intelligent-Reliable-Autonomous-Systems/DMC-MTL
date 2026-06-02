@@ -11,8 +11,12 @@
             "request": "launch",
             "module": "trainers.train_model",
             "console": "integratedTerminal",
-            "args": "--config journal/ch_deep --region QC --station Montreal --site Montreal --cultivar All --seed 0",
-            "justMyCode": false
+            "args": "--config journal/deep_foundation ",
+            "justMyCode": false,
+            "env": {
+        "CUDA_LAUNCH_BLOCKING": "1",
+        "TORCH_USE_CUDA_DSA": "1"
+      }
         },
 
         {

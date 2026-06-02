@@ -14,12 +14,12 @@ run_name: ferg_model
 seed: 0
 # Data use
 DataConfig:
-    cultivar: Chardonnay
+    cultivar: All
     data_fpath: _data/processed_data/
     dtype: grape_coldhardiness_reg
-    region: WI
-    station: Madison
-    site: Madison
+    region: All
+    station: All
+    site: All
 # Parameters to predict at each time step
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"] # "THETA, "LTE10M", "LTE10B", "LTE90M", "LTE90B"
 # Range of prediction for each parameter

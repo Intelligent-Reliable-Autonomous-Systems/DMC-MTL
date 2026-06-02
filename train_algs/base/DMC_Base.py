@@ -27,11 +27,12 @@ from train_algs.base.util import set_embedding_op
 class BaseModule(nn.Module):
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__()
+        self.config = c
         self.hidden_dim = c.DConfig.hidden_dim
         self.dim2 = int(self.hidden_dim / 2)
         self.input_dim = model.get_input_dim(c)
         self.output_dim = model.get_output_dim(c)
-        self.embed_dim = set_embedding_op(self, c.DConfig.embed_op)
+        self.embed_dim = set_embedding_op(self, c.DConfig.embed_op, c.DConfig.embed_size)
 
         self.embed_op_str = c.DConfig.embed_op
         self.synth_data = c.DataConfig.synth_data
@@ -525,10 +526,19 @@ class DeepEmbeddingGRU(BaseModule):
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super(DeepEmbeddingGRU, self).__init__(c, model)
 
-        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
-        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
-        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
-        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
+        self.cult_embedding_layer = nn.Embedding(
+            len(CROP_NAMES[c.DataConfig.dtype]),
+            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
+        )
+        self.reg_embedding_layer = nn.Embedding(
+            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.stat_embedding_layer = nn.Embedding(
+            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.site_embedding_layer = nn.Embedding(
+            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
 
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -570,10 +580,10 @@ class DeepEmbeddingGRU(BaseModule):
         if input.ndim == 2:
             input = input.unsqueeze(1)
 
-        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
-        reg_embed = reg_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
-        stat_embed = stat_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
-        site_embed = site_embed.unsqueeze(1).expand_as(input) if self.synth_data is None else None
+        cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
 
         if self.embed_op_str == "concat_reg":
             gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
@@ -882,7 +892,7 @@ class FoundationEmbeddingGRU(BaseModule):
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.ReLU(),
-            nn.Linear(128, self.input_dim),
+            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
         )
         self.site_embedder = nn.Sequential(
             nn.Linear(1024, 512),
@@ -891,7 +901,7 @@ class FoundationEmbeddingGRU(BaseModule):
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.ReLU(),
-            nn.Linear(128, self.input_dim),
+            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
         )
 
         self.stat_embedder = nn.Sequential(
@@ -901,13 +911,22 @@ class FoundationEmbeddingGRU(BaseModule):
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.ReLU(),
-            nn.Linear(128, self.input_dim),
+            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
         )
 
-        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
-        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
-        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
-        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
+        self.cult_embedding_layer = nn.Embedding(
+            len(CROP_NAMES[c.DataConfig.dtype]),
+            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
+        )
+        self.reg_embedding_layer = nn.Embedding(
+            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.stat_embedding_layer = nn.Embedding(
+            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.site_embedding_layer = nn.Embedding(
+            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
 
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -924,7 +943,7 @@ class FoundationEmbeddingGRU(BaseModule):
             self.output_dim if "Deep" in c.DConfig.type else len(c.PConfig.output_vars),
             self.weather_output_dim,
             batch_first=True,
-        )  # Sine/Cosine embedding
+        )
         self.transfer_pool_attn = nn.Linear(self.weather_output_dim, 1)
         self.transfer_embed_attn = nn.Linear(self.weather_output_dim, self.embed_dim - self.input_dim)
 
@@ -943,10 +962,34 @@ class FoundationEmbeddingGRU(BaseModule):
         text_mask = map_idx == 1
         transfer_mask = map_idx == 2
 
-        reg_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
-        stat_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
-        site_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
-        cult_embed = torch.zeros(size=(cultivars.shape[0], self.input_dim), device=cultivars.device)
+        reg_embed = torch.zeros(
+            size=(
+                cultivars.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=cultivars.device,
+        )
+        stat_embed = torch.zeros(
+            size=(
+                cultivars.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=cultivars.device,
+        )
+        site_embed = torch.zeros(
+            size=(
+                cultivars.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=cultivars.device,
+        )
+        cult_embed = torch.zeros(
+            size=(
+                cultivars.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=cultivars.device,
+        )
 
         if text_mask.sum() != 0:
             reg_embed_text, stat_embed_text, site_embed_text, cult_embed_text = self.forward_embed_text(
@@ -1028,12 +1071,35 @@ class FoundationEmbeddingGRU(BaseModule):
 
         direct_mask = map_idx == 0
         text_mask = map_idx == 1
-        transfer_mask = map_idx == 2
 
-        reg_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
-        stat_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
-        site_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
-        cult_embed = torch.zeros(size=(input.shape[0], self.input_dim), device=input.device)
+        reg_embed = torch.zeros(
+            size=(
+                input.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=input.device,
+        )
+        stat_embed = torch.zeros(
+            size=(
+                input.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=input.device,
+        )
+        site_embed = torch.zeros(
+            size=(
+                input.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=input.device,
+        )
+        cult_embed = torch.zeros(
+            size=(
+                input.shape[0],
+                self.input_dim if self.config.DConfig.embed_size is None else self.config.DConfig.embed_size,
+            ),
+            device=input.device,
+        )
 
         if text_mask.sum() != 0:
             reg_embed_text, stat_embed_text, site_embed_text, cult_embed_text = self.forward_embed_text(
@@ -1058,10 +1124,10 @@ class FoundationEmbeddingGRU(BaseModule):
             site_embed[direct_mask.flatten()] = site_embed_direct
             cult_embed[direct_mask.flatten()] = cult_embed_direct
 
-        cult_embed = cult_embed.unsqueeze(1).expand_as(input)
-        site_embed = site_embed.unsqueeze(1).expand_as(input)
-        stat_embed = stat_embed.unsqueeze(1).expand_as(input)
-        reg_embed = reg_embed.unsqueeze(1).expand_as(input)
+        cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
+        reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
 
         if self.embed_op_str == "concat_reg":
             gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
@@ -1181,7 +1247,6 @@ class FoundationEmbeddingGRU(BaseModule):
             map_idx=map_idx,
             bsize=(transfer_inds).sum().item(),
         )
-        print(embed.shape)
 
     def forward_embed(
         self,

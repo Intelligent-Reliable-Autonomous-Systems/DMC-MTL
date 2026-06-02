@@ -21,7 +21,7 @@ from torch.nn import _reduction as _Reduction
 from torch.utils.tensorboard import SummaryWriter
 
 
-def set_embedding_op(model: nn.Module, embed_op: str) -> int:
+def set_embedding_op(model: nn.Module, embed_op: str, embed_size: int | None = None) -> int:
     """
     Set the embedding operation to be used
     in MultiTask Embedding Models
@@ -32,28 +32,28 @@ def set_embedding_op(model: nn.Module, embed_op: str) -> int:
             return torch.concatenate((embed, input), dim=-1)
 
         model.embed_op = concat
-        return 2 * model.input_dim
+        return 2 * model.input_dim if embed_size is None else model.input_dim + embed_size
     elif embed_op == "concat_reg":
 
         def concat(embed1, embed2, embed3, embed4, input):
             return torch.concatenate((embed1, embed2, embed3, embed4, input), dim=-1)
 
         model.embed_op = concat
-        return 5 * model.input_dim
+        return 5 * model.input_dim if embed_size is None else model.input_dim + 4 * embed_size
     elif embed_op == "concat_stat":
 
         def concat(embed1, embed2, embed3, input):
             return torch.concatenate((embed1, embed2, embed3, input), dim=-1)
 
         model.embed_op = concat
-        return 4 * model.input_dim
+        return 4 * model.input_dim if embed_size is None else model.input_dim + 3 * embed_size
     elif embed_op == "concat_site":
 
         def concat(embed1, embed2, input):
             return torch.concatenate((embed1, embed2, input), dim=-1)
 
         model.embed_op = concat
-        return 3 * model.input_dim
+        return 3 * model.input_dim if embed_size is None else model.input_dim + 2 * embed_size
     elif embed_op == "add":
 
         def add(embed, input):
@@ -124,11 +124,14 @@ def cumulative_error(
     n_stages: int = 5,
     RMSE: bool = True,
     device: torch.device = "cpu",
+    embed: bool = False,
 ) -> torch.Tensor:
     """
     Plot the errors in predicting onset of stage
     """
     avgs = torch.zeros(size=(n_stages,)).to(device)
+    if embed:
+        return avgs
     if model.size(-1) == 3:
         return avgs
 

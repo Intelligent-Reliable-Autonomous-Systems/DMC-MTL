@@ -78,6 +78,17 @@ CROP_NAMES = {
             "Sauvignon_Blanc",  # 9
             "Syrah",  # 10
             "Zinfandel",  # 11
+            "Barbera",  # 12
+            "Chenin_Blanc",  # 13
+            "Concord",  # 14
+            "Grenache",  # 15
+            "Lemberger",  # 16
+            "Malbec",  # 17
+            "Mourvedre",  # 18
+            "Nebbiolo",  # 19
+            "Sangiovese",  # 20
+            "Semillon",  # 21
+            "Viognier",  # 22
         ],
         dtype=str,
     ),
@@ -264,7 +275,7 @@ CULT_STR = np.array(
     ]
 )
 
-CULT_STR_VERB = np.array(
+CULT_STR_VERB_ACTUAL = np.array(
     [
         "query: Cabernet Franc is an early- to mid-budding, mid-ripening red grape cultivar with medium vigor and loose to moderately compact clusters, producing wines with moderate acidity and a lighter, translucent red color. It has good cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as gravelly loam or limestone.",
         "query: Cabernet Sauvignon is a late-budding, late-ripening red grape cultivar with small, compact clusters, producing deeply colored wines with firm acidity and strong tannins. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained gravelly or sandy-loam soils.",
@@ -278,6 +289,45 @@ CULT_STR_VERB = np.array(
         "query: Sauvignon Blanc is an early- to mid-ripening white grape cultivar with moderate vigor and medium-sized, loose clusters, producing wines with high acidity and a pale greenish-yellow color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as gravel, limestone, or sandy loam.",
         "query: Syrah is a mid- to late-budding, mid- to late-ripening red grape cultivar with high vigor and medium to large, compact clusters, producing wines with moderate acidity and a deep, dark purple color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained, stony or gravelly soils.",
         "query: Zinfandel is a mid- to late-budding, mid- to late-ripening red grape cultivar with high vigor and medium to large, loosely packed clusters, producing wines with moderate acidity and a deep ruby to purple color. It has low to moderate cold-hardiness (tolerating around -12C/10F) and prefers well-drained, sandy or loamy soils.",
+        "query: Barbera is a mid-budding, mid- to late-ripening red grape cultivar with high vigor and medium to large, loosely packed clusters, producing wines with very high acidity and a deep ruby to purple color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as clay, limestone, or sandy loam.",
+        "query: Chenin Blanc is an early- to mid-budding, mid-ripening white grape cultivar with moderate to high vigor and medium-sized, compact clusters, producing wines with high acidity and a pale yellow to golden color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as tuffeau, schist, or sandy loam.",
+        "query: Concord is a mid-budding, early- to mid-ripening red grape cultivar with high vigor and medium to large, loosely packed clusters, producing wines with moderate acidity and a deep blue-purple color. It has excellent cold-hardiness (tolerating around -25C/-13F) and prefers well-drained soils such as sandy loam, loam, or glacial till.",
+        "query: Grenache is a late-budding, late-ripening red grape cultivar with high vigor and medium to large, loosely packed clusters, producing wines with low acidity and a pale to medium ruby color. It has low to moderate cold-hardiness (tolerating around -12C/10F) and prefers well-drained soils such as sandy, stony, or gravelly loam.",
+        "query: Lemberger is an early- to mid-budding, mid-ripening red grape cultivar with moderate vigor and medium-sized, moderately compact clusters, producing wines with moderate to high acidity and a deep blue-red color. It has good cold-hardiness (tolerating around -20C/-4F) and prefers well-drained soils such as loam, gravel, or limestone.",
+        "query: Malbec is a mid-budding, mid- to late-ripening red grape cultivar with moderate to high vigor and medium-sized, compact clusters, producing wines with moderate acidity and a deep violet to inky purple color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as clay, limestone, or alluvial gravel.",
+        "query: Mourvedre is a late-budding, late-ripening red grape cultivar with moderate vigor and small to medium, compact clusters, producing wines with moderate acidity and firm tannins and a deep ruby to purple color. It has low cold-hardiness (tolerating around -10C/14F) and prefers well-drained soils such as sandy, gravelly, or stony loam.",
+        "query: Nebbiolo is an early-budding, late-ripening red grape cultivar with moderate vigor and small to medium, compact clusters, producing wines with very high acidity and strong tannins and a pale garnet to brick-red color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as calcareous marl, limestone, or sandy loam.",
+        "query: Sangiovese is a mid-budding, mid- to late-ripening red grape cultivar with moderate to high vigor and medium-sized, compact clusters, producing wines with high acidity and firm tannins and a medium ruby to garnet color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as galestro, limestone, or sandy clay.",
+        "query: Semillon is an early- to mid-ripening white grape cultivar with moderate vigor and medium to large, loosely packed clusters, producing wines with moderate acidity and a pale golden to deep yellow color. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as gravel, sandy loam, or clay.",
+        "query: Viognier is a mid-budding, mid-ripening white grape cultivar with low to moderate vigor and small to medium, loosely packed clusters, producing wines with low to moderate acidity and a deep golden to amber color. It has low to moderate cold-hardiness (tolerating around -12C/10F) and prefers well-drained soils such as granite, sandy loam, or gravelly schist.",
+    ]
+)
+
+CULT_STR_VERB = np.array(
+    [
+        "query: a wooden spoon develops a rich patina over years of regular cooking use.",
+        "query: a grandfather clock requires careful calibration to keep accurate time.",
+        "query: a rubber band loses its elasticity when exposed to extreme heat.",
+        "query: a ceramic mug retains heat far longer than a paper cup.",
+        "query: a bicycle chain needs lubrication every few hundred miles of riding.",
+        "query: a glass marble can refract light into a tiny rainbow on a sunny day.",
+        "query: a wool blanket becomes softer with each gentle wash cycle.",
+        "query: a cast iron skillet can last for several generations if properly seasoned.",
+        "query: a compass needle always aligns itself with the Earth's magnetic field.",
+        "query: a leather wallet gradually molds to the shape of its owner's pocket.",
+        "query: a piano has exactly 88 keys spanning over seven octaves.",
+        "query: a candle burns faster in a room with good air circulation.",
+        "query: a tin can will begin to rust within weeks if left out in the rain.",
+        "query: a tennis ball loses its bounce after prolonged exposure to cold temperatures.",
+        "query: a cork expands slightly when inserted into a wine bottle.",
+        "query: a matchstick contains a small amount of phosphorus at its tip.",
+        "query: a paper clip can hold roughly ten sheets of standard printer paper.",
+        "query: a linen shirt becomes more breathable after several washes.",
+        "query: a pocket watch must be wound daily to maintain accurate timekeeping.",
+        "query: a snow globe contains glycerin to slow the falling of the artificial snow.",
+        "query: a wooden pencil can draw a line approximately 35 miles long before running out.",
+        "query: a thermometer measures temperature by tracking the expansion of liquid inside.",
+        "query: a doorknob made of brass naturally kills most bacteria within a few hours.",
     ]
 )
 
@@ -372,9 +422,9 @@ STATION_STR_VERB = np.array(
         "query: The Geneva weather station in the Finger Lakes region of New York State, United States (approximately 42.87 N, -76.99 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Seneca Lake, producing a relatively long growing season with steady precipitation and significant diurnal temperature variation.",
         "query: The Hudson weather station in the Hudson Valley of New York State, United States (approximately 42.25 N, -73.79 W) records a humid continental climate with warm, humid summers and cold winters influenced by the Hudson River valley, producing a moderate growing season with consistent precipitation and seasonal temperature variability.",
         "query: The Portland weather station along the Lake Erie shoreline of New York State, United States (approximately 42.38 N, -79.47 W) records a humid continental climate with warm summers, cool nights, and cold winters moderated by nearby Lake Erie, producing a relatively long growing season with lake-influenced temperatures and moderate annual precipitation.",
-        "query: The Montreal weather station in Quebec, Canada (approximately 45.47 N, -73.74 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters influenced by the St. Lawrence River valley, producing a moderate growing season with consistent precipitation distributed across the year and notable seasonal temperature variability."
-        "query: The Madison weather station in Wisconsin, United States (approximately 43.14 N, -89.33 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters moderated modestly by the surrounding lakes Mendota and Monona, producing a moderate growing season with fairly consistent precipitation and significant diurnal and seasonal temperature variation."
-        "query: The Brownfield weather station on the Texas High Plains, United States (approximately 33.18 N, -102.27 W) records a semi-arid continental climate with hot, intensely sunny summers, strong diurnal temperature swings, cool nights, and low annual precipitation typical of the Llano Estacado plateau that produces a long growing season with high evapotranspiration demand and occasional late spring or early autumn frost risk."
+        "query: The Montreal weather station in Quebec, Canada (approximately 45.47 N, -73.74 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters influenced by the St. Lawrence River valley, producing a moderate growing season with consistent precipitation distributed across the year and notable seasonal temperature variability.",
+        "query: The Madison weather station in Wisconsin, United States (approximately 43.14 N, -89.33 W) records a humid continental climate with warm, humid summers, cool nights, and cold, snowy winters moderated modestly by the surrounding lakes Mendota and Monona, producing a moderate growing season with fairly consistent precipitation and significant diurnal and seasonal temperature variation.",
+        "query: The Brownfield weather station on the Texas High Plains, United States (approximately 33.18 N, -102.27 W) records a semi-arid continental climate with hot, intensely sunny summers, strong diurnal temperature swings, cool nights, and low annual precipitation typical of the Llano Estacado plateau that produces a long growing season with high evapotranspiration demand and occasional late spring or early autumn frost risk.",
         "query: The Penn State weather station in central Pennsylvania, United States (approximately 40.72 N, -77.93 W) records a humid continental climate with warm, humid summers, cool nights, and cold winters influenced by the Ridge and Valley terrain that channels air flow and moderates temperature extremes, producing a moderate growing season with well-distributed annual precipitation and meaningful diurnal temperature swings.",
     ]
 )

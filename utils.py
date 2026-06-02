@@ -74,6 +74,10 @@ class DConfig:
     transfer_start: Optional[int] = 1000000
     """How many years of data to use for transfer(max)"""
     num_transfer_years: Optional[int] = 1
+    """How large should each embedding be"""
+    embed_size: Optional[int] = None
+    """Type of transfer to use"""
+    transfer_type: Optional[str] = None
 
 
 @dataclass
@@ -177,6 +181,10 @@ def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
     if hasattr(args, "withold"):
         config.DataConfig.withold = (
             OmegaConf.create(yaml.safe_load(args.withold)) if args.withold is not None else config.DataConfig.withold
+        )
+    if hasattr(args, "transfer_type"):
+        config.DConfig.transfer_type = (
+            args.transfer_type if args.transfer_type is not None else config.DConfig.transfer_type
         )
 
     return config, load_data_from_config(config, args)
@@ -359,6 +367,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC_Transfer.DeepAdaptRNN(config, data)
     elif config.DConfig.type == "FoundationDeep":
         calibrator = DMC_Transfer.DeepFoundationRNN(config, data)
+    elif config.DConfig.type == "FoundationDeepEmbed":
+        calibrator = DMC_Transfer.DeepFoundationEmbedRNN(config, data)
     elif config.DConfig.type == "FoundationParam":
         calibrator = DMC_Transfer.ParamFoundationRNN(config, data)
     else:

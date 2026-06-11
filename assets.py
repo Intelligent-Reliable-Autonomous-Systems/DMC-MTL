@@ -275,7 +275,7 @@ CULT_STR = np.array(
     ]
 )
 
-CULT_STR_VERB_ACTUAL = np.array(
+CULT_STR_VERB = np.array(
     [
         "query: Cabernet Franc is an early- to mid-budding, mid-ripening red grape cultivar with medium vigor and loose to moderately compact clusters, producing wines with moderate acidity and a lighter, translucent red color. It has good cold-hardiness (tolerating around -15C/5F) and prefers well-drained soils such as gravelly loam or limestone.",
         "query: Cabernet Sauvignon is a late-budding, late-ripening red grape cultivar with small, compact clusters, producing deeply colored wines with firm acidity and strong tannins. It has moderate cold-hardiness (tolerating around -15C/5F) and prefers well-drained gravelly or sandy-loam soils.",
@@ -303,7 +303,7 @@ CULT_STR_VERB_ACTUAL = np.array(
     ]
 )
 
-CULT_STR_VERB = np.array(
+CULT_STR_TEST = np.array(
     [
         "query: a wooden spoon develops a rich patina over years of regular cooking use.",
         "query: a grandfather clock requires careful calibration to keep accurate time.",

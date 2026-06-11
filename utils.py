@@ -204,6 +204,10 @@ def load_config_data_fpath(args: Namespace, includes: str = None) -> tuple[DictC
     if hasattr(args, "synth_test"):
         if args.synth_test is not None:
             config.DataConfig.synth_data = args.synth_test
+    if hasattr(args, "transfer_type"):
+        config.DConfig.transfer_type = (
+            args.transfer_type if args.transfer_type is not None else config.DConfig.transfer_type
+        )
     return config, load_data_from_config(config, args, includes=includes), fpath
 
 
@@ -367,10 +371,12 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC_Transfer.DeepAdaptRNN(config, data)
     elif config.DConfig.type == "FoundationDeep":
         calibrator = DMC_Transfer.DeepFoundationRNN(config, data)
-    elif config.DConfig.type == "FoundationDeepEmbed":
+    elif config.DConfig.type == "FoundationEmbedDeep":
         calibrator = DMC_Transfer.DeepFoundationEmbedRNN(config, data)
     elif config.DConfig.type == "FoundationParam":
         calibrator = DMC_Transfer.ParamFoundationRNN(config, data)
+    elif config.DConfig.type == "FoundationEmbedParam":
+        calibrator = DMC_Transfer.ParamFoundationEmbedRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 

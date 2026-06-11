@@ -151,7 +151,7 @@ class BaseRNN(BaseModel):
             # Training
             train_transfer = 0 if epoch < self.config.DConfig.transfer_start else 1
             train_embed = True
-            embed = train_embed and "Foundation" in self.config.DConfig.type and train_transfer == 1
+            embed = train_embed and "FoundationEmbed" in self.config.DConfig.type and train_transfer == 1
             if train_transfer == 1:
                 for name, param in self.nn.named_parameters():
                     if any(name.startswith(p) for p in ["transfer"]):
@@ -185,7 +185,7 @@ class BaseRNN(BaseModel):
                     name=train_name,
                     train_embed=train_embed,
                 )
-                # Train the embedding for foundatio models
+                # Train the embedding for foundation models
                 if embed:
                     target = val_out
 

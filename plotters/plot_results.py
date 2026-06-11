@@ -30,6 +30,7 @@ def main():
     argparser.add_argument("--fname", type=str, default="data.txt", help="File to save data to")
     argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
     argparser.add_argument("--transfer_rate", type=float, default=0.0)
+    argparser.add_argument("--transfer_type", type=str, default="direct")
     argparser.add_argument(
         "--mode",
         default="default",

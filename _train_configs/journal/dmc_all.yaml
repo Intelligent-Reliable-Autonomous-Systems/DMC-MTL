@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/Journal/AllDMC/
+log_path: /_runs/Journal2/DMCMTHL/
 run_name: deep_mtl
 seed: 0
 #
@@ -32,4 +32,5 @@ DConfig:
     learning_rate: .0002
     lr_factor: 0.95
     batch_size: 72
-    epochs: 400
+    epochs: 200
+    embed_size: 24

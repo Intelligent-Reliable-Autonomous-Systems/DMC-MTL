@@ -209,9 +209,15 @@ def main():
     parser.add_argument("--per_cult", action="store_false", help="If to print per cultivar results")
     parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
     parser.add_argument("--uq", action="store_true", help="If to print calibration data")
+    parser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
+
     args = parser.parse_args()
 
-    fname = "results_agg_cultivars.pkl" if not args.uq else "uq_agg_cultivars.pkl"
+    fname = (
+        f"results_agg_cultivars_{args.transfer_type}.pkl"
+        if not args.uq
+        else f"uq_agg_cultivars_{args.transfer_type}.pkl"
+    )
     fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
     mtl_models = load_named_pickles([args.start_dir], fpath, args)

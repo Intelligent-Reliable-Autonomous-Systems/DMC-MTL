@@ -35,6 +35,9 @@ def main():
     argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
     argparser.add_argument("--num_transfer_years", type=int, default=5, help="If to compute over all region data")
     argparser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
+    argparser.add_argument(
+        "--verbose_level", type=str, default="verb", help="level of verbosity of strings for transfer"
+    )
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
@@ -281,16 +284,24 @@ def main():
             pkl.dump(all_cultivar_avg_pheno, f)
         f.close()
     elif "coldhardiness" in config.DataConfig.dtype:
-        with open(f"{args.start_dir}/{prefix}results_agg_cultivars_{args.transfer_type}.pkl", "wb") as f:
+        with open(
+            f"{args.start_dir}/{prefix}results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
+        ) as f:
             pkl.dump(all_avg_ch, f)
         f.close()
-        with open(f"{args.start_dir}/{prefix}results_per_cultivars_{args.transfer_type}.pkl", "wb") as f:
+        with open(
+            f"{args.start_dir}/{prefix}results_per_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
+        ) as f:
             pkl.dump(all_cultivar_avg_ch, f)
         f.close()
-        with open(f"{args.start_dir}/{prefix}uq_agg_cultivars_{args.transfer_type}.pkl", "wb") as f:
+        with open(
+            f"{args.start_dir}/{prefix}uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
+        ) as f:
             pkl.dump(all_uq_ch, f)
         f.close()
-        with open(f"{args.start_dir}/{prefix}uq_per_cultivars_{args.transfer_type}.pkl", "wb") as f:
+        with open(
+            f"{args.start_dir}/{prefix}uq_per_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
+        ) as f:
             pkl.dump(all_cultivar_uq_ch, f)
         f.close()
     elif "wofost" in config.DataConfig.dtype:

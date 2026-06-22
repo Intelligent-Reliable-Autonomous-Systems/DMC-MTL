@@ -762,3 +762,63 @@ class ParamFoundationEmbedRNN(BaseRNN):
                 [pg for pg in embed_param_groups if pg is not None],
                 lr=self.learning_rate,
             )
+
+
+class FoundationModel(BaseRNN):
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
+
+        super(FoundationModel, self).__init__(config, data)
+        from sentence_transformers import SentenceTransformer
+
+        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+        self.model = get_engine(self.config)(
+            num_models=self.batch_size,
+            config=config.PConfig,
+            inputprovider=self.input_data,
+            device=self.device,
+        )
+
+        self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
+
+    def forward(
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
+        map_idx = torch.randint(0, 2, size=cultivars.shape)
+        if self.config.DConfig.transfer_type == "direct":
+            map_idx = torch.zeros_like(cultivars, device=self.device)
+        elif self.config.DConfig.transfer_type == "text":
+            map_idx = torch.ones_like(cultivars, device=self.device)
+
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+        batch_params = (
+            self.task_params[cultivars.to(torch.long).squeeze()] if cultivars is not None else self.task_params[0]
+        )
+
+        self.model.set_model_params(batch_params, self.params)
+        params, _ = self.nn(
+            input=data[:, 0],
+            cultivars=cultivars,
+            sites=sites,
+            stations=stations,
+            regions=regions,
+            map_idx=map_idx,
+            text_embedder=self.text_model,
+        )
+        self.model.set_model_params(self.param_cast(params), self.params)
+        output = self.model.reset(b_size)
+
+        for i in range(dlen):
+            output = self.model.run(dates=dates[:, i], cultivars=cultivars)
+            output_tens[:, i] = output
+
+        return output_tens, None, None

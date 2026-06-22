@@ -1,0 +1,23 @@
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781924978 --region BCOV
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925142 --region BCOV
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925310 --region BCOV
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925473 --region BCOV
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925639 --region BCOV
+
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781924978 --region ONNP
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925142 --region ONNP
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925310 --region ONNP
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925473 --region ONNP
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925639 --region ONNP
+
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781924978 --region WA
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925142 --region WA
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925310 --region WA
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925473 --region WA
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925639 --region WA
+
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781924978 --region NY
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925142 --region NY
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925310 --region NY
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925473 --region NY
+python3 -m trainers.train_model_rtmc --config journal/rtmc/ch_param_2 --seed 0 --rnn_fpath _runs/Journal3/DeepMTHL/BCOV/All/All/All/deep_mtl__1781925639 --region NY

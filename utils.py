@@ -78,6 +78,8 @@ class DConfig:
     embed_size: Optional[int] = None
     """Type of transfer to use"""
     transfer_type: Optional[str] = None
+    """How verbose of a string to use. Literal["base", "verb", "bare", "mini", "test"]]"""
+    verbose_level: Optional[str] = "verb"
 
 
 @dataclass
@@ -207,6 +209,10 @@ def load_config_data_fpath(args: Namespace, includes: str = None) -> tuple[DictC
     if hasattr(args, "transfer_type"):
         config.DConfig.transfer_type = (
             args.transfer_type if args.transfer_type is not None else config.DConfig.transfer_type
+        )
+    if hasattr(args, "verbose_level"):
+        config.DConfig.verbose_level = (
+            args.verbose_level if args.verbose_level is not None else config.DConfig.verbose_level
         )
     return config, load_data_from_config(config, args, includes=includes), fpath
 
@@ -361,6 +367,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         calibrator = DMC.StationaryModel(config, data)
     elif config.DConfig.type == "Hybrid":
         calibrator = DMC.HybridModel(config, data)
+    elif config.DConfig.type == "Foundation":
+        calibrator = DMC_Transfer.FoundationModel(config, data)
     elif config.DConfig.type == "Residual":
         calibrator = DMC.ResidualRNN(config, data)
     elif config.DConfig.type == "TransferParam":

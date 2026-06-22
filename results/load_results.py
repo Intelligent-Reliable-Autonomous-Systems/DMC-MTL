@@ -47,7 +47,7 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
     return results
 
 
-def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
+def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray, region: bool = False):
     """
     Make print string for when we are printing MTL result over regions
     """
@@ -73,24 +73,38 @@ def compute_str_ndim5(mtl_arr: np.ndarray, mean: np.ndarray, std: np.ndarray):
                 for m in range(mean.shape[3]):
                     if (np.isnan(mean[j, k, l, m])).all():
                         continue
-                    all_str += "        "
+                    if not region:
+                        all_str += "        "
                     for i in range(mean.shape[4]):
+                        if region:
+                            break
                         all_str += f"{mean[j, k, l, m, i]} +/- {std[j, k, l, m, i]}, "
-                    all_str += "\n"
-                all_str += "      "
+                    if not region:
+                        all_str += "\n"
+                if not region:
+                    all_str += "      "
                 for i in range(mean.shape[4]):
+                    if region:
+                        break
                     all_str += f"{cult_mean[j, k, l, i]} +/- {cult_std[j, k, l, i]}, "
-                all_str += "\n"
-                all_str += "\n"
-            all_str += "    "
+                if not region:
+                    all_str += "\n"
+                    all_str += "\n"
+            if not region:
+                all_str += "    "
             for i in range(mean.shape[4]):
+                if region:
+                    break
                 all_str += f"{site_mean[j, k, i]} +/- {site_std[j, k, i]}, "
-            all_str += "\n"
-            all_str += "\n"
-        all_str += "  "
+            if not region:
+                all_str += "\n"
+                all_str += "\n"
+        if not region:
+            all_str += "  "
         for i in range(mean.shape[4]):
             all_str += f"{stat_mean[j, i]} +/- {stat_std[j, i]}, "
-        all_str += "\n"
+        if not region:
+            all_str += "\n"
         all_str += "\n"
     for i in range(mean.shape[4]):
         all_str += f"{reg_mean[i]} +/- {reg_std[i]}, "
@@ -203,6 +217,7 @@ def main():
     parser.add_argument("--prefix", type=str, help="prefix of results file", default="")
     parser.add_argument("--stl", action="store_true", help="If to toggle printing for STL variant")
     parser.add_argument("--station", action="store_true", help="If to toggle MTL printing variant by station")
+    parser.add_argument("--region", action="store_true", help="If to toggle MTL printing variant by region")
     parser.add_argument("--site", action="store_true", help="If to toggle MTL printint variant by site")
     parser.add_argument("--cult", action="store_true", help="If to toggle MTL printint variant by cult")
     parser.add_argument("--per", action="store_false", help="If to load per cultivar or aggregate file")
@@ -210,13 +225,14 @@ def main():
     parser.add_argument("--rtmc", action="store_true", help="If to print RTMC data")
     parser.add_argument("--uq", action="store_true", help="If to print calibration data")
     parser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
+    parser.add_argument("--verbose_level", type=str, default="verb")
 
     args = parser.parse_args()
 
     fname = (
-        f"results_agg_cultivars_{args.transfer_type}.pkl"
+        f"results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
         if not args.uq
-        else f"uq_agg_cultivars_{args.transfer_type}.pkl"
+        else f"uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
     )
     fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
@@ -253,8 +269,12 @@ def main():
         else:
             if mean.ndim == 6:
                 all_str = compute_str_ndim6(mtl_arr, mean, std)
-            elif mean.ndim == 5:  # For when we have region/station/site/cultivar
-                all_str = compute_str_ndim5(mtl_arr, mean, std)
+            elif mean.ndim == 5:  # For when we have region/station/site/cultivar\
+                print(args.region)
+                if args.region:
+                    all_str = compute_str_ndim5(mtl_arr, mean, std, region=True)
+                else:
+                    all_str = compute_str_ndim5(mtl_arr, mean, std)
             elif mean.ndim == 3:  # For when we are loading multiple single task models
                 for k in range(mean.shape[0]):
                     for j in range(mean.shape[2]):

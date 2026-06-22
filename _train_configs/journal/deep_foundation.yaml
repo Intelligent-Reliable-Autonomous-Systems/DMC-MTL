@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/Journal2/FoundationDeep/
+log_path: /_runs/Journal3/FoundationDeep/
 run_name: deep_mtl
 seed: 0
 DataConfig: 
@@ -31,7 +31,6 @@ DConfig:
     learning_rate: .0002
     lr_factor: 0.95
     batch_size: 72
-    epochs: 500
-    transfer_start: 300
+    epochs: 600
+    transfer_start: 400
     num_transfer_years: 5
-    embed_size: 12

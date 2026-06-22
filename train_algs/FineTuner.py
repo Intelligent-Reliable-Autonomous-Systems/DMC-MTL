@@ -9,6 +9,7 @@ Written by Will Solow, 2025
 """
 
 import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -146,6 +147,7 @@ class BaseFineTuner(BaseModel):
         train_name = "val" if self.config.DataConfig.val_set else "train"
         test_name = "test"
         for epoch in range(self.epochs):
+            st = time.time()
             train_loss = 0
             grad = 0
             inds = np.arange(len(self.data[train_name]))
@@ -247,17 +249,7 @@ class BaseFineTuner(BaseModel):
                 test_avg[:3] += avg_[1:-1]
                 test_avg[-1] += torch.sum(avg_[1:-1]).to(self.device)
 
-            log_training(
-                self,
-                writer,
-                log_path,
-                epoch,
-                train_loss,
-                test_loss,
-                train_avg,
-                test_avg,
-                grad,
-            )
+            log_training(self, writer, log_path, epoch, train_loss, test_loss, train_avg, test_avg, grad, st)
 
             self.scheduler.step(float(train_loss))
 
@@ -370,6 +362,9 @@ class DeepFineTuner(BaseFineTuner):
         data: torch.Tensor,
         dates: np.ndarray,
         cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
         val_data: torch.Tensor = None,
         days: int = None,
         **kwargs,
@@ -396,17 +391,18 @@ class DeepFineTuner(BaseFineTuner):
         # Run through entirety of time series predicting parameters for physical model at each step
         for i in range(dlen):
             output_predict, hn_cn = self.nn(
-                input=data[:, i],
-                hn=hn_cn,
-                cultivars=cultivars,
+                input=data[:, i], hn=hn_cn, cultivars=cultivars, regions=regions, sites=sites, stations=stations
             )
             output_predict_ft, hn_cn_ft = self.finetuner(
                 error=error_tens[:, i - 1].clone().detach(),
                 hn=hn_cn_ft,
                 cultivars=cultivars,
+                regions=regions,
+                sites=sites,
+                stations=stations,
                 delta_t=torch.ones(size=(b_size, 1), device=self.device),
             )
-            output = output_predict + output_predict_ft
+            output = output_predict.squeeze(-1) + output_predict_ft
 
             error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], days=days)
 

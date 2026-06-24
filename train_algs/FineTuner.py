@@ -77,9 +77,11 @@ class BaseFineTuner(BaseModel):
         """
         Load Fine Tuner Model
         """
-        self.finetuner.load_state_dict(
-            torch.load(f"{path}/finetune_model.pt", weights_only=True, map_location=self.device)
-        )
+        ckpt = torch.load(f"{path}/finetune_model.pt", weights_only=True, map_location=self.device)
+        if hasattr(self.finetuner, "embedding_layer"):
+            self.grow_embedding(self.finetuner, ckpt, "embedding_layer.weight")
+        self.finetuner.load_state_dict(ckpt)
+
         self.nn.load_state_dict(torch.load(f"{path}/{name}", weights_only=True, map_location=self.device))
 
     @staticmethod

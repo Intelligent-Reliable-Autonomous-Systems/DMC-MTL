@@ -4,14 +4,17 @@ Base class for Finetuning param prediction
 Written by Will Solow, 2025
 """
 
+from collections import OrderedDict
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from omegaconf import DictConfig
 
+from assets import CROP_NAMES
+
 
 class BaseFTModule(nn.Module):
-
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__()
         self.hidden_dim = c.RTMCConfig.hidden_dim
@@ -24,6 +27,14 @@ class BaseFTModule(nn.Module):
 
         return self.h0.repeat(1, batch_size, 1)
 
+    def grow_embedding(self, nn: nn.Module, ckpt: OrderedDict, name: str):
+        old = ckpt[name]  # [old_n, d]
+        new = nn.state_dict()[name]  # [new_n, d]
+
+        new[: old.shape[0]] = old
+        new[old.shape[0] :].zero_()
+        ckpt[name] = new
+
 
 class EmbedErrorFCTuner(BaseFTModule):
     """
@@ -33,8 +44,8 @@ class EmbedErrorFCTuner(BaseFTModule):
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
 
         super(EmbedErrorFCTuner, self).__init__(c, model)
-
-        self.embedding_layer = nn.Embedding(model.num_cultivars, self.input_dim)
+        # len(CROP_NAMES[c.DataConfig.dtype])
+        self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(2 * self.input_dim, self.dim2, bias=self.bias)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim, bias=self.bias)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True, bias=self.bias)

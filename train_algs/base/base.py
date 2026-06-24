@@ -137,7 +137,6 @@ class BaseModel(nn.Module):
     def grow_embedding(self, nn: nn.Module, ckpt: OrderedDict, name: str):
         old = ckpt[name]  # [old_n, d]
         new = nn.state_dict()[name]  # [new_n, d]
-
         new[: old.shape[0]] = old
         new[old.shape[0] :].zero_()
         ckpt[name] = new

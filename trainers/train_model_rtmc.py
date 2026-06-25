@@ -7,6 +7,7 @@ Written by Will Solow, 2025
 """
 
 import argparse
+
 import utils
 from train_algs import FineTuner
 
@@ -20,6 +21,7 @@ def main():
     parser.add_argument("--site", default=None, type=str, help="Site")
     parser.add_argument("--cultivar", default=None, type=str, help="Cultivar Type")
     parser.add_argument("--rnn_fpath", default=None, type=str, help="Path to RNN config and agent")
+    parser.add_argument("--transfer_type", default=None, type=str, help="Type of transfer")
 
     args = parser.parse_args()
 
@@ -29,6 +31,8 @@ def main():
         calibrator = FineTuner.DeepFineTuner(config, data, rnn_fpath=args.rnn_fpath)
     elif config.DConfig.type == "Param":
         calibrator = FineTuner.FineTuner(config, data, rnn_fpath=args.rnn_fpath)
+    elif config.DConfig.type == "Foundation":
+        calibrator = FineTuner.DeepFoundationFineTuner(config, data, rnn_fpath=args.rnn_fpath)
     else:
         raise Exception(f"Unrecognized Model Type `{config.DConfig.type}`")
 

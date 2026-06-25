@@ -324,9 +324,22 @@ def gen_all_data_and_plot(
                 if cult_inds is not None
                 else None
             )
+        # compute_biological_realism(output_arr)
 
         if args.break_early:
             break
+
+
+def compute_biological_realism(list_arr: list[np.ndarray]):
+    """Compute the percentage of biologically realistic predictions."""
+    biologically_unreal = 0
+    total_count = 0
+    for arr in list_arr:
+        for j in range(len(arr)):
+            total_count += len(arr[j])
+            # biologically_unreal += np.count_nonzero(np.diff(arr[j, 230:]) < 0)
+            # biologically_unreal += np.count_nonzero(arr[j, 230:] < -10)
+            biologically_unreal += np.count_nonzero(np.diff(arr[j, 170:]) > 0.8)
 
 
 def gen_all_data_and_plot_error(

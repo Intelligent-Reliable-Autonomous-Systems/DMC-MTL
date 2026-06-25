@@ -349,6 +349,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
             calibrator = FineTuner.FineTuner(config, data)
         elif config.DConfig.type == "Deep":
             calibrator = FineTuner.DeepFineTuner(config, data)
+        elif config.DConfig.type == "Foundation":
+            calibrator = FineTuner.DeepFoundationFineTuner(config, data)
     elif config.DConfig.type == "Param":
         calibrator = DMC.ParamRNN(config, data)
     elif config.DConfig.type == "NoObsParam":

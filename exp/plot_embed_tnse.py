@@ -288,6 +288,7 @@ def main():
     calibrator.eval()
 
     # Generate all data
+
     config, fpath, calibrator, true, output, regions, stations, sites, cultivars, all_inds = gen_embeddings(
         config,
         fpath,
@@ -295,6 +296,7 @@ def main():
         calibrator,
         name="test",
     )
+
     # generate tsne data
     tsne, all_emds, unq_inds, cdtype, dfpath, dtype = gen_tsne(
         config,
@@ -303,6 +305,9 @@ def main():
         calibrator,
         name="test",
     )
+
+    for i in range(len(all_emds)):
+        print(all_emds[i])
 
     plot(
         config,

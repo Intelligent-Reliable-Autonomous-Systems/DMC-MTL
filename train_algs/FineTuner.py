@@ -411,3 +411,90 @@ class DeepFineTuner(BaseFineTuner):
             output_tens[:, i] = output
 
         return output_tens, None, None
+
+
+class DeepFoundationFineTuner(BaseFineTuner):
+    def __init__(self, config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> None:
+
+        super(DeepFoundationFineTuner, self).__init__(config, data, rnn_fpath=rnn_fpath)
+
+        from sentence_transformers import SentenceTransformer
+
+        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+
+    def forward(
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        val_data: torch.Tensor = None,
+        days: int = None,
+        transfer_rate: float = 0.0,
+        **kwargs,
+    ) -> tuple[
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor,
+        torch.Tensor | tuple[torch.Tensor, torch.Tensor],
+        torch.Tensor,
+    ]:
+
+        data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+        self.store_error = torch.zeros(size=(b_size, 1)).to(self.device)
+        error_tens = torch.zeros(size=(b_size, dlen, len(self.output_vars))).to(self.device)
+
+        self.nn.zero_grad()
+        self.finetuner.zero_grad()
+
+        hn_cn = self.nn.get_init_state(batch_size=b_size)
+        hn_cn_ft = self.finetuner.get_init_state(batch_size=b_size)
+
+        map_idx = torch.randint(0, 2, size=cultivars.shape)
+        if self.config.DConfig.transfer_type == "direct":
+            map_idx = torch.zeros_like(cultivars, device=self.device)
+        elif self.config.DConfig.transfer_type == "text":
+            map_idx = torch.ones_like(cultivars, device=self.device)
+
+        transfer_inds = torch.rand(data.shape[0]) < transfer_rate
+        if (~transfer_inds).sum() != 0:
+            reg_embed, stat_embed, site_embed, cult_embed = self.nn.get_embeds(
+                cultivars[~transfer_inds],
+                regions[~transfer_inds],
+                stations[~transfer_inds],
+                sites[~transfer_inds],
+                self.text_model,
+                map_idx[~transfer_inds],
+            )
+
+        # Run through entirety of time series predicting parameters for physical model at each step
+        for i in range(dlen):
+            if (~transfer_inds).sum() != 0:
+                output_predict, hn_cn = self.nn.forward_with_embed(
+                    data[~transfer_inds, i],
+                    hn=hn_cn[:, ~transfer_inds],
+                    reg_embed=reg_embed,
+                    stat_embed=stat_embed,
+                    site_embed=site_embed,
+                    cult_embed=cult_embed,
+                )
+            output_predict_ft, hn_cn_ft = self.finetuner(
+                error=error_tens[:, i - 1].clone().detach(),
+                hn=hn_cn_ft,
+                cultivars=cultivars,
+                regions=regions,
+                sites=sites,
+                stations=stations,
+                delta_t=torch.ones(size=(b_size, 1), device=self.device),
+            )
+            output = output_predict.squeeze(-1) + output_predict_ft
+
+            error_tens[:, i] = self.compute_error(i, b_size, output, val_data[:, i], days=days)
+
+            output_tens[:, i] = output
+
+        return output_tens, None, None

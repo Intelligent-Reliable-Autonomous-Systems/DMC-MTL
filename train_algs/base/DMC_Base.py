@@ -3,9 +3,9 @@
 Written by Will Solow, 2025"""
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from omegaconf import DictConfig
+from torch import nn
 
 from assets import (
     CROP_NAMES,
@@ -76,7 +76,7 @@ class FCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(FCGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.fc1 = nn.Linear(self.input_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -120,7 +120,7 @@ class EmbeddingFCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(EmbeddingFCGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.cult_embedding_layer = nn.Embedding(
             len(CROP_NAMES[c.DataConfig.dtype]),
@@ -203,6 +203,33 @@ class EmbeddingFCGRU(BaseModule):
 
         return reg_embed, stat_embed, site_embed, cult_embed
 
+    def forward_embed_direct(
+        self,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        reg_embed = (
+            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        stat_embed = (
+            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+        site_embed = (
+            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
+            if self.synth_data is None
+            else None
+        )
+
+        return reg_embed, stat_embed, site_embed, cult_embed
+
 
 class EmbeddingTextGRU(BaseModule):
     """
@@ -210,7 +237,7 @@ class EmbeddingTextGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(EmbeddingTextGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.cult_embedder = nn.Sequential(
             nn.Linear(1024, 512),
@@ -366,7 +393,7 @@ class EmbeddingVerboseTextGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(EmbeddingVerboseTextGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.cult_embedder = nn.Sequential(
             nn.Linear(1024, 512),
@@ -524,7 +551,7 @@ class DeepEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(DeepEmbeddingGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.cult_embedding_layer = nn.Embedding(
             len(CROP_NAMES[c.DataConfig.dtype]),
@@ -664,7 +691,7 @@ class EmbeddingFCFF(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(EmbeddingFCFF, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
@@ -705,7 +732,7 @@ class OneHotEmbeddingFCGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(OneHotEmbeddingFCGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.fc1 = nn.Linear(1 + self.input_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -744,7 +771,7 @@ class GHCNDeepEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(GHCNDeepEmbeddingGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
@@ -783,7 +810,7 @@ class FFTempResponse(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(FFTempResponse, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.temp_response = nn.Sequential(
             nn.Linear(in_features=self.input_dim, out_features=self.hidden_dim),
@@ -795,7 +822,7 @@ class FFTempResponse(BaseModule):
             nn.Linear(in_features=self.hidden_dim, out_features=self.output_dim),
         )
 
-        self.model_params = nn.Parameter(torch.rand((len(c.params))) - 1)
+        self.model_params = nn.Parameter(torch.rand(len(c.params)) - 1)
 
     def forward(self, input: torch.Tensor, **kwargs) -> tuple[torch.Tensor, torch.Tensor]:
         """
@@ -810,8 +837,8 @@ class ParamModel(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(ParamModel, self).__init__(c, model)
-        self.model_params = nn.Parameter(torch.rand((len(c.params))) - 1)
+        super().__init__(c, model)
+        self.model_params = nn.Parameter(torch.rand(len(c.params)) - 1)
 
     def forward(self, input: torch.Tensor, **kwargs) -> tuple[torch.Tensor, torch.Tensor]:
         """
@@ -826,7 +853,7 @@ class FoundationParamModel(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(FoundationParamModel, self).__init__(c, model)
+        super().__init__(c, model)
         self.embed_dim = self.embed_dim - self.input_dim
         self.cult_embedder = nn.Sequential(
             nn.Linear(1024, 512),
@@ -1068,7 +1095,7 @@ class DeepEmbeddingMuSigmaGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(DeepEmbeddingMuSigmaGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
         self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
@@ -1148,7 +1175,7 @@ class FoundationEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(FoundationEmbeddingGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.weather_output_dim = 128
 
@@ -1631,7 +1658,7 @@ class FoundationParamEmbeddingGRU(BaseModule):
     """
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super(FoundationParamEmbeddingGRU, self).__init__(c, model)
+        super().__init__(c, model)
 
         self.weather_output_dim = 128
 

@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn
 import torch
-import torch.nn as nn
 from matplotlib.patches import Patch
 from omegaconf import DictConfig
+from torch import nn
 
 import utils
 from assets import SITES
@@ -35,7 +35,7 @@ def plot(
 ):
     tsne_embed = tsne.fit_transform(embed)
 
-    n = 30
+    n = 34
     cmap = plt.colormaps["gist_ncar"]  # or 'turbo', 'rainbow', 'nipy_spectral'
     cmap = [cmap(i / n) for i in range(n)]
     plt.figure(figsize=(10, 10))

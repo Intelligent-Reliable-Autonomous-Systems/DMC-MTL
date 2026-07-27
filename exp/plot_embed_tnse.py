@@ -15,15 +15,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn
 import torch
-import torch.nn as nn
 from matplotlib.patches import Patch
 from omegaconf import DictConfig
+from torch import nn
 
 import utils
 from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from plotters.plot_utils import gen_batch_data
 
-markers = ["o", "s", "^", "v", "D", "d", "P", "X", "*", "p", "h"]
+markers = ["o", "4", "^", "v", "+", "d", "3", "x", "*", "p", "h"]
 
 
 def plot(
@@ -47,7 +47,7 @@ def plot(
     Plot the embeddings
     """
 
-    fig, ax = plt.subplots(2, figsize=(6, 7))
+    fig, ax = plt.subplots(2, figsize=(6, 5))
     # fig.subplots_adjust(top=0.98)
     # fig.subplots_adjust(bottom=0.02)
     for k in range(inds[0]):
@@ -68,14 +68,23 @@ def plot(
 
         tsne_embed = tsne.fit_transform(embed)
 
-    n = 30
+    n = 34
     cmap = plt.colormaps["gist_ncar"]
     cmap = [cmap(i / n) for i in range(n)]
     for i, xy in enumerate(tsne_embed):
         if type == "all":
             c = cmap[idx[i, 2]]
             m = markers[idx[i, 3] % 11]
-            ax[1].scatter(tsne_embed[i, 0], tsne_embed[i, 1], color=c, marker=m)
+            ax[1].scatter(
+                tsne_embed[i, 0],
+                tsne_embed[i, 1],
+                color=c,
+                marker=m,
+                s=30,
+                facecolors="none",
+                linewidths=1.5,
+                edgecolors=c,
+            )
 
             labels = [f"{SITES[i]}" for i in range(len(SITES))]
 
@@ -108,7 +117,7 @@ def gen_embeddings(
     all_regions = torch.unique(calibrator.regions[name]).unsqueeze(1)
     all_stations = torch.unique(calibrator.stations[name]).unsqueeze(1)
     all_sites = torch.unique(calibrator.sites[name]).unsqueeze(1)
-    for i in range(0, len(calibrator.data[name])):
+    for i in range(len(calibrator.data[name])):
         data = calibrator.data[name][i, None]
         dates = calibrator.dates[name][i, None]
         val = calibrator.val[name][i, None]

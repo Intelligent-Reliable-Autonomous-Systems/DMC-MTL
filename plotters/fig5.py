@@ -64,7 +64,7 @@ ax[2].set_ylabel("% Unrealistic Predictions", fontsize=12)
 ax[2].set_xlabel("Modeling Choice", fontsize=12)
 ax[2].set_xticks(
     ticks=[0.5, 1.75, 3],
-    labels=["Ferguson Model", "Hybrid Model", "Deep Learning"],
+    labels=["Ferguson Model", "Hybrid Model", "DL Model"],
     fontsize=12,
 )
 ax[2].tick_params(axis="y", labelsize=12)

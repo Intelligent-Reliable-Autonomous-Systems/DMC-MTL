@@ -35,6 +35,7 @@ def main():
     argparser.add_argument("--num_runs", type=int, default=5)
     argparser.add_argument("--data_fname", type=str, default="rmse.txt")
     argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
+
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 

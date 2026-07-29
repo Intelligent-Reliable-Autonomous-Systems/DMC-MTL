@@ -112,7 +112,7 @@ def main():
         # "_runs/PaperExperiments/ColdHardiness/PINNMTL/All/pinn_mtl__1746895757"
     ]
 
-    ch_model_names = ["Hybrid DMC-MTL", "GrapeHardiNet"]
+    ch_model_names = ["Hybrid Model", "DL Model"]
 
     ch_models = load_models(ch_fpaths, args=args)
 

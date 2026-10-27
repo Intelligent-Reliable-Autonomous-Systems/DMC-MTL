@@ -19,7 +19,6 @@ from train_algs.base.base import BaseModel
 from train_algs.base.DMC_Base import (
     FCGRU,
     DeepEmbeddingGRU,
-    DeepEmbeddingMuSigmaGRU,
     EmbeddingFCFF,
     EmbeddingFCGRU,
     EmbeddingTextGRU,
@@ -95,9 +94,6 @@ class BaseRNN(BaseModel):
             nn = DeepTransferGRU(config, model)
         elif config.DConfig.arch == "DeepTransferAttnGRU":
             nn = DeepTransferAttnGRU(config, model)
-        elif config.DConfig.arch == "DeepMuSigmaGRU":
-            nn = DeepEmbeddingMuSigmaGRU(config, model)
-
         elif config.DConfig.arch == "FoundationGRU":
             nn = FoundationEmbeddingGRU(config, model)
         elif config.DConfig.arch == "FoundationParamGRU":

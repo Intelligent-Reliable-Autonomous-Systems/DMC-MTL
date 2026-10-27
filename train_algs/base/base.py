@@ -20,7 +20,8 @@ from omegaconf import DictConfig
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from train_algs.base.process_data import process_data_novalset
-from train_algs.base.util import ScaledMSELoss, StageCrossEntropyLoss, StageMSELoss
+from train_algs.base.util import ScaledMSELoss, StageCrossEntropyLoss, StageMSELoss, grow_embedding_weight
+
 
 
 class BaseModel(nn.Module):
@@ -135,13 +136,7 @@ class BaseModel(nn.Module):
         torch.save(self.nn.state_dict(), f"{path}/{name}")
 
     def grow_embedding(self, nn: nn.Module, ckpt: OrderedDict, name: str):
-        old = ckpt[name]  # [old_n, d]
-        new = nn.state_dict()[name]  # [new_n, d]
-        new[: old.shape[0]] = old
-        new[old.shape[0] :].zero_()
-        ckpt[name] = new
-
-    # remaining rows stay randomly initialized
+        grow_embedding_weight(nn, ckpt, name)
 
     def load_model(self, path: str, name: str = "rnn_model.pt") -> None:
         """

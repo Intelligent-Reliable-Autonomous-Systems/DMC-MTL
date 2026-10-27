@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from omegaconf import DictConfig
 
 from assets import CROP_NAMES
+from train_algs.base.util import grow_embedding_weight
 
 
 class BaseFTModule(nn.Module):
@@ -28,12 +29,8 @@ class BaseFTModule(nn.Module):
         return self.h0.repeat(1, batch_size, 1)
 
     def grow_embedding(self, nn: nn.Module, ckpt: OrderedDict, name: str):
-        old = ckpt[name]  # [old_n, d]
-        new = nn.state_dict()[name]  # [new_n, d]
+        grow_embedding_weight(nn, ckpt, name)
 
-        new[: old.shape[0]] = old
-        new[old.shape[0] :].zero_()
-        ckpt[name] = new
 
 
 class EmbedErrorFCTuner(BaseFTModule):

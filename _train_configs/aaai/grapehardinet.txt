@@ -1,0 +1,5 @@
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region WA
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region WA
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region WA
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region WA
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region WA

@@ -70,6 +70,15 @@ def set_embedding_op(model: nn.Module, embed_op: str, embed_size: int | None = N
         return model.input_dim
 
 
+def grow_embedding_weight(module: nn.Module, ckpt: dict, name: str) -> None:
+    """Copy old embedding rows into a larger embedding; zero-fill new rows in-place on ckpt."""
+    old = ckpt[name]  # [old_n, d]
+    new = module.state_dict()[name]  # [new_n, d]
+    new[: old.shape[0]] = old
+    new[old.shape[0] :].zero_()
+    ckpt[name] = new
+
+
 def load_config(fpath: str) -> DictConfig:
     """
     Loads configuration file of model
@@ -77,6 +86,7 @@ def load_config(fpath: str) -> DictConfig:
     config = OmegaConf.load(f"{os.getcwd()}/{fpath}/config.yaml")
 
     return config
+
 
 
 def load_model_fpath(fpath: str, name: str = "rnn_model_best.pt") -> str:

@@ -2,46 +2,34 @@
 PConfig:
     config_fpath: _configs_models/
     model: Ferguson_ColdHardiness_TensorBatch
-    model_parameters: grape_coldhardiness:1 
+    model_parameters: grape_coldhardiness:1
     latitude: 46
     longitude: -120
     start_date: 2023-01-01
     input_vars: [DAY, TEMP, TMIN, TMAX]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/AAAI/RTMC/FoundationMTL_3/
+log_path: /_runs/AAAI/GrapeHardiNet/
 run_name: deep_mtl
 seed: 0
 # Data use
 DataConfig: 
-    cultivar: All
-    data_fpath: _data/processed_data/
-    data_cap: 3
-    dtype: grape_coldhardiness_reg
-    region: All
-    station: All
-    site: All
+  data_fpath: _data/processed_data/
+  dtype: grape_coldhardiness_reg
+  region: All
+  station: All
+  site: All
+  cultivar: All
 # Parameters
 params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
 params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]]
 DConfig: 
-    type: Foundation
-    arch: FoundationGRU
+    type: Deep
+    arch: DeepEmbedGRU
     hidden_dim: 2048
-    embed_op: concat_reg
+    embed_op: concat
     loss_func: MSELoss
-    learning_rate: .0002
-    lr_factor: 0.95
-    batch_size: 72
+    learning_rate: .0001
+    lr_factor: 0.9
+    batch_size: 12
     epochs: 200
-    embed_size: 24
-RTMCConfig:
-  arch: EmbedFCGRU
-  hidden_dim: 1024
-  loss_func: MSELoss
-  learning_rate: 0.0002
-  lr_factor: 0.95
-  batch_size: 12
-  epochs: 300
-  bias: False
-  day_masking: True

@@ -69,6 +69,271 @@ class BaseModule(nn.Module):
     def get_init_state(self, batch_size: int = 1) -> torch.Tensor:
         return self.h0.repeat(1, batch_size, 1)
 
+    def lookup_id_embeds(
+        self,
+        regions=None,
+        stations=None,
+        sites=None,
+        cultivars=None,
+        *,
+        synth_safe: bool = False,
+    ):
+        """Lookup cult/reg/stat/site embedding vectors via ID mappings.
+
+        When ``synth_safe`` and ``synth_data`` is set, geo embeds are None
+        (matches DeepEmbeddingGRU / Adapt convention).
+        """
+        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
+        if synth_safe and self.synth_data is not None:
+            return cult_embed, None, None, None
+        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
+        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
+        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
+        return cult_embed, reg_embed, stat_embed, site_embed
+
+    def expand_embeds_to_T(self, cult_embed, reg_embed, stat_embed, site_embed, T: int, *, mode: str = "repeat"):
+        """Expand ID embeds along time. mode: 'repeat' | 'expand_as' (needs weather for expand_as)."""
+        if mode == "repeat":
+            cult_embed = cult_embed.unsqueeze(1).repeat(1, T, 1)
+            reg_embed = reg_embed.unsqueeze(1).repeat(1, T, 1) if reg_embed is not None else None
+            stat_embed = stat_embed.unsqueeze(1).repeat(1, T, 1) if stat_embed is not None else None
+            site_embed = site_embed.unsqueeze(1).repeat(1, T, 1) if site_embed is not None else None
+        else:
+            raise ValueError(f"Unknown expand mode `{mode}`")
+        return cult_embed, reg_embed, stat_embed, site_embed
+
+    def apply_embed_op(
+        self, cult_embed, site_embed=None, stat_embed=None, reg_embed=None, weather=None, *, ids_only: bool = False
+    ):
+        """Single dispatch for concat_reg / concat_stat / concat_site / concat.
+
+        When ``ids_only``, concatenate hierarchy embeds without weather
+        (FoundationParamModel).
+        """
+        if ids_only:
+            if self.embed_op_str == "concat_reg":
+                return torch.cat((cult_embed, site_embed, stat_embed, reg_embed), dim=-1)
+            if self.embed_op_str == "concat_stat":
+                return torch.cat((cult_embed, site_embed, stat_embed), dim=-1)
+            if self.embed_op_str == "concat_site":
+                return torch.cat((cult_embed, site_embed), dim=-1)
+            if self.embed_op_str == "concat":
+                return cult_embed
+            raise ValueError(f"Unsupported embed_op `{self.embed_op_str}`")
+        if self.embed_op_str == "concat_reg":
+            return self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, weather)
+        if self.embed_op_str == "concat_stat":
+            return self.embed_op(cult_embed, site_embed, stat_embed, weather)
+        if self.embed_op_str == "concat_site":
+            return self.embed_op(cult_embed, site_embed, weather)
+        if self.embed_op_str == "concat":
+            return self.embed_op(cult_embed, weather)
+        raise ValueError(f"Unsupported embed_op `{self.embed_op_str}`")
+
+    def _build_hierarchy_embeddings(
+        self, c: DictConfig, *, embed_size_aware: bool = True, synth_optional: bool = False
+    ):
+        """Create cult/reg/stat/site Embedding layers (shared constructor pattern)."""
+        edim = self.input_dim if (not embed_size_aware or c.DConfig.embed_size is None) else c.DConfig.embed_size
+        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), edim)
+        if synth_optional and self.synth_data is not None:
+            self.reg_embedding_layer = None
+            self.stat_embedding_layer = None
+            self.site_embedding_layer = None
+        else:
+            self.reg_embedding_layer = nn.Embedding(len(REGIONS), edim)
+            self.stat_embedding_layer = nn.Embedding(len(STATIONS), edim)
+            self.site_embedding_layer = nn.Embedding(len(SITES), edim)
+
+    def _prep_hierarchy_input(
+        self,
+        input,
+        regions=None,
+        stations=None,
+        sites=None,
+        cultivars=None,
+        *,
+        synth_safe: bool = True,
+        expand: str = "repeat",
+    ):
+        """Lookup → expand → apply_embed_op. Returns (gru_input, input)."""
+        cult_embed, reg_embed, stat_embed, site_embed = self.lookup_id_embeds(
+            regions, stations, sites, cultivars, synth_safe=synth_safe
+        )
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+        if expand == "repeat":
+            cult_embed, reg_embed, stat_embed, site_embed = self.expand_embeds_to_T(
+                cult_embed, reg_embed, stat_embed, site_embed, input.shape[1]
+            )
+        elif expand == "expand_as":
+            cult_embed = cult_embed.unsqueeze(1).expand_as(input)
+            reg_embed = reg_embed.unsqueeze(1).expand_as(input) if reg_embed is not None else None
+            stat_embed = stat_embed.unsqueeze(1).expand_as(input) if stat_embed is not None else None
+            site_embed = site_embed.unsqueeze(1).expand_as(input) if site_embed is not None else None
+        else:
+            raise ValueError(f"Unknown expand mode `{expand}`")
+        gru_input = self.apply_embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
+        return gru_input, input
+
+    def forward_embed_direct(
+        self,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ):
+        """Shared direct ID embedding lookup (reg, stat, site, cult)."""
+        cult_embed, reg_embed, stat_embed, site_embed = self.lookup_id_embeds(
+            regions, stations, sites, cultivars, synth_safe=True
+        )
+        return reg_embed, stat_embed, site_embed, cult_embed
+
+    def _build_text_projectors(self, out_dim: int):
+        """MLP towers projecting 1024-d text embeds → out_dim (cult/site/stat; reg reuses stat)."""
+
+        def _tower():
+            return nn.Sequential(
+                nn.Linear(1024, 512),
+                nn.ReLU(),
+                nn.Linear(512, 256),
+                nn.ReLU(),
+                nn.Linear(256, 128),
+                nn.ReLU(),
+                nn.Linear(128, out_dim),
+            )
+
+        self.cult_embedder = _tower()
+        self.site_embedder = _tower()
+        self.stat_embedder = _tower()
+
+    def _resolve_text_tables(self):
+        """String tables for text embedding (verbose_level or EmbeddingTextGRU.verbose)."""
+        level = getattr(self.config.DConfig, "verbose_level", None)
+        if level is None:
+            level = "verb" if getattr(self, "verbose", False) else "base"
+        tables = {
+            "verb": (CULT_STR_VERB, SITE_STR_VERB, STATION_STR_VERB, REGION_STR_VERB),
+            "mini": (CULT_STR_MINI, SITE_STR_MINI, STATION_STR_MINI, REGION_STR_MINI),
+            "bare": (CULT_STR_BARE, SITE_STR_BARE, STATION_STR_BARE, REGION_STR_BARE),
+            "base": (CULT_STR, SITE_STR, STATION_STR, REGION_STR),
+            "test": (CULT_STR_TEST, SITE_STR_TEST, STATION_STR_TEST, REGION_STR_TEST),
+        }
+        if level not in tables:
+            raise ValueError(f"Unknown verbose_level `{level}`")
+        return tables[level]
+
+    def forward_embed_text(
+        self,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        text_embedder: nn.Module = None,
+        **kwargs,
+    ):
+        """Shared text→MLP embedding (crossed cult/site wiring; reg uses stat_embedder)."""
+        cult_str, site_str, station_str, region_str = self._resolve_text_tables()
+        device = cultivars.device
+        with torch.no_grad():
+            cult_embed_text = text_embedder.encode(
+                cult_str[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=device,
+            ).clone()
+            site_embed_text = text_embedder.encode(
+                site_str[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=device,
+            ).clone()
+            stat_embed_text = text_embedder.encode(
+                station_str[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=device,
+            ).clone()
+            reg_embed_text = text_embedder.encode(
+                region_str[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
+                normalize_embeddings=True,
+                convert_to_tensor=True,
+                device=device,
+            ).clone()
+        cult_embed = self.cult_embedder(site_embed_text)
+        site_embed = self.site_embedder(cult_embed_text)
+        stat_embed = self.stat_embedder(stat_embed_text)
+        reg_embed = self.stat_embedder(reg_embed_text)
+        return reg_embed, stat_embed, site_embed, cult_embed
+
+    def _weather_ch_cross_attn_embed(
+        self,
+        weather_input: torch.Tensor,
+        ch: torch.Tensor,
+        *,
+        sine_day: bool = False,
+        map_idx: torch.Tensor = None,
+        bsize: int = None,
+    ):
+        """Shared weather–CH cross-attention embed (Foundation / DeepAdapt / Sine)."""
+        if weather_input.ndim == 2:
+            weather_input = weather_input.unsqueeze(1)
+        if ch.ndim == 2:
+            ch = ch.unsqueeze(1)
+        w_encode, _ = self.transfer_weather_rnn(weather_input)
+
+        B, T, d = ch.shape
+        ch_mask = ~torch.isnan(ch)
+        if sine_day:
+            ch_inds = torch.arange(T, device=ch.device).unsqueeze(1).repeat(1, 2) * (2 * torch.pi) / 365
+            ch_inds[:, 0] = torch.sin(ch_inds[:, 0])
+            ch_inds[:, 1] = torch.cos(ch_inds[:, 1])
+            ch_inds = ch_inds.unsqueeze(0).repeat(B, 1, 1)
+            ch_num = torch.where(ch_mask, ch, torch.zeros_like(ch))
+            ch_clean = torch.cat((ch_num, ch_inds), dim=-1)
+            feat_dim = d + 2
+        else:
+            ch_clean = torch.where(ch_mask, ch, torch.zeros_like(ch))
+            feat_dim = d
+
+        ch_lengths = ch_mask.sum(dim=(1, 2))
+        max_len = ch_lengths.max().item()
+        if max_len == 0:
+            return torch.zeros(B, self.embed_dim, device=ch.device, requires_grad=True)
+
+        ch_arr_list = []
+        for i in range(B):
+            mask_i = ch_mask[i].any(dim=-1)
+            valid_data = ch_clean[i][mask_i]
+            valid_len = valid_data.shape[0]
+            if valid_len < max_len:
+                pad = torch.zeros((max_len - valid_len, feat_dim), device=ch.device, dtype=ch.dtype)
+                valid_data = torch.cat([valid_data, pad], dim=0)
+            ch_arr_list.append(valid_data)
+        ch_arr = torch.stack(ch_arr_list)
+
+        ch_embed, _ = self.transfer_ch_rnn(ch_arr)
+        attn_mask = torch.arange(max_len, device=ch.device).unsqueeze(0) < ch_lengths.unsqueeze(1)
+        ch_encode = torch.where(~attn_mask.unsqueeze(-1), torch.zeros(ch_embed.shape[-1], device=ch.device), ch_embed)
+
+        attn_scores = torch.bmm(w_encode, ch_encode.transpose(1, 2))
+        attn_scores = attn_scores.masked_fill(~attn_mask.unsqueeze(1), float("-inf"))
+        attn_weights = torch.softmax(attn_scores, dim=2)
+        ch_aligned = torch.bmm(attn_weights, ch_encode)
+
+        attn_weights = self.transfer_pool_attn(ch_aligned).softmax(dim=1)
+        attn_pooled = (ch_aligned * attn_weights).sum(dim=1)
+        embed_all = self.transfer_embed_attn(attn_pooled)
+
+        if map_idx is not None and bsize is not None:
+            embed = torch.zeros((bsize, embed_all.shape[-1]), device=ch.device)
+            embed = embed.scatter_reduce(
+                0, map_idx.unsqueeze(1).expand(-1, embed_all.shape[-1]), embed_all, reduce="mean", include_self=False
+            )
+            return embed
+        return embed_all
+
 
 class FCGRU(BaseModule):
     """
@@ -121,30 +386,12 @@ class EmbeddingFCGRU(BaseModule):
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__(c, model)
-
-        self.cult_embedding_layer = nn.Embedding(
-            len(CROP_NAMES[c.DataConfig.dtype]),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.reg_embedding_layer = nn.Embedding(
-            len(REGIONS),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.stat_embedding_layer = nn.Embedding(
-            len(STATIONS),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.site_embedding_layer = nn.Embedding(
-            len(SITES),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-
+        self._build_hierarchy_embeddings(c, embed_size_aware=True)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
-
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
 
     def forward(
@@ -157,35 +404,15 @@ class EmbeddingFCGRU(BaseModule):
         sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-
-        if input.ndim == 2:
-            input = input.unsqueeze(1)
-
-        cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
-
+        gru_input, _ = self._prep_hierarchy_input(
+            input, regions, stations, sites, cultivars, synth_safe=False, expand="repeat"
+        )
         x = self.fc1(gru_input)
         x = self.fc2(x)
         _, hn = self.rnn(x, hn)
         out = F.relu(hn)
         out = F.relu(self.fc3(out))
         params = self.hidden_to_params(out).squeeze(0)
-
         return params, hn
 
     def forward_embed(
@@ -196,38 +423,9 @@ class EmbeddingFCGRU(BaseModule):
         sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-        stat_embed = self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-        site_embed = self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-
-        return reg_embed, stat_embed, site_embed, cult_embed
-
-    def forward_embed_direct(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
+        cult_embed, reg_embed, stat_embed, site_embed = self.lookup_id_embeds(
+            regions, stations, sites, cultivars, synth_safe=False
         )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
         return reg_embed, stat_embed, site_embed, cult_embed
 
 
@@ -240,48 +438,13 @@ class EmbeddingTextGRU(BaseModule):
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__(c, model)
-
-        self.cult_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim),
-        )
-        self.site_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim),
-        )
-
-        self.stat_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim),
-        )
-
+        self._build_text_projectors(self.input_dim)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
-
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
-    def _text_tables(self):
-        if self.verbose:
-            return CULT_STR_VERB, SITE_STR_VERB, STATION_STR_VERB, REGION_STR_VERB
-        return CULT_STR, SITE_STR, STATION_STR, REGION_STR
 
     def forward(
         self,
@@ -294,62 +457,25 @@ class EmbeddingTextGRU(BaseModule):
         text_embedder: nn.Module = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
         if input.ndim == 2:
             input = input.unsqueeze(1)
-
-        cult_str, site_str, station_str, region_str = self._text_tables()
-        with torch.no_grad():
-            cult_embed_text = text_embedder.encode(
-                cult_str[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=input.device,
-            ).clone()
-            site_embed_text = text_embedder.encode(
-                site_str[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=input.device,
-            ).clone()
-            stat_embed_text = text_embedder.encode(
-                station_str[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=input.device,
-            ).clone()
-            reg_embed_text = text_embedder.encode(
-                region_str[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=input.device,
-            ).clone()
-        cult_embed = self.cult_embedder(site_embed_text)
-        site_embed = self.site_embedder(cult_embed_text)
-        stat_embed = self.stat_embedder(stat_embed_text)
-        reg_embed = self.stat_embedder(reg_embed_text)
-
+        reg_embed, stat_embed, site_embed, cult_embed = self.forward_embed_text(
+            cultivars=cultivars,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+            text_embedder=text_embedder,
+        )
         cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
-
+        gru_input = self.apply_embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
         x = self.fc1(gru_input).relu()
         x = self.fc2(x).relu()
         gru_out, hn = self.rnn(x, hn)
-
         gru_out = self.fc3(gru_out).relu()
         output = self.hidden_to_output(gru_out)
-
         return output, hn
 
     def forward_embed(
@@ -361,39 +487,14 @@ class EmbeddingTextGRU(BaseModule):
         text_embedder: nn.Module = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        cult_str, site_str, station_str, region_str = self._text_tables()
-        with torch.no_grad():
-            cult_embed_text = text_embedder.encode(
-                cult_str[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            site_embed_text = text_embedder.encode(
-                site_str[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            stat_embed_text = text_embedder.encode(
-                station_str[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            reg_embed_text = text_embedder.encode(
-                region_str[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-        cult_embed = self.cult_embedder(site_embed_text)
-        site_embed = self.site_embedder(cult_embed_text)
-        stat_embed = self.stat_embedder(stat_embed_text)
-        reg_embed = self.stat_embedder(reg_embed_text)
-
-        return reg_embed, stat_embed, site_embed, cult_embed
+        return self.forward_embed_text(
+            cultivars=cultivars,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+            text_embedder=text_embedder,
+            **kwargs,
+        )
 
 
 class EmbeddingVerboseTextGRU(EmbeddingTextGRU):
@@ -411,29 +512,13 @@ class DeepEmbeddingGRU(BaseModule):
 
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__(c, model)
-
-        self.cult_embedding_layer = nn.Embedding(
-            len(CROP_NAMES[c.DataConfig.dtype]),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.reg_embedding_layer = nn.Embedding(
-            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.stat_embedding_layer = nn.Embedding(
-            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.site_embedding_layer = nn.Embedding(
-            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-
+        self._build_hierarchy_embeddings(c, embed_size_aware=True)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
         self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
-
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
         self.init_state = self.h0
 
     def forward(
@@ -446,47 +531,14 @@ class DeepEmbeddingGRU(BaseModule):
         sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
+        gru_input, _ = self._prep_hierarchy_input(
+            input, regions, stations, sites, cultivars, synth_safe=True, expand="repeat"
         )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        if input.ndim == 2:
-            input = input.unsqueeze(1)
-
-        cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
-
         x = self.fc1(gru_input).relu()
         x = self.fc2(x).relu()
         gru_out, hn = self.rnn(x, hn)
-
         gru_out = self.fc3(gru_out).relu()
         output = self.hidden_to_output(gru_out)
-
         return output, hn
 
     def forward_embed(
@@ -497,51 +549,7 @@ class DeepEmbeddingGRU(BaseModule):
         sites: torch.Tensor = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        return reg_embed, stat_embed, site_embed, cult_embed
-
-    def forward_embed_direct(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        return reg_embed, stat_embed, site_embed, cult_embed
+        return self.forward_embed_direct(cultivars=cultivars, regions=regions, stations=stations, sites=sites, **kwargs)
 
 
 class EmbeddingFCFF(BaseModule):
@@ -714,50 +722,9 @@ class FoundationParamModel(BaseModule):
     def __init__(self, c: DictConfig, model: nn.Module) -> None:
         super().__init__(c, model)
         self.embed_dim = self.embed_dim - self.input_dim
-        self.cult_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
-        self.site_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
-
-        self.stat_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
-
-        self.cult_embedding_layer = nn.Embedding(
-            len(CROP_NAMES[c.DataConfig.dtype]),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.reg_embedding_layer = nn.Embedding(
-            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.stat_embedding_layer = nn.Embedding(
-            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.site_embedding_layer = nn.Embedding(
-            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-
-        # self.model_params = nn.Parameter(torch.rand((len(c.params))) - 1)
+        edim = self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        self._build_text_projectors(edim)
+        self._build_hierarchy_embeddings(c, embed_size_aware=True)
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.dim2)
         self.hidden_to_params = nn.Linear(self.dim2, self.output_dim)
@@ -837,195 +804,12 @@ class FoundationParamModel(BaseModule):
         stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
 
-        if self.embed_op_str == "concat_reg":
-            gru_input = torch.cat((cult_embed, site_embed, stat_embed, reg_embed), dim=-1)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = torch.cat((cult_embed, site_embed, stat_embed), dim=-1)
-        elif self.embed_op_str == "concat_site":
-            gru_input = torch.cat((cult_embed, site_embed), dim=-1)
-        elif self.embed_op_str == "concat":
-            gru_input = torch.cat((cult_embed), dim=-1)
+        gru_input = self.apply_embed_op(cult_embed, site_embed, stat_embed, reg_embed, ids_only=True)
 
         x = self.fc1(gru_input).relu()
         x = self.fc2(x).relu()
         output = self.hidden_to_params(x).squeeze(-1)
         return output, None
-
-    def forward_embed_text(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        text_embedder: nn.Module = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        with torch.no_grad():
-            if self.config.DConfig.verbose_level == "verb":
-                cult_str = CULT_STR_VERB
-                site_str = SITE_STR_VERB
-                stat_str = STATION_STR_VERB
-                reg_str = REGION_STR_VERB
-            elif self.config.DConfig.verbose_level == "mini":
-                cult_str = CULT_STR_MINI
-                site_str = SITE_STR_MINI
-                stat_str = STATION_STR_MINI
-                reg_str = REGION_STR_MINI
-            elif self.config.DConfig.verbose_level == "bare":
-                cult_str = CULT_STR_BARE
-                site_str = SITE_STR_BARE
-                stat_str = STATION_STR_BARE
-                reg_str = REGION_STR_BARE
-            elif self.config.DConfig.verbose_level == "base":
-                cult_str = CULT_STR
-                site_str = SITE_STR
-                stat_str = STATION_STR
-                reg_str = REGION_STR
-            elif self.config.DConfig.verbose_level == "test":
-                cult_str = CULT_STR_TEST
-                site_str = SITE_STR_TEST
-                stat_str = STATION_STR_TEST
-                reg_str = REGION_STR_TEST
-            cult_embed_text = text_embedder.encode(
-                cult_str[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            site_embed_text = text_embedder.encode(
-                site_str[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            stat_embed_text = text_embedder.encode(
-                stat_str[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            reg_embed_text = text_embedder.encode(
-                reg_str[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-        cult_embed = self.cult_embedder(site_embed_text)
-        site_embed = self.site_embedder(cult_embed_text)
-        stat_embed = self.stat_embedder(stat_embed_text)
-        reg_embed = self.stat_embedder(reg_embed_text)
-
-        return reg_embed, stat_embed, site_embed, cult_embed
-
-    def forward_embed_direct(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        return reg_embed, stat_embed, site_embed, cult_embed
-
-
-class DeepEmbeddingMuSigmaGRU(BaseModule):
-    """
-    DeepRNN Embedding GRU
-    Takes one hot embedding of cultivar and passes through RNN
-    to create a regression prediction of the output
-    """
-
-    def __init__(self, c: DictConfig, model: nn.Module) -> None:
-        super().__init__(c, model)
-
-        self.cult_embedding_layer = nn.Embedding(len(CROP_NAMES[c.DataConfig.dtype]), self.input_dim)
-        self.reg_embedding_layer = nn.Embedding(len(REGIONS), self.input_dim) if self.synth_data is None else None
-        self.stat_embedding_layer = nn.Embedding(len(STATIONS), self.input_dim) if self.synth_data is None else None
-        self.site_embedding_layer = nn.Embedding(len(SITES), self.input_dim) if self.synth_data is None else None
-
-        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
-        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
-        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
-        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
-        self.hidden_to_mu = nn.Linear(self.dim2, self.output_dim)
-        self.hidden_to_log_sigma = nn.Linear(self.dim2, self.output_dim)
-        self.hidden_to_log_sigma.bias.data.fill_(-3)
-
-        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
-        self.init_state = self.h0
-
-    def forward(
-        self,
-        input: torch.Tensor = None,
-        hn: torch.Tensor = None,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        if input.ndim == 2:
-            input = input.unsqueeze(1)
-
-        cult_embed = cult_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-        site_embed = site_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
-
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
-
-        x = self.fc1(gru_input).relu()
-        x = self.fc2(x).relu()
-        gru_out, hn = self.rnn(x, hn)
-
-        gru_out = self.fc3(gru_out).relu()
-        mu = self.hidden_to_mu(gru_out)
-        sigma = torch.exp(self.hidden_to_log_sigma(gru_out))
-
-        return torch.cat((mu, sigma), dim=-1), hn
 
 
 class FoundationEmbeddingGRU(BaseModule):
@@ -1057,20 +841,9 @@ class FoundationEmbeddingGRU(BaseModule):
         super().__init__(c, model)
 
         self.weather_output_dim = 128
-
-        self.cult_embedding_layer = nn.Embedding(
-            len(CROP_NAMES[c.DataConfig.dtype]),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.reg_embedding_layer = nn.Embedding(
-            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.stat_embedding_layer = nn.Embedding(
-            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.site_embedding_layer = nn.Embedding(
-            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
+        edim = self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        self._build_hierarchy_embeddings(c, embed_size_aware=True)
+        self._build_text_projectors(edim)
 
         self.fc1 = nn.Linear(self.embed_dim, self.dim2)
         self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
@@ -1078,35 +851,6 @@ class FoundationEmbeddingGRU(BaseModule):
         self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
         self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
-
-        self.cult_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
-        self.site_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
-
-        self.stat_embedder = nn.Sequential(
-            nn.Linear(1024, 512),
-            nn.ReLU(),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
-        )
 
         self.transfer_weather_rnn = nn.GRU(
             self.input_dim if "Deep" in c.DConfig.type else (self.input_dim - len(c.PConfig.output_vars)),
@@ -1207,14 +951,7 @@ class FoundationEmbeddingGRU(BaseModule):
         stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
 
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
+        gru_input = self.apply_embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
 
         output, hn = self._run_trunk(gru_input, hn)
 
@@ -1273,112 +1010,11 @@ class FoundationEmbeddingGRU(BaseModule):
         stat_embed = stat_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
         reg_embed = reg_embed.unsqueeze(1).repeat(1, input.shape[1], 1)
 
-        if self.embed_op_str == "concat_reg":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
-        elif self.embed_op_str == "concat_stat":
-            gru_input = self.embed_op(cult_embed, site_embed, stat_embed, input)
-        elif self.embed_op_str == "concat_site":
-            gru_input = self.embed_op(cult_embed, site_embed, input)
-        elif self.embed_op_str == "concat":
-            gru_input = self.embed_op(cult_embed, input)
+        gru_input = self.apply_embed_op(cult_embed, site_embed, stat_embed, reg_embed, input)
 
         output, hn = self._run_trunk(gru_input, hn)
 
         return output, hn
-
-    def forward_embed_text(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        text_embedder: nn.Module = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-
-        with torch.no_grad():
-            if self.config.DConfig.verbose_level == "verb":
-                cult_str = CULT_STR_VERB
-                site_str = SITE_STR_VERB
-                stat_str = STATION_STR_VERB
-                reg_str = REGION_STR_VERB
-            elif self.config.DConfig.verbose_level == "mini":
-                cult_str = CULT_STR_MINI
-                site_str = SITE_STR_MINI
-                stat_str = STATION_STR_MINI
-                reg_str = REGION_STR_MINI
-            elif self.config.DConfig.verbose_level == "bare":
-                cult_str = CULT_STR_BARE
-                site_str = SITE_STR_BARE
-                stat_str = STATION_STR_BARE
-                reg_str = REGION_STR_BARE
-            elif self.config.DConfig.verbose_level == "base":
-                cult_str = CULT_STR
-                site_str = SITE_STR
-                stat_str = STATION_STR
-                reg_str = REGION_STR
-            elif self.config.DConfig.verbose_level == "test":
-                cult_str = CULT_STR_TEST
-                site_str = SITE_STR_TEST
-                stat_str = STATION_STR_TEST
-                reg_str = REGION_STR_TEST
-            cult_embed_text = text_embedder.encode(
-                cult_str[self.cult_mapping[cultivars.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            site_embed_text = text_embedder.encode(
-                site_str[self.site_mapping[sites.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            stat_embed_text = text_embedder.encode(
-                stat_str[self.stat_mapping[stations.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-            reg_embed_text = text_embedder.encode(
-                reg_str[self.reg_mapping[regions.flatten().to(torch.int)].cpu().numpy()],
-                normalize_embeddings=True,
-                convert_to_tensor=True,
-                device=cultivars.device,
-            ).clone()
-        cult_embed = self.cult_embedder(site_embed_text)
-        site_embed = self.site_embedder(cult_embed_text)
-        stat_embed = self.stat_embedder(stat_embed_text)
-        reg_embed = self.stat_embedder(reg_embed_text)
-
-        return reg_embed, stat_embed, site_embed, cult_embed
-
-    def forward_embed_direct(
-        self,
-        cultivars: torch.Tensor = None,
-        regions: torch.Tensor = None,
-        stations: torch.Tensor = None,
-        sites: torch.Tensor = None,
-        **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        cult_embed = self.cult_embedding_layer(self.cult_mapping[cultivars.flatten().to(torch.int)])
-        reg_embed = (
-            self.reg_embedding_layer(self.reg_mapping[regions.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        stat_embed = (
-            self.stat_embedding_layer(self.stat_mapping[stations.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-        site_embed = (
-            self.site_embedding_layer(self.site_mapping[sites.flatten().to(torch.int)])
-            if self.synth_data is None
-            else None
-        )
-
-        return reg_embed, stat_embed, site_embed, cult_embed
 
     def forward_embed_adapt(
         self,
@@ -1439,57 +1075,7 @@ class FoundationEmbeddingGRU(BaseModule):
         bsize: int = None,
         **kwargs,
     ) -> tuple[torch.Tensor, torch.Tensor]:
-        if weather_input.ndim == 2:
-            weather_input = weather_input.unsqueeze(1)
-        if ch.ndim == 2:
-            ch = ch.unsqueeze(1)
-        w_encode, _ = self.transfer_weather_rnn(weather_input)  # (T,d)
-
-        B, T, d = ch.shape
-        # Create mask for CH
-        ch_mask = ~torch.isnan(ch)
-        ch_clean = torch.where(ch_mask, ch, torch.zeros_like(ch))
-
-        ch_lengths = ch_mask.sum(dim=(1, 2))
-        max_len = ch_lengths.max().item()
-        if max_len == 0:
-            return torch.zeros(B, self.embed_dim, device=ch.device, requires_grad=True)
-        ch_arr = torch.zeros(size=(B, max_len), device=ch.device, requires_grad=True)
-
-        ch_arr_list = []
-        # Go through batch and pad data, loop avoids breaking gradient flow via masking
-        for i in range(B):
-            mask_i = ch_mask[i].any(dim=-1)
-            valid_data = ch_clean[i][mask_i]
-            valid_len = valid_data.shape[0]
-            if valid_len < max_len:
-                pad = torch.zeros((max_len - valid_len, d), device=ch.device, dtype=ch.dtype)
-                valid_data = torch.cat([valid_data, pad], dim=0)
-            ch_arr_list.append(valid_data)
-        ch_arr = torch.stack(ch_arr_list)
-
-        ch_embed, _ = self.transfer_ch_rnn(ch_arr)  # (ch_max_len, d), padded with zeros
-
-        attn_mask = torch.arange(max_len, device=ch.device).unsqueeze(0) < ch_lengths.unsqueeze(1)
-        ch_encode = torch.where(~attn_mask.unsqueeze(-1), torch.zeros(ch_embed.shape[-1], device=ch.device), ch_embed)
-
-        attn_scores = torch.bmm(w_encode, ch_encode.transpose(1, 2))
-        attn_scores = attn_scores.masked_fill(
-            ~attn_mask.unsqueeze(1),  # (B, 1, h_max_len)
-            float("-inf"),
-        )
-        attn_weights = torch.softmax(attn_scores, dim=2)  # (B, T, ch_max_len)
-        ch_aligned = torch.bmm(attn_weights, ch_encode)  # (B, T, d)
-
-        attn_weights = self.transfer_pool_attn(ch_aligned).softmax(dim=1)  # (B, T, 1)
-        attn_pooled = (ch_aligned * attn_weights).sum(dim=1)  # (B, d)
-        embed_all = self.transfer_embed_attn(attn_pooled)  # (B,embed_dim)
-
-        embed = torch.zeros((bsize, embed_all.shape[-1]), device=ch.device)
-        embed = embed.scatter_reduce(
-            0, map_idx.unsqueeze(1).expand(-1, embed_all.shape[-1]), embed_all, reduce="mean", include_self=False
-        )
-        return embed
+        return self._weather_ch_cross_attn_embed(weather_input, ch, sine_day=False, map_idx=map_idx, bsize=bsize)
 
 
 class FoundationParamEmbeddingGRU(FoundationEmbeddingGRU):

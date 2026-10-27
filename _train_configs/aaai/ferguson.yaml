@@ -9,7 +9,7 @@ PConfig:
     input_vars: [DAY, TEMP]
     output_vars: [LTE50]
 # Log configuration
-log_path: /_runs/Journal/Ferguson/
+log_path: /_runs/AAAI/Ferguson/
 run_name: ferg_model
 seed: 0
 # Data use

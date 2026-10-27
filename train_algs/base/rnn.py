@@ -32,7 +32,6 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     ParamModel,
 )
-from train_algs.base.DMC_GP_Base import DeepEmbedGP
 from train_algs.base.DMC_Transfer_Base import (
     DeepAdaptTransferGRU,
     DeepEmbeddingTransferGRU,
@@ -98,8 +97,7 @@ class BaseRNN(BaseModel):
             nn = DeepTransferAttnGRU(config, model)
         elif config.DConfig.arch == "DeepMuSigmaGRU":
             nn = DeepEmbeddingMuSigmaGRU(config, model)
-        elif config.DConfig.arch == "DeepGPGRU":
-            nn = DeepEmbedGP(config, model)
+
         elif config.DConfig.arch == "FoundationGRU":
             nn = FoundationEmbeddingGRU(config, model)
         elif config.DConfig.arch == "FoundationParamGRU":

@@ -19,6 +19,7 @@ from train_algs.base.base import BaseModel
 from train_algs.base.DMC_Base import (
     FCGRU,
     DeepEmbeddingGRU,
+    DeepGRU,
     EmbeddingFCFF,
     EmbeddingFCGRU,
     EmbeddingTextGRU,
@@ -70,6 +71,8 @@ class BaseRNN(BaseModel):
             nn = EmbeddingFCGRU(config, model)
         elif config.DConfig.arch == "DeepEmbedGRU":
             nn = DeepEmbeddingGRU(config, model)
+        elif config.DConfig.arch == "DeepGRU":
+            nn = DeepGRU(config, model)
         elif config.DConfig.arch == "GHCNDeepEmbedFCGRU":
             nn = GHCNDeepEmbeddingGRU(config, model)
         elif config.DConfig.arch == "OneHotEmbedFCGRU":

@@ -274,6 +274,8 @@ class DeepFoundationRNN(BaseRNN):
             map_idx = torch.ones_like(cultivars, device=self.device)
         elif self.config.DConfig.transfer_type == "adapt":
             map_idx = torch.ones_like(cultivars, device=self.device) + 1
+        elif self.config.DConfig.transfer_type == "mean":
+            map_idx = torch.ones_like(cultivars, device=self.device) + 1
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
         if (~transfer_inds).sum() != 0:
@@ -290,28 +292,47 @@ class DeepFoundationRNN(BaseRNN):
             output_tens[~transfer_inds, :] = output_predict
 
         if transfer_inds.sum() != 0:
-            b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
-            all_inds = self.all_inds["train"]
-            adapt_inds = []
-            map_idx = []
-            for i, ind in enumerate(b_all_inds):
-                ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
+            if self.config.DConfig.transfer_type == "mean":
+                if getattr(self, "_mean_embed", None) is None:
+                    all_ids = self.all_ids["train"]
+                    reg_e, stat_e, site_e, cult_e = self.nn.forward_embed_direct(
+                        cultivars=all_ids[:, 3:4],
+                        regions=all_ids[:, 0:1],
+                        stations=all_ids[:, 1:2],
+                        sites=all_ids[:, 2:3],
+                    )
+                    self._mean_embed = self.nn.apply_embed_op(
+                        cult_e, site_e, stat_e, reg_e, ids_only=True
+                    ).mean(dim=0)
+                n_transfer = (transfer_inds).sum().item()
+                embed = self._mean_embed.unsqueeze(0).expand(n_transfer, -1)
+                transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn)
+                output_tens[transfer_inds, :] = transfer_predict
+            else:
+                b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]
+                all_inds = self.all_inds["train"]
+                adapt_inds = []
+                map_idx = []
+                for i, ind in enumerate(b_all_inds):
+                    ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
 
-                idx = ids[
-                    torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]
-                ]
-                adapt_inds.append(idx)
-                map_idx.append(torch.ones_like(idx, device=idx.device) * i)
-            adapt_inds = torch.cat(adapt_inds)
-            map_idx = torch.cat(map_idx)
-            embed = self.nn.compute_embed(
-                self.data["train"][adapt_inds],
-                ch=self.val["train"][adapt_inds],
-                map_idx=map_idx,
-                bsize=(transfer_inds).sum().item(),
-            )
-            transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn)
-            output_tens[transfer_inds, :] = transfer_predict
+                    idx = ids[
+                        torch.randperm(ids.shape[0])[
+                            : min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)
+                        ]
+                    ]
+                    adapt_inds.append(idx)
+                    map_idx.append(torch.ones_like(idx, device=idx.device) * i)
+                adapt_inds = torch.cat(adapt_inds)
+                map_idx = torch.cat(map_idx)
+                embed = self.nn.compute_embed(
+                    self.data["train"][adapt_inds],
+                    ch=self.val["train"][adapt_inds],
+                    map_idx=map_idx,
+                    bsize=(transfer_inds).sum().item(),
+                )
+                transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn)
+                output_tens[transfer_inds, :] = transfer_predict
 
         return output_tens, attn_map, orig_pred
 

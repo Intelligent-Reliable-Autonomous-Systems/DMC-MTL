@@ -552,6 +552,65 @@ class DeepEmbeddingGRU(BaseModule):
         return self.forward_embed_direct(cultivars=cultivars, regions=regions, stations=stations, sites=sites, **kwargs)
 
 
+class DeepGRU(BaseModule):
+    """
+    DeepRNN GRU without hierarchy embeddings.
+    Passes weather input directly through the FC → GRU trunk.
+    """
+
+    def __init__(self, c: DictConfig, model: nn.Module) -> None:
+        super().__init__(c, model)
+        self.embed_dim = self.input_dim
+        self._build_hierarchy_embeddings(c, embed_size_aware=True)
+        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
+        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
+        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
+        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+        self.init_state = self.h0
+
+    def _build_hierarchy_embeddings(self, c: DictConfig, *, embed_size_aware: bool = True, synth_optional: bool = False):
+        """No-op: DeepGRU does not use cultivar/region/station/site embeddings."""
+        return
+
+    def _prep_hierarchy_input(
+        self,
+        input,
+        regions=None,
+        stations=None,
+        sites=None,
+        cultivars=None,
+        *,
+        synth_safe: bool = True,
+        expand: str = "repeat",
+    ):
+        """Return weather only (no embedding concat)."""
+        if input.ndim == 2:
+            input = input.unsqueeze(1)
+        return input, input
+
+    def forward(
+        self,
+        input: torch.Tensor = None,
+        hn: torch.Tensor = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        gru_input, _ = self._prep_hierarchy_input(
+            input, regions, stations, sites, cultivars, synth_safe=True, expand="repeat"
+        )
+        x = self.fc1(gru_input).relu()
+        x = self.fc2(x).relu()
+        gru_out, hn = self.rnn(x, hn)
+        gru_out = self.fc3(gru_out).relu()
+        output = self.hidden_to_output(gru_out)
+        return output, hn
+
+
 class EmbeddingFCFF(BaseModule):
     """
     Multi Task FF

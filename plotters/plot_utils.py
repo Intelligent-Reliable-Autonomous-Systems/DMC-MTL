@@ -8,7 +8,6 @@ Written by Will Solow, 2025
 
 from argparse import Namespace
 
-import gpytorch
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -211,8 +210,7 @@ def gen_batch_data(
         )
 
     true_data = val_data.cpu().squeeze().numpy()
-    if isinstance(output, gpytorch.distributions.MultivariateNormal):
-        output = output.mean
+
     if output.size(-1) == len(PHENOLOGY_INT):
         probs = F.softmax(output, dim=-1)
         output = torch.argmax(probs, dim=-1)
@@ -316,9 +314,7 @@ def append_masked_batch(
         true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
         output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
         if cult_inds is not None:
-            cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(
-                torch.argwhere(inds[k]).flatten().cpu().numpy()
-            )
+            cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
 
 
 def gen_all_data_and_plot(
@@ -368,9 +364,7 @@ def gen_all_data_and_plot(
                 o.append(output)
                 t.append(true)
             if "phenology" in dtype:
-                plot_output_phenology(
-                    config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save
-                )
+                plot_output_phenology(config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save)
             elif "coldhardiness" in dtype:
                 plot_output_coldhardiness_error(
                     config, fpath, batch_idx, np.array(o), np.array(p), val_slice, name=name, save=args.save

@@ -12,5 +12,4 @@ data.txt
 *_runs/
 *nyus/
 *.csv
-*.pkl
 *.cursor/

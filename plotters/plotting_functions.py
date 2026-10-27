@@ -398,6 +398,32 @@ def plot_output_phenology(
     return inds
 
 
+def _prepare_ch_series(val_data, output, *extras):
+    """Shared CH mask/shape prep for default, error, and transfer plotters.
+
+    Returns (inds, val_np, output, *extras) with batch-of-1 normalized.
+    """
+    ind_val_data = val_data.cpu().squeeze()
+    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
+    val_np = val_data.cpu().numpy()
+    val_np = val_np[:, :, 0] if val_np.shape[-1] == 3 else val_np
+    output = output[:, :, 0] if output.shape[-1] == 3 else output
+
+    if len(inds.shape) != 2:
+        inds = inds[np.newaxis, :]
+        if len(output.shape) != 2:
+            output = output[np.newaxis, :]
+            extras = tuple(e[np.newaxis, :] if e is not None else None for e in extras)
+    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    return (inds, val_np, output) + extras
+
+
+def _savefig_model(fpath: str, name: str, i_k, cultivar, prefix: str = "Model") -> None:
+    """Save and close the current figure with the standard CH naming scheme."""
+    plt.savefig(f"{fpath}/{prefix}_{name}_{i_k}_{cultivar}.png", bbox_inches="tight")
+    plt.close()
+
+
 def plot_output_coldhardiness(
     config: DictConfig,
     fpath: str,
@@ -411,24 +437,11 @@ def plot_output_coldhardiness(
     """
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
-    ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
-    val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
-    output = output[:, :, 0] if output.shape[-1] == 3 else output
+    inds, val_data, output, params = _prepare_ch_series(val_data, output, params)
     uq_flag = output.shape[-1] == 2
 
-    # Handle when a batch size of 1 is passed
-    if len(inds.shape) != 2:
-        inds = inds[np.newaxis, :]
-        if len(output.shape) != 2:
-            output = output[np.newaxis, :]
-            params = params[np.newaxis, :] if params is not None else None
-
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
     if save:
         for k in range(inds.shape[0]):
-            x = np.arange(len(output[k][inds[k]]))
             fig, ax = plt.subplots(2)
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
@@ -466,11 +479,7 @@ def plot_output_coldhardiness(
                 ax[1].set_ylabel("TENDO Value")
                 ax[1].set_xlabel("Days")
 
-            plt.savefig(
-                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
-                bbox_inches="tight",
-            )
-            plt.close()
+            _savefig_model(fpath, name, i[k], config.DataConfig.cultivar)
             if params is not None:
                 plot_params(fpath, config, np.array(params[k]), i[k], name=name)
 
@@ -643,23 +652,9 @@ def plot_output_coldhardiness_error(
     """
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
-    ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
-    val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
-    output = output[:, :, 0] if output.shape[-1] == 3 else output
-
-    # Handle when a batch size of 1 is passed
-    if len(inds.shape) != 2:
-        inds = inds[np.newaxis, :]
-        if len(output.shape) != 2:
-            output = output[np.newaxis, :]
-            params = params[np.newaxis, :] if params is not None else None
-
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
+    inds, val_data, output, params = _prepare_ch_series(val_data, output, params)
     if save:
         for k in range(inds.shape[0]):
-            x = np.arange(len(output[0, k][inds[k]]))
             fig, ax = plt.subplots(3, figsize=(6, 6))
             target = config.PConfig.output_vars
             prop_cycle = plt.rcParams["axes.prop_cycle"]
@@ -701,7 +696,6 @@ def plot_output_coldhardiness_error(
                     ax[1].set_xlim([0, len(inds[k])])
                     ax[1].set_ylabel("TENDO Value")
                     ax[1].set_xticks([], [])
-                    # ax[1].set_xlabel("Days")
             arr = np.zeros(shape=(output.shape[0]))
             for j in range(output.shape[0]):
                 mean, _ = compute_total_RMSE(val_data[k, :, 0][inds[k]], output[j, k][inds[k]])
@@ -710,20 +704,13 @@ def plot_output_coldhardiness_error(
             ax[2].set_ylabel("RMSE")
             ax[2].set_xlabel("Days")
             ax[2].set_xlim([0, 8])
-            # ax[2].set_xticks(np.arange(output.shape[0]), labels=["0-30", "0-60", "0-90", "0-120","0-150", "0-180", "0-210", "0-240", "0-270"])
             ax[2].set_xticks(
                 np.arange(output.shape[0]),
                 labels=[30, 60, 90, 120, 150, 180, 210, 240, 270],
             )
             ax[2].set_title("Prediction Error with Additional In-Season Observations")
 
-            plt.savefig(
-                f"{fpath}/Model_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
-                bbox_inches="tight",
-            )
-            plt.close()
-            # if params is not None:
-            #    plot_params(fpath, config, np.array(params[k]), i[k], name=name)
+            _savefig_model(fpath, name, i[k], config.DataConfig.cultivar)
 
     return inds
 
@@ -747,26 +734,11 @@ def plot_output_coldhardiness_transfer(
     """
     Plot the cold haridness and the parameters for each time series in the passed batch
     """
-    ind_val_data = val_data.cpu().squeeze()
-    inds = ~torch.isnan(ind_val_data[:, :, 0]) if ind_val_data.shape[-1] == 3 else ~torch.isnan(ind_val_data)
-    val_data = val_data.cpu().numpy()
-    val_data = val_data[:, :, 0] if val_data.shape[-1] == 3 else val_data  # Handle GCHN prediction
-    output = output[:, :, 0] if output.shape[-1] == 3 else output
-
+    inds, val_data, output, attn_map, orig_pred = _prepare_ch_series(val_data, output, attn_map, orig_pred)
     true_ids = np.concatenate((regions, stations, sites, cultivars), axis=1)
 
-    # Handle when a batch size of 1 is passed
-    if len(inds.shape) != 2:
-        inds = inds[np.newaxis, :]
-        if len(output.shape) != 2:
-            output = output[np.newaxis, :]
-            attn_map = attn_map[np.newaxis, :]
-            orig_pred = orig_pred[np.newaxis, :]
-
-    assert len(inds.shape) == 2, "Incorrectly specified data, ensure that the batch setting is being passed"
     if save:
         for k in range(inds.shape[0]):
-            x = np.arange(len(output[k][inds[k]]))
             fig, ax = plt.subplots(
                 2,
                 figsize=(4, 8),
@@ -791,7 +763,6 @@ def plot_output_coldhardiness_transfer(
 
             ax[0].legend()
             ax[0].set_title(f"{target} (Predicted)")
-            # ax[0].set_xticks([], [])
             ax[0].set_xlim([0, len(inds[k])])
             ax[0].set_ylabel(f"{SITES[int(sites[k])]}/{CROP_NAMES[config.DataConfig.dtype][int(cultivars[k])]}")
             ax[0].set_xlabel("Days")
@@ -806,11 +777,6 @@ def plot_output_coldhardiness_transfer(
                 labs.append(f"{SITES[int(all_ids[j, 2])]}/{CROP_NAMES[config.DataConfig.dtype][int(all_ids[j, 3])]}")
             ax[1].set_yticks(np.arange(all_ids.shape[0]), labs, fontsize=9)
 
-            # Attach colorbar to the figure, linked to the imshow
             fig.colorbar(im, ax=ax[1], label="Attention Weight")
-            plt.savefig(
-                f"{fpath}/ModelTransfer_{name}_{i[k]}_{config.DataConfig.cultivar}.png",
-                bbox_inches="tight",
-            )
-            plt.close()
+            _savefig_model(fpath, name, i[k], config.DataConfig.cultivar, prefix="ModelTransfer")
     return inds

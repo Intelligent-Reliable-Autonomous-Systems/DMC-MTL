@@ -307,31 +307,34 @@ def append_masked_predictions(
     split_idx: int = 2,
     name: str = "test",
 ) -> None:
-    """Append masked series into aggregate + cultivar trees (transfer compilers)."""
+    """Append masked series into aggregate + cultivar trees (transfer compilers).
+
+    Resolves hierarchy IDs from ``a_inds`` then delegates to
+    ``plotters.plot_utils.append_masked_batch``.
+    """
     import torch
+    from plotters.plot_utils import append_masked_batch
 
-    if len(true.shape) == 1:
-        true = true[np.newaxis, :]
-        output = output[np.newaxis, :]
-    if true.shape[-1] == 3:
-        true = true[:, :, 0]
-        output = output[:, :, 0]
-    for k in range(len(true)):
-        true_data[split_idx].append(true[k][inds[k]])
-        output_data[split_idx].append(output[k][inds[k]])
-
-    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-    for k in range(len(true)):
-        idx = a_inds[k].to(torch.int32)
-        ck = int(calibrator.cultivars[name][idx].item()) if calibrator.cultivars is not None else 0
-        rk = int(calibrator.regions[name][idx].item()) if calibrator.regions is not None else 0
-        sk = int(calibrator.stations[name][idx].item()) if calibrator.stations is not None else 0
-        sik = int(calibrator.sites[name][idx].item()) if calibrator.sites is not None else 0
-        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][split_idx].append(true[k][inds[k]])
-        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][split_idx].append(output[k][inds[k]])
+    idx = a_inds.to(torch.int32)
+    cultivars = calibrator.cultivars[name][idx] if calibrator.cultivars is not None else None
+    regions = calibrator.regions[name][idx] if calibrator.regions is not None else None
+    stations = calibrator.stations[name][idx] if calibrator.stations is not None else None
+    sites = calibrator.sites[name][idx] if calibrator.sites is not None else None
+    append_masked_batch(
+        true_data,
+        output_data,
+        true_cultivar_data,
+        output_cultivar_data,
+        calibrator,
+        true,
+        output,
+        inds,
+        cultivars,
+        regions,
+        stations,
+        sites,
+        split_idx,
+    )
 
 
 def parse_withold(config) -> tuple[list, list, list, list]:

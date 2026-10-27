@@ -204,6 +204,64 @@ def gen_batch_transfer_data(
     return true_data, output_data, attn_map, orig_pred
 
 
+def _batch_ids(calibrator: nn.Module, name: str, i: int):
+    """Slice cultivar/region/station/site ID tensors for one batch."""
+    cultivars = calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
+    regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
+    stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
+    sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
+    return cultivars, regions, stations, sites
+
+
+def append_masked_batch(
+    true_data,
+    output_data,
+    true_cultivar_data,
+    output_cultivar_data,
+    calibrator,
+    true,
+    output,
+    inds,
+    cultivars,
+    regions,
+    stations,
+    sites,
+    n: int,
+    all_inds=None,
+    cult_inds=None,
+) -> None:
+    """Normalize shapes and append masked series into aggregate + cultivar trees."""
+    if len(true.shape) == 1:
+        true = true[np.newaxis, :]
+        output = output[np.newaxis, :]
+    if true.shape[-1] == 3:
+        true = true[:, :, 0]
+        output = output[:, :, 0]
+
+    for k in range(len(true)):
+        true_data[n].append(true[k][inds[k]])
+        output_data[n].append(output[k][inds[k]])
+        if all_inds is not None:
+            all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
+
+    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
+    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
+    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
+    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
+
+    for k in range(len(true)):
+        ck = int(cultivars[k].item()) if cultivars is not None else 0
+        rk = int(regions[k].item()) if regions is not None else 0
+        sk = int(stations[k].item()) if stations is not None else 0
+        sik = int(sites[k].item()) if sites is not None else 0
+        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
+        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
+        if cult_inds is not None:
+            cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(
+                torch.argwhere(inds[k]).flatten().cpu().numpy()
+            )
+
+
 def gen_all_data_and_plot(
     config: DictConfig,
     fpath: str,
@@ -218,111 +276,146 @@ def gen_all_data_and_plot(
     all_inds: list[np.ndarray] = None,
     cult_inds: list[np.ndarray] = None,
     transfer_rate: float = 0.0,
+    mode: str = "default",
 ) -> None:
     """
-    Generates data for train and testing data and plots accordingly for RNNs
+    Unified train/val/test data generation + plotting.
+
+    mode: "default" | "error" | "transfer"
     """
-    if name == "train":
-        n = 0
-    elif name == "val":
-        n = 1
-    else:  # test
-        n = 2
+    n = {"train": 0, "val": 1}.get(name, 2)
+    dtype = config.DataConfig.dtype
 
-    true_arr = []
-    output_arr = []
     for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
-        cultivars = (
-            calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
-        )
-        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
-        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
-        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
+        cultivars, regions, stations, sites = _batch_ids(calibrator, name, i)
+        batch_idx = np.arange(start=i, stop=i + calibrator.batch_size)
+        val_slice = calibrator.val[name][i : i + calibrator.batch_size]
 
-        true, output, params = gen_batch_data(
-            calibrator,
-            calibrator.data[name][i : i + calibrator.batch_size],
-            calibrator.dates[name][i : i + calibrator.batch_size],
-            calibrator.val[name][i : i + calibrator.batch_size],
-            cultivars,
-            regions,
-            stations,
-            sites,
-            days=days,
-            name=name,
-            transfer_rate=transfer_rate,
-        )
-        true_arr.append(true)
-        output_arr.append(output)
+        if mode == "error":
+            p, o, t = [], [], []
+            for j in np.arange(0, 270, 30):
+                true, output, params = gen_batch_data(
+                    calibrator,
+                    calibrator.data[name][i : i + calibrator.batch_size],
+                    calibrator.dates[name][i : i + calibrator.batch_size],
+                    val_slice,
+                    cultivars,
+                    regions,
+                    stations,
+                    sites,
+                    days=torch.tensor(np.tile(j, calibrator.batch_size)).unsqueeze(1).to(calibrator.device),
+                )
+                p.append(params)
+                o.append(output)
+                t.append(true)
+            if "phenology" in dtype:
+                plot_output_phenology(
+                    config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save
+                )
+            elif "coldhardiness" in dtype:
+                plot_output_coldhardiness_error(
+                    config, fpath, batch_idx, np.array(o), np.array(p), val_slice, name=name, save=args.save
+                )
+            elif "wofost" in dtype:
+                plot_output_wofost(config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save)
+            else:
+                raise Exception(f"Unknown dtype `{dtype}`, cannot save data")
+            # error mode: plot-only (no buffer append)
 
-        if "phenology" in config.DataConfig.dtype:
-            inds = plot_output_phenology(
+        elif mode == "transfer":
+            if "coldhardiness" not in dtype:
+                raise Exception(f"Unknown dtype `{dtype}`, cannot save data")
+            true, output, attn_map, orig_pred = gen_batch_transfer_data(
+                calibrator,
+                calibrator.data[name][i : i + calibrator.batch_size],
+                calibrator.dates[name][i : i + calibrator.batch_size],
+                val_slice,
+                cultivars,
+                regions,
+                stations,
+                sites,
+                calibrator.all_ids[name],
+                days=days,
+                name=name,
+            )
+            inds = plot_output_coldhardiness_transfer(
                 config,
                 fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
+                batch_idx,
                 output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
+                val_slice,
+                attn_map,
+                orig_pred,
+                calibrator.all_ids[name].cpu().numpy(),
+                regions.cpu().numpy(),
+                stations.cpu().numpy(),
+                sites.cpu().numpy(),
+                cultivars.cpu().numpy(),
                 name=name,
                 save=args.save,
             )
-        elif "coldhardiness" in config.DataConfig.dtype:
-            inds = plot_output_coldhardiness(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
+            append_masked_batch(
+                true_data,
+                output_data,
+                true_cultivar_data,
+                output_cultivar_data,
+                calibrator,
+                true,
                 output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
+                inds,
+                cultivars,
+                regions,
+                stations,
+                sites,
+                n,
+                all_inds=all_inds,
+                cult_inds=cult_inds,
             )
-        elif "wofost" in config.DataConfig.dtype:
-            inds = plot_output_wofost(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
+
+        else:  # default
+            true, output, params = gen_batch_data(
+                calibrator,
+                calibrator.data[name][i : i + calibrator.batch_size],
+                calibrator.dates[name][i : i + calibrator.batch_size],
+                val_slice,
+                cultivars,
+                regions,
+                stations,
+                sites,
+                days=days,
+                name=name,
+                transfer_rate=transfer_rate,
+            )
+            if "phenology" in dtype:
+                inds = plot_output_phenology(
+                    config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save
+                )
+            elif "coldhardiness" in dtype:
+                inds = plot_output_coldhardiness(
+                    config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save
+                )
+            elif "wofost" in dtype:
+                inds = plot_output_wofost(
+                    config, fpath, batch_idx, output, params, val_slice, name=name, save=args.save
+                )
+            else:
+                raise Exception(f"Unknown dtype `{dtype}`, cannot save data")
+            append_masked_batch(
+                true_data,
+                output_data,
+                true_cultivar_data,
+                output_cultivar_data,
+                calibrator,
+                true,
                 output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
-            )
-        else:
-            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
-
-        if len(true.shape) == 1:
-            true = true[np.newaxis, :]
-            output = output[np.newaxis, :]
-        if true.shape[-1] == 3:
-            true = true[:, :, 0]
-            output = output[:, :, 0]
-
-        [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
-        [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
-        (
-            [all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) for k in range(len(inds))]
-            if all_inds is not None
-            else None
-        )
-
-        cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-        rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-
-        for k in range(len(true)):
-            ck = int(cultivars[k].item()) if cultivars is not None else 0
-            rk = int(regions[k].item()) if regions is not None else 0
-            sk = int(stations[k].item()) if stations is not None else 0
-            sik = int(sites[k].item()) if sites is not None else 0
-
-            true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
-            output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
-            (
-                cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
-                if cult_inds is not None
-                else None
+                inds,
+                cultivars,
+                regions,
+                stations,
+                sites,
+                n,
+                all_inds=all_inds,
+                cult_inds=cult_inds,
             )
 
         if args.break_early:
@@ -339,209 +432,13 @@ def compute_biological_realism(list_arr: list[np.ndarray]):
             biologically_unreal += np.count_nonzero(np.diff(arr[j, 170:]) > 0.8)
 
 
-def gen_all_data_and_plot_error(
-    config: DictConfig,
-    fpath: str,
-    args: Namespace,
-    calibrator: nn.Module,
-    true_data: list[np.ndarray],
-    output_data: list[np.ndarray],
-    true_cultivar_data: list[np.ndarray],
-    output_cultivar_data: list[np.ndarray],
-    name: str = "train",
-    days: int = None,
-    all_inds: list[np.ndarray] = None,
-    cult_inds: list[np.ndarray] = None,
-    transfer_rate: float = 0.0,
-) -> None:
-    """
-    Generates data for train and testing data and plots accordingly for RNNs
-    """
-    if name == "train":
-        n = 0
-    elif name == "val":
-        n = 1
-    else:  # test
-        n = 2
-
-    true_arr = []
-    output_arr = []
-    params_arr = []
-    for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
-        cultivars = (
-            calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
-        )
-        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
-        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
-        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
-
-        p = []
-        o = []
-        t = []
-        for j in np.arange(0, 270, 30):
-            true, output, params = gen_batch_data(
-                calibrator,
-                calibrator.data[name][i : i + calibrator.batch_size],
-                calibrator.dates[name][i : i + calibrator.batch_size],
-                calibrator.val[name][i : i + calibrator.batch_size],
-                cultivars,
-                regions,
-                stations,
-                sites,
-                days=torch.tensor(np.tile(j, calibrator.batch_size)).unsqueeze(1).to(calibrator.device),
-            )
-            p.append(params)
-            o.append(output)
-            t.append(true)
-
-        true_arr.append(t)
-        output_arr.append(o)
-        params_arr.append(p)
-
-        if "phenology" in config.DataConfig.dtype:
-            plot_output_phenology(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
-                output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
-            )
-        elif "coldhardiness" in config.DataConfig.dtype:
-            plot_output_coldhardiness_error(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
-                np.array(o),
-                np.array(p),
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
-            )
-        elif "wofost" in config.DataConfig.dtype:
-            plot_output_wofost(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
-                output,
-                params,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                name=name,
-                save=args.save,
-            )
-        else:
-            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
-
-        if args.break_early:
-            break
+def gen_all_data_and_plot_error(*args, **kwargs):
+    """Thin wrapper: day-horizon error plotting mode."""
+    kwargs.pop("mode", None)
+    return gen_all_data_and_plot(*args, mode="error", **kwargs)
 
 
-def gen_all_data_and_plot_transfer(
-    config: DictConfig,
-    fpath: str,
-    args: Namespace,
-    calibrator: nn.Module,
-    true_data: list[np.ndarray],
-    output_data: list[np.ndarray],
-    true_cultivar_data: list[np.ndarray],
-    output_cultivar_data: list[np.ndarray],
-    name: str = "train",
-    days: int = None,
-    all_inds: list[np.ndarray] = None,
-    cult_inds: list[np.ndarray] = None,
-    transfer_rate: float = 0.0,
-) -> None:
-    """
-    Generates data for train and testing data and plots accordingly for RNNs
-    """
-    if name == "train":
-        n = 0
-    elif name == "val":
-        n = 1
-    else:  # test
-        n = 2
-
-    true_arr = []
-    output_arr = []
-    for i in range(0, len(calibrator.data[name]), calibrator.batch_size):
-        cultivars = (
-            calibrator.cultivars[name][i : i + calibrator.batch_size] if calibrator.cultivars is not None else None
-        )
-        regions = calibrator.regions[name][i : i + calibrator.batch_size] if calibrator.regions is not None else None
-        stations = calibrator.stations[name][i : i + calibrator.batch_size] if calibrator.stations is not None else None
-        sites = calibrator.sites[name][i : i + calibrator.batch_size] if calibrator.sites is not None else None
-
-        true, output, attn_map, orig_pred = gen_batch_transfer_data(
-            calibrator,
-            calibrator.data[name][i : i + calibrator.batch_size],
-            calibrator.dates[name][i : i + calibrator.batch_size],
-            calibrator.val[name][i : i + calibrator.batch_size],
-            cultivars,
-            regions,
-            stations,
-            sites,
-            calibrator.all_ids[name],
-            days=days,
-            name=name,
-        )
-        true_arr.append(true)
-        output_arr.append(output)
-
-        if "coldhardiness" in config.DataConfig.dtype:
-            inds = plot_output_coldhardiness_transfer(
-                config,
-                fpath,
-                np.arange(start=i, stop=i + calibrator.batch_size),
-                output,
-                calibrator.val[name][i : i + calibrator.batch_size],
-                attn_map,
-                orig_pred,
-                calibrator.all_ids[name].cpu().numpy(),
-                regions.cpu().numpy(),
-                stations.cpu().numpy(),
-                sites.cpu().numpy(),
-                cultivars.cpu().numpy(),
-                name=name,
-                save=args.save,
-            )
-        else:
-            raise Exception(f"Unknown dtype `{calibrator.config.DataConfig.dtype}`, cannot save data")
-
-        if len(true.shape) == 1:
-            true = true[np.newaxis, :]
-            output = output[np.newaxis, :]
-        if true.shape[-1] == 3:
-            true = true[:, :, 0]
-            output = output[:, :, 0]
-
-        [true_data[n].append(true[k][inds[k]]) for k in range(len(true))]
-        [output_data[n].append(output[k][inds[k]]) for k in range(len(output))]
-        (
-            [all_inds[n].append(torch.argwhere(inds[k]).flatten().cpu().numpy()) for k in range(len(inds))]
-            if all_inds is not None
-            else None
-        )
-
-        cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-        rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-        sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-        sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-
-        for k in range(len(true)):
-            ck = int(cultivars[k].item()) if cultivars is not None else 0
-            rk = int(regions[k].item()) if regions is not None else 0
-            sk = int(stations[k].item()) if stations is not None else 0
-            sik = int(sites[k].item()) if sites is not None else 0
-
-            true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(true[k][inds[k]])
-            output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(output[k][inds[k]])
-            (
-                cult_inds[rm[rk]][sm[sk]][sim[sik]][cm[ck]][n].append(torch.argwhere(inds[k]).flatten().cpu().numpy())
-                if cult_inds is not None
-                else None
-            )
-
-        if args.break_early:
-            break
+def gen_all_data_and_plot_transfer(*args, **kwargs):
+    """Thin wrapper: transfer attention plotting mode."""
+    kwargs.pop("mode", None)
+    return gen_all_data_and_plot(*args, mode="transfer", **kwargs)

@@ -86,43 +86,21 @@ def predict_mean_all(config, fpath, args, calibrator, true_data, output_data, tr
                         name=n,
                         save=args.save,
                     )
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -191,43 +169,21 @@ def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, t
                         name=n,
                         save=args.save,
                     )
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_mean_site(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -299,43 +255,21 @@ def predict_mean_site(config, fpath, args, calibrator, true_data, output_data, t
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_best_source(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -470,43 +404,21 @@ def predict_best_source(config, fpath, args, calibrator, true_data, output_data,
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -650,43 +562,21 @@ def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, tr
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -831,43 +721,21 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -1024,43 +892,21 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 
 def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
@@ -1218,43 +1064,21 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                         save=args.save,
                     )
 
-                    if len(true.shape) == 1:
-                        true = true[np.newaxis, :]
-                        output = output[np.newaxis, :]
-                    if true.shape[-1] == 3:
-                        true = true[:, :, 0]
-                        output = output[:, :, 0]
-                    [true_data[2].append(true[k][inds[k]]) for k in range(len(true))]
-                    [output_data[2].append(output[k][inds[k]]) for k in range(len(output))]
+                    from results.eval_common import append_masked_predictions
 
-                    cm = calibrator.nn.cult_mapping if hasattr(calibrator.nn, "cult_mapping") else [0, 0]
-                    rm = calibrator.nn.reg_mapping if hasattr(calibrator.nn, "reg_mapping") else [0, 0]
-                    sm = calibrator.nn.stat_mapping if hasattr(calibrator.nn, "stat_mapping") else [0, 0]
-                    sim = calibrator.nn.site_mapping if hasattr(calibrator.nn, "site_mapping") else [0, 0]
-                    for k in range(len(true)):
-                        ck = (
-                            int(calibrator.cultivars[n][a_inds[k].to(torch.int32)].item())
-                            if cultivars is not None
-                            else 0
-                        )
-                        rk = (
-                            int(calibrator.regions[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.regions is not None
-                            else 0
-                        )
-                        sk = (
-                            int(calibrator.stations[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.stations is not None
-                            else 0
-                        )
-                        sik = (
-                            int(calibrator.sites[n][a_inds[k].to(torch.int32)].item())
-                            if calibrator.sites is not None
-                            else 0
-                        )
-
-                        true_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(true[k][inds[k]])
-                        output_cultivar_data[rm[rk]][sm[sk]][sim[sik]][cm[ck]][2].append(output[k][inds[k]])
+                    append_masked_predictions(
+                        true_data,
+                        output_data,
+                        true_cultivar_data,
+                        output_cultivar_data,
+                        calibrator,
+                        true,
+                        output,
+                        inds,
+                        a_inds,
+                        split_idx=2,
+                        name=n,
+                    )
 
 STRATEGIES = {
     "mean_all": predict_mean_all,

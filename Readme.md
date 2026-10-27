@@ -15,7 +15,7 @@ Correspondance to Will Solow, soloww@oregonstate.edu
 
 3. Install dependencies with pip
 * `pip install -e model_engine`
-* `pip install numpy pandas omegaconf matplotlib requests tensorboard huggingface_hub gpytorch sentence-transformers` 
+* `pip install numpy pandas omegaconf matplotlib requests tensorboard sentence-transformers` 
 
 ### Running experiments
 1. See available data in _data/processed_data/

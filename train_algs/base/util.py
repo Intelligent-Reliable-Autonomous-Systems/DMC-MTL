@@ -13,7 +13,6 @@ from argparse import Namespace
 import numpy as np
 import torch
 import torch.nn.functional as F
-from huggingface_hub import upload_folder
 from model_engine.util import PHENOLOGY_INT
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
@@ -86,7 +85,6 @@ def load_config(fpath: str) -> DictConfig:
     config = OmegaConf.load(f"{os.getcwd()}/{fpath}/config.yaml")
 
     return config
-
 
 
 def load_model_fpath(fpath: str, name: str = "rnn_model_best.pt") -> str:
@@ -299,29 +297,6 @@ def log_error_training(
     p_str += f"Model Grad Norm: {grad / len(calibrator.data['train'])}\n"
 
     print(p_str)
-
-
-def save_and_upload_hf(
-    step: int,
-    local_dir: str = "./_runs/",
-    repo_id: str = "wsolow/ParamCalibration",
-) -> None:
-    """
-    Upload a checkpointed model to hugging face
-    """
-    """repo = Repository(local_dir=local_dir, clone_from=repo_id)
-
-    # Commit and push to HuggingFace
-    repo.git_add(auto_lfs_track=True)
-    repo.git_commit(f"Upload checkpoint at step {step}")
-    repo.git_push()"""
-
-    upload_folder(
-        repo_id=repo_id,
-        folder_path=local_dir,
-        repo_type="model",
-        commit_message=f"Checkpoint upload {step}",
-    )
 
 
 class StageMSELoss(nn.Module):

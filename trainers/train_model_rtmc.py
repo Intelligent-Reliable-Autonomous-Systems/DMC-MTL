@@ -1,7 +1,7 @@
 """
-train_model.py
+train_model_rtmc.py
 
-Entry interface for RNN training.
+Entry interface for RTMC / FineTuner training.
 
 Written by Will Solow, 2025
 """
@@ -9,7 +9,6 @@ Written by Will Solow, 2025
 import argparse
 
 import utils
-from train_algs import FineTuner
 
 
 def main():
@@ -26,16 +25,7 @@ def main():
     args = parser.parse_args()
 
     config, data = utils.load_config_data(args)
-
-    if config.DConfig.type == "Deep":  # Note that this is actually the wrong config to be making decisions off of
-        calibrator = FineTuner.DeepFineTuner(config, data, rnn_fpath=args.rnn_fpath)
-    elif config.DConfig.type == "Param":
-        calibrator = FineTuner.FineTuner(config, data, rnn_fpath=args.rnn_fpath)
-    elif config.DConfig.type == "Foundation":
-        calibrator = FineTuner.DeepFoundationFineTuner(config, data, rnn_fpath=args.rnn_fpath)
-    else:
-        raise Exception(f"Unrecognized Model Type `{config.DConfig.type}`")
-
+    calibrator = utils.load_model_from_config(config, data, rnn_fpath=args.rnn_fpath)
     calibrator.optimize()
 
 

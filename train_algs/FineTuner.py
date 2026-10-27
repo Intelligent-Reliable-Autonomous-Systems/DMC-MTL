@@ -35,8 +35,8 @@ from train_algs.base.util import (
     log_training,
     setup_logging,
 )
-from train_algs.DMC import BaseRNN
-from utils import CROP_NAMES
+from assets import CROP_NAMES
+from train_algs.base.rnn import BaseRNN
 
 
 class BaseFineTuner(BaseModel):

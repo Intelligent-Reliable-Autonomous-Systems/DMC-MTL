@@ -14,8 +14,8 @@ from model_engine.engine import get_engine
 from model_engine.util import per_task_param_loader
 from omegaconf import DictConfig
 
-from train_algs.DMC import BaseRNN
-from utils import CROP_NAMES
+from assets import CROP_NAMES
+from train_algs.base.rnn import BaseRNN
 
 
 class DeepTransferRNN(BaseRNN):

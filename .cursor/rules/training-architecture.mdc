@@ -1,0 +1,51 @@
+---
+description: Training stack architecture — configs, data pipeline, couplings vs arches, entry points
+alwaysApply: true
+---
+
+# Training architecture
+
+## Layers
+
+1. **`utils.py`** — OmegaConf YAML configs (`PConfig`/`DConfig`/`RTMCConfig`/`DataConfig`), pickle discovery (`load_data_from_config`), trainer factory (`load_model_from_config`). Disk I/O stops at `list[pd.DataFrame]` with integer ID columns.
+2. **`train_algs/`** — Coupling strategies (`DConfig.type`): Param/Deep/PINN/Transfer/Foundation/FineTuner. Subclasses mostly implement `forward`; train via `.optimize()`.
+3. **`train_algs/base/`** — Shared infra: `BaseModel`, `BaseRNN` (`base/rnn.py`), `process_data.py`, `util.py`, NN arches in `DMC_*_Base.py`.
+4. **`model_engine/`** — Physical crop simulators + weather providers (used by Param*/PINN/FineTuner).
+
+## Coupling vs architecture
+
+- `DConfig.type` → calibrator class (how NN couples to physics / transfer).
+- `DConfig.arch` → NN module via `BaseRNN.make_rnn` (FCGRU, DeepEmbedGRU, FoundationGRU, DeepGPGRU, …).
+- Do not invent a third dispatch axis; extend the factory and `make_rnn` registry.
+
+## Data pipeline
+
+```
+_data/processed_data/.../*.pkl
+  → utils.load_data_from_config → list[DataFrame]
+  → BaseModel.__init__ → process_data_novalset
+  → model.data / .val / .dates / ID tensors + all_ids
+  → BaseRNN.optimize (manual index shuffle + batch slices; no DataLoader)
+```
+
+Train/test split is per (region, station, site, cultivar) via `split_train_test_indices` in `process_data.py`. NYUS uses the same splitter, then keeps raw DataFrames for AutoGluon.
+
+## Entry points
+
+- Train: `python -m trainers.train_model --config <rel to _train_configs> --seed N`
+- RTMC: `trainers.train_model_rtmc` → factory with `rnn_fpath`
+- Eval/plot: `load_config_data_fpath` → `load_model_from_config` → `load_model(fpath)`
+
+## Preserve
+
+- Shared `BaseRNN.optimize`; new couplings implement `forward` only when possible.
+- FineTuner = frozen pretrained `nn` + trainable error head (`RTMCConfig`).
+- Embedding grow-on-load in `BaseModel.load_model` for expanding vocabularies.
+- Public `DConfig.type` / `arch` string names (YAML + saved runs depend on them).
+
+## Avoid repeating
+
+- Do not fork coupling classes per arch (old `DMC_GP.py` clones were removed; keep GP in `DMC_GP_Base` + `arch: DeepGPGRU`).
+- Do not reimplement ID train/test split outside `process_data.split_train_test_indices`.
+- Prefer parameterizing near-twin arches (text string table, foundation shared embed) over copy-paste classes.
+- Import `CROP_NAMES` from `assets`, not via `utils` re-export, in new code.

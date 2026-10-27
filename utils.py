@@ -12,7 +12,6 @@ import pickle
 from argparse import Namespace
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -28,112 +27,112 @@ from train_algs import DMC, DMC_Transfer, FineTuner
 class PConfig:
     """Path to configuration files"""
 
-    config_fpath: Optional[str] = None
+    config_fpath: str | None = None
     """Model to use"""
-    model: Optional[str] = None
+    model: str | None = None
     """Model parameters to use"""
-    model_parameters: Optional[str] = None
+    model_parameters: str | None = None
     """Latitude of location"""
-    latitude: Optional[int] = None
+    latitude: int | None = None
     """Longitude of location"""
-    longitude: Optional[int] = None
+    longitude: int | None = None
     """Start date"""
-    start_date: Optional[str] = None
+    start_date: str | None = None
     """Output Variables"""
-    output_vars: Optional[list] = None
+    output_vars: list | None = None
     """Input variables"""
-    input_vars: Optional[list] = None
+    input_vars: list | None = None
 
 
 @dataclass
 class DConfig:
     """Model Type"""
 
-    type: Optional[str] = None
+    type: str | None = None
     """Model architecture"""
-    arch: Optional[str] = None
+    arch: str | None = None
     """Loss function"""
-    loss_func: Optional[str] = None
+    loss_func: str | None = None
     """Learning rate for training"""
-    learning_rate: Optional[float] = None
+    learning_rate: float | None = None
     """Learning rate reduction factor"""
-    lr_factor: Optional[float] = None
+    lr_factor: float | None = None
     """Batch size"""
-    batch_size: Optional[int] = None
+    batch_size: int | None = None
     """Epochs for training"""
-    epochs: Optional[int] = None
+    epochs: int | None = None
     """Hyperparameter for PINNs, weighting model output"""
-    pinn_p: Optional[float] = 0.5
+    pinn_p: float | None = 0.5
     """Embedding operation"""
-    embed_op: Optional[str] = None
+    embed_op: str | None = None
     """Hidden dim of Model"""
-    hidden_dim: Optional[int] = None
+    hidden_dim: int | None = None
     """Window size for RNN"""
-    window_size: Optional[int] = None
+    window_size: int | None = None
     """Epoch to start transfer"""
-    transfer_start: Optional[int] = 1000000
+    transfer_start: int | None = 1000000
     """How many years of data to use for transfer(max)"""
-    num_transfer_years: Optional[int] = 1
+    num_transfer_years: int | None = 1
     """How large should each embedding be"""
-    embed_size: Optional[int] = None
+    embed_size: int | None = None
     """Type of transfer to use"""
-    transfer_type: Optional[str] = None
+    transfer_type: str | None = None
     """How verbose of a string to use. Literal["base", "verb", "bare", "mini", "test"]]"""
-    verbose_level: Optional[str] = "verb"
+    verbose_level: str | None = "verb"
 
 
 @dataclass
 class RTMCConfig:
     """Finetuner Type"""
 
-    arch: Optional[str] = None
+    arch: str | None = None
     """Hidden dimension of Layers"""
-    hidden_dim: Optional[int] = None
+    hidden_dim: int | None = None
     """Loss function"""
-    loss_func: Optional[str] = None
+    loss_func: str | None = None
     """Learning rate for training"""
-    learning_rate: Optional[float] = None
+    learning_rate: float | None = None
     """Learning rate reduction factor"""
-    lr_factor: Optional[float] = None
+    lr_factor: float | None = None
     """Batch size"""
-    batch_size: Optional[int] = None
+    batch_size: int | None = None
     """Epochs for training"""
-    epochs: Optional[int] = None
+    epochs: int | None = None
     """Path to base model"""
-    rnn_fpath: Optional[str] = None
+    rnn_fpath: str | None = None
     """If bias is included"""
-    bias: Optional[bool] = None
+    bias: bool | None = None
     """Random day masking flag"""
-    day_masking: Optional[bool] = None
+    day_masking: bool | None = None
 
 
 @dataclass
 class DataConfig:
     """If using a validation set or not"""
 
-    val_set: Optional[bool] = None
+    val_set: bool | None = None
     """Amount of years to cap train set per cultivar"""
-    data_cap: Optional[int] = None
+    data_cap: int | None = None
     """How many cultivars of 'most data' to use"""
-    prim_cultivars: Optional[int] = None
+    prim_cultivars: int | None = None
     """Path to real data"""
-    data_fpath: Optional[str] = True
+    data_fpath: str | None = True
     """Data type (cold-hardiness, phenology, wheat)"""
-    dtype: Optional[str] = None
+    dtype: str | None = None
     """Region of data"""
-    region: Optional[str] = None
+    region: str | None = None
     """Weather station for data"""
-    station: Optional[str] = None
+    station: str | None = None
     """Site of data"""
-    site: Optional[str] = None
+    site: str | None = None
     """Cultivar"""
-    cultivar: Optional[str] = None
+    cultivar: str | None = None
     """If using synthetic data"""
-    synth_data: Optional[str] = None
+    synth_data: str | None = None
     """Withold cultivar/site/station/region"""
-    withold: Optional[dict] = None
+    withold: dict | None = None
     """Size of the test set"""
-    test_set_size: Optional[int] = 2
+    test_set_size: int | None = 2
 
 
 @dataclass
@@ -149,17 +148,17 @@ class Args:
     DataConfig: object = DataConfig
 
     """Path to save model"""
-    log_path: Optional[str] = None
+    log_path: str | None = None
     """Run name for experiment"""
-    run_name: Optional[str] = None
+    run_name: str | None = None
     """Seed"""
-    seed: Optional[int] = None
+    seed: int | None = None
     """Parameters to predict"""
-    params: Optional[list] = None
+    params: list | None = None
     """Ranges for each parameter to predict"""
-    params_range: Optional[list] = None
+    params_range: list | None = None
     """Parameters smoothing coefficient"""
-    param_scale: Optional[float] = None
+    param_scale: float | None = None
 
 
 def load_config_data(args: Namespace) -> tuple[DictConfig, list[pd.DataFrame]]:
@@ -332,10 +331,12 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
     return data
 
 
-def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.Module:
+def load_model_from_config(config: DictConfig, data: list[pd.DataFrame], rnn_fpath: str = None) -> nn.Module:
     """
     Load the model to train using the configuration and pass
-    it args and data
+    it args and data.
+
+    rnn_fpath: optional pretrained RNN run dir for FineTuner / RTMC.
     """
     if config.DataConfig.cultivar == "All":
         assert not (
@@ -346,11 +347,13 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame]) -> nn.M
         ), "Must use a Multi Architecture"
     if config.RTMCConfig.arch is not None:
         if config.DConfig.type == "Param":
-            calibrator = FineTuner.FineTuner(config, data)
+            calibrator = FineTuner.FineTuner(config, data, rnn_fpath=rnn_fpath)
         elif config.DConfig.type == "Deep":
-            calibrator = FineTuner.DeepFineTuner(config, data)
+            calibrator = FineTuner.DeepFineTuner(config, data, rnn_fpath=rnn_fpath)
         elif config.DConfig.type == "Foundation":
-            calibrator = FineTuner.DeepFoundationFineTuner(config, data)
+            calibrator = FineTuner.DeepFoundationFineTuner(config, data, rnn_fpath=rnn_fpath)
+        else:
+            raise NotImplementedError(f"Unrecognized FineTuner model type `{config.DConfig.type}`")
     elif config.DConfig.type == "Param":
         calibrator = DMC.ParamRNN(config, data)
     elif config.DConfig.type == "NoObsParam":

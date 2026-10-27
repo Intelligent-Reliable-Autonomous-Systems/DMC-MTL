@@ -1,2 +1,1 @@
-from . import util
-from . import train_algs
+from . import train_algs, util

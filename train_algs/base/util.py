@@ -12,11 +12,11 @@ from argparse import Namespace
 
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from huggingface_hub import upload_folder
 from model_engine.util import PHENOLOGY_INT
 from omegaconf import DictConfig, OmegaConf
+from torch import nn
 from torch.nn import _reduction as _Reduction
 from torch.utils.tensorboard import SummaryWriter
 
@@ -229,11 +229,7 @@ def log_training(
             calibrator.best_cum_rmse = best_avg
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
             calibrator.best_rmse = eval_avg
-    elif "coldhardiness" in calibrator.config.DataConfig.dtype:
-        if calibrator.best_eval_loss > eval_loss:
-            calibrator.best_eval_loss = eval_loss
-            calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")
-    elif "wofost" in calibrator.config.DataConfig.dtype:
+    elif "coldhardiness" in calibrator.config.DataConfig.dtype or "wofost" in calibrator.config.DataConfig.dtype:
         if calibrator.best_eval_loss > eval_loss:
             calibrator.best_eval_loss = eval_loss
             calibrator.save_model(f"{fpath}", name="rnn_model_best.pt")

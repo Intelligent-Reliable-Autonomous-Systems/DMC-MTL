@@ -9,24 +9,21 @@ Written by Will Solow, 2025
 import random
 from collections import OrderedDict
 
-import gpytorch
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from model_engine.util import PHENOLOGY_INT
 from omegaconf import DictConfig
+from torch import nn, optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from train_algs.base.process_data import process_data_novalset
 from train_algs.base.util import ScaledMSELoss, StageCrossEntropyLoss, StageMSELoss, grow_embedding_weight
 
 
-
 class BaseModel(nn.Module):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(BaseModel, self).__init__()
+        super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         np.random.seed(config.seed)
         random.seed(config.seed)
@@ -65,10 +62,6 @@ class BaseModel(nn.Module):
             self.loss_func = StageMSELoss("Veraison", reduction="none")
         elif self.config.DConfig.loss_func == "GaussianNLLLoss":
             self.loss_func = nn.GaussianNLLLoss(reduction="none")
-        elif self.config.DConfig.loss_func == "VELBOLoss":
-            self.loss_func = gpytorch.mlls.VariationalELBO(
-                model.likelihood, model.gp_head, num_data=len(self.data["train"])
-            )
 
         else:
             msg = f"Unimplemented DConfig Loss Function {self.config.DConfig.loss_func}"

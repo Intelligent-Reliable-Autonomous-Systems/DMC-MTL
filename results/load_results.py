@@ -39,6 +39,12 @@ def load_named_pickles(folder_paths: list[str], target_name: str, args: Namespac
                     or "All" in pkl_file.parent.parts[-4]
                 ):
                     continue
+                include = getattr(args, "include", None)
+                exclude = getattr(args, "exclude", None)
+                if include is not None and include == "Cultivar" and "Cultivar" not in str(pkl_file):
+                    continue
+                if exclude is not None and exclude == "Cultivar" and "Cultivar" in str(pkl_file):
+                    continue
                 print(pkl_file)
                 with open(pkl_file, "rb") as f:
                     results[subdir] = pickle.load(f)
@@ -226,14 +232,24 @@ def main():
     parser.add_argument("--uq", action="store_true", help="If to print calibration data")
     parser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
     parser.add_argument("--verbose_level", type=str, default="verb")
+    parser.add_argument("--include", default=None, type=str, help="Substring filter to include (e.g. Cultivar)")
+    parser.add_argument("--exclude", default=None, type=str, help="Substring filter to exclude")
+    parser.add_argument(
+        "--transfer_pickles",
+        action="store_true",
+        help="Load transfer-style pickles (results_*_cultivars.pkl without transfer_type)",
+    )
 
     args = parser.parse_args()
 
-    fname = (
-        f"results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
-        if not args.uq
-        else f"uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
-    )
+    if args.transfer_pickles:
+        fname = "results_agg_cultivars.pkl"
+    else:
+        fname = (
+            f"results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
+            if not args.uq
+            else f"uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
+        )
     fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
     mtl_models = load_named_pickles([args.start_dir], fpath, args)
@@ -241,6 +257,16 @@ def main():
     sorted_keys = np.argsort(list(mtl_models.keys()))  # Reorder based on alphabetical
     mtl_arr = np.array(list(mtl_models.values()))[sorted_keys]
     mtl_arr = np.where(mtl_arr == 0, np.nan, mtl_arr)  # Replace 0.0s with nan
+    if args.transfer_pickles and mtl_arr.ndim >= 6:
+        # Collapse runs where only one of three splits is non-nan (legacy transfer loader)
+        nan_count = np.isnan(mtl_arr).sum(axis=-2)
+        dim0, dim1, dim2, dim3, dim4, dim5 = np.where(nan_count == 2)
+        new_mtl_arr = np.full(mtl_arr.shape[1:], np.nan)
+        for i in range(len(dim0)):
+            new_mtl_arr[dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]] = mtl_arr[
+                dim0[i], dim1[i], dim2[i], dim3[i], dim4[i], :, dim5[i]
+            ]
+        mtl_arr = new_mtl_arr
     # Take average over runs and cultivars
     if args.per:
         if args.per_cult:

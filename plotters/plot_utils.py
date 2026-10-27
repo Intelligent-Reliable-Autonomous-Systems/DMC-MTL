@@ -11,10 +11,10 @@ from argparse import Namespace
 import gpytorch
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from model_engine.util import PHENOLOGY_INT
 from omegaconf import DictConfig
+from torch import nn
 
 from plotters.plotting_functions import (
     plot_output_coldhardiness,
@@ -35,7 +35,7 @@ def compute_obs_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[n
 
     max_len = 0
     for t in true:
-        max_len = len(t) if len(t) > max_len else max_len
+        max_len = max(max_len, len(t))
 
     samples = np.zeros(shape=max_len)
     avgs = np.zeros(shape=max_len)
@@ -324,7 +324,6 @@ def gen_all_data_and_plot(
                 if cult_inds is not None
                 else None
             )
-        # compute_biological_realism(output_arr)
 
         if args.break_early:
             break
@@ -337,8 +336,6 @@ def compute_biological_realism(list_arr: list[np.ndarray]):
     for arr in list_arr:
         for j in range(len(arr)):
             total_count += len(arr[j])
-            # biologically_unreal += np.count_nonzero(np.diff(arr[j, 230:]) < 0)
-            # biologically_unreal += np.count_nonzero(arr[j, 230:] < -10)
             biologically_unreal += np.count_nonzero(np.diff(arr[j, 170:]) > 0.8)
 
 
@@ -355,6 +352,7 @@ def gen_all_data_and_plot_error(
     days: int = None,
     all_inds: list[np.ndarray] = None,
     cult_inds: list[np.ndarray] = None,
+    transfer_rate: float = 0.0,
 ) -> None:
     """
     Generates data for train and testing data and plots accordingly for RNNs

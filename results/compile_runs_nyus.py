@@ -20,6 +20,7 @@ from omegaconf import DictConfig
 import utils
 from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from plotters.plot_utils import compute_total_RMSE
+from results.eval_common import empty_prediction_buffers, iter_run_dirs
 from train_algs.NYUS_2 import NYUS2
 
 
@@ -131,7 +132,7 @@ def main():
     np.set_printoptions(precision=2)
     args = argparser.parse_args()
 
-    config_dirs = utils.find_config_yaml_dirs(start_dir=args.start_dir)
+    config_dirs = iter_run_dirs(args.start_dir, args.prefix)
 
     # Setup total storage
     all_avg_ch = np.zeros((3, args.num_runs))
@@ -151,9 +152,6 @@ def main():
 
     for i, config in enumerate(config_dirs):
         print(config)
-        if args.prefix is not None:
-            if args.prefix not in config:
-                continue
 
         args.config = f"{args.start_dir}/{config}"
         fpath = f"{os.getcwd()}/{args.config}"
@@ -163,23 +161,7 @@ def main():
         config.DConfig.batch_size = 72
         calibrator = NYUS2(config, data)
 
-        # Setup per run storage
-        true_data = [[], [], []]
-        output_data = [[], [], []]
-        true_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
-        ]
-        output_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
-        ]
+        true_data, output_data, true_cultivar_data, output_cultivar_data = empty_prediction_buffers(calibrator)
         # Generate all data
         [
             gen_all_data_and_plot_nyus(

@@ -33,23 +33,10 @@ C_SHAPES = ["o", "^", "s", "x", "d"]
 
 
 def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Computes total RMSE across entire dataset
-    """
+    """Delegate to plot_utils (UQ-aware). Local import avoids circular dependency."""
+    from plotters.plot_utils import compute_total_RMSE as _rmse
 
-    avgs = 0
-    samples = 0
-    if isinstance(true, np.ndarray):
-        true = [true]
-        model = [model]
-
-    for i in range(len(true)):
-        avgs += np.sum((true[i] - model[i]) ** 2)
-        samples += len(true[i])
-    if samples == 0:
-        return 0, None
-    else:
-        return np.sqrt(avgs / samples), None
+    return _rmse(true, model)
 
 
 def compute_RMSE_STAGE(true_output: np.ndarray, model_output: np.ndarray, stage: int) -> np.ndarray:

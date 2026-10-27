@@ -1,123 +1,58 @@
 """
 compile_runs.py
 
-Compiles RNN data across multiple runs and takes the average RMSE,
-saving data to file
+Compiles RNN metrics across multiple runs and saves pickles.
 
 Written by Will Solow, 2025
 """
 
 import argparse
-import os
-import pickle as pkl
 
 import numpy as np
 
-import utils
-from assets import CROP_NAMES, REGIONS, SITES, STATIONS
-from plotters.plot_utils import compute_total_RMSE, compute_total_uq, gen_all_data_and_plot
-from plotters.plotting_functions import compute_rmse_plot
+from plotters.plot_utils import gen_all_data_and_plot
+from results.eval_common import (
+    add_compile_args,
+    alloc_result_arrays,
+    apply_split_scores,
+    empty_prediction_buffers,
+    iter_run_dirs,
+    load_run_calibrator,
+    save_result_pickles,
+    score_per_cultivar,
+    score_splits,
+)
 
 
 def main():
-
-    argparser = argparse.ArgumentParser(description="Plotting script for model")
-    argparser.add_argument("--start_dir", type=str, default="_runs/")
-    argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
-    argparser.add_argument("--save", action="store_true", help="If to save the plots")
-    argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
-    argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")
-    argparser.add_argument("--num_runs", type=int, default=5)
-    argparser.add_argument("--data_fname", type=str, default="rmse.txt")
-    argparser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
-    argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
-    argparser.add_argument("--transfer_rate", type=float, default=0.0)
-    argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
-    argparser.add_argument("--num_transfer_years", type=int, default=5, help="If to compute over all region data")
-    argparser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
-    argparser.add_argument(
-        "--verbose_level", type=str, default="verb", help="level of verbosity of strings for transfer"
-    )
+    parser = argparse.ArgumentParser(description="Compile RMSE across runs")
+    add_compile_args(parser)
     np.set_printoptions(precision=2)
-    args = argparser.parse_args()
+    args = parser.parse_args()
 
-    config_dirs = utils.find_config_yaml_dirs(start_dir=args.start_dir)
+    import utils
 
-    # Setup total storage
-    all_avg_pheno = np.zeros((12, args.num_runs))
-    all_avg_ch = np.zeros((3, args.num_runs))
-    all_uq_ch = np.zeros((3, args.num_runs))
-    all_avg_wf = np.zeros((3, args.num_runs))
+    config_dirs = iter_run_dirs(args.start_dir, args.prefix)
+    if not config_dirs:
+        raise SystemExit(f"No run dirs found under {args.start_dir}")
+
     args.config = f"{args.start_dir}/{config_dirs[0]}"
-    config0, data, fpath = utils.load_config_data_fpath(args)
-    all_cultivar_avg_pheno = np.zeros(
-        (
-            len(REGIONS),
-            len(STATIONS),
-            len(SITES),
-            len(CROP_NAMES[config0.DataConfig.dtype]),
-            12,
-            args.num_runs,
+    config0, _, _ = utils.load_config_data_fpath(args)
+    arrays = alloc_result_arrays(config0.DataConfig.dtype, args.num_runs)
+    last_dtype = config0.DataConfig.dtype
+
+    run_i = 0
+    for config_rel in config_dirs:
+        print(config_rel)
+        args.config = f"{args.start_dir}/{config_rel}"
+        config, data, fpath, calibrator = load_run_calibrator(
+            args, batch_size=72, num_transfer_years=args.num_transfer_years
         )
-    )
-    all_cultivar_avg_ch = np.zeros(
-        (
-            len(REGIONS),
-            len(STATIONS),
-            len(SITES),
-            len(CROP_NAMES[config0.DataConfig.dtype]),
-            3,
-            args.num_runs,
-        )
-    )
-    all_cultivar_uq_ch = np.zeros(
-        (
-            len(REGIONS),
-            len(STATIONS),
-            len(SITES),
-            len(CROP_NAMES[config0.DataConfig.dtype]),
-            3,
-            args.num_runs,
-        )
-    )
-    all_cultivar_avg_wf = np.zeros((len(CROP_NAMES[config0.DataConfig.dtype]), 3, args.num_runs))
+        last_dtype = config.DataConfig.dtype
 
-    for i, config in enumerate(config_dirs):
-        print(config)
-        if args.prefix is not None:
-            if args.prefix not in config:
-                continue
+        true_data, output_data, true_cultivar_data, output_cultivar_data = empty_prediction_buffers(calibrator)
 
-        args.config = f"{args.start_dir}/{config}"
-        fpath = f"{os.getcwd()}/{args.config}"
-
-        config, data, fpath = utils.load_config_data_fpath(args)
-        args.cultivar = config.DataConfig.cultivar
-        config.DConfig.batch_size = 72
-        config.DConfig.num_transfer_years = args.num_transfer_years
-        calibrator = utils.load_model_from_config(config, data)
-
-        calibrator.load_model(f"{fpath}", name=args.rnn_name)
-        calibrator.eval()
-        # Setup per run storage
-        true_data = [[], [], []]
-        output_data = [[], [], []]
-        true_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
-        ]
-        output_cultivar_data = [
-            [
-                [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                for _ in range(calibrator.num_stations)
-            ]
-            for _ in range(calibrator.num_regions)
-        ]
-        # Generate all data
-        [
+        for n in ["train", "test"]:
             gen_all_data_and_plot(
                 config,
                 fpath,
@@ -130,9 +65,6 @@ def main():
                 name=n,
                 transfer_rate=args.transfer_rate,
             )
-            for n in ["train", "test"]
-        ]
-
         if config.DataConfig.val_set:
             gen_all_data_and_plot(
                 config,
@@ -147,170 +79,30 @@ def main():
                 transfer_rate=args.transfer_rate,
             )
 
-        # Store data for averaging
-        if "phenology" in config.DataConfig.dtype:
-            train_avg, _ = compute_rmse_plot(config, true_data[0], output_data[0], fpath, save=False)
-            test_avg, _ = compute_rmse_plot(config, true_data[2], output_data[2], fpath, name="test", save=False)
-            val_avg, _ = compute_rmse_plot(config, true_data[1], output_data[1], fpath, name="val", save=False)
-            all_avg_pheno[:, i] = np.concatenate(
-                (
-                    train_avg[1:-1],
-                    [np.sum(train_avg[1:-1])],
-                    val_avg[1:-1],
-                    [np.sum(val_avg[1:-1])],
-                    test_avg[1:-1],
-                    [np.sum(test_avg[1:-1])],
-                )
-            )
-        elif "coldhardiness" in config.DataConfig.dtype:
-            total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
-            val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
-            test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
-            total_uq, _ = compute_total_uq(true_data[0], output_data[0])
-            val_total_uq, _ = compute_total_uq(true_data[1], output_data[1])
-            test_total_uq, _ = compute_total_uq(true_data[2], output_data[2])
-            all_avg_ch[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
-            all_uq_ch[:, i] = np.array([total_uq, val_total_uq, test_total_uq])
-        elif "wofost" in config.DataConfig.dtype:
-            total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
-            val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
-            test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
-            all_avg_wf[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
+        scores = score_splits(config, true_data, output_data, fpath)
+        apply_split_scores(arrays, scores, run_i)
+        score_per_cultivar(
+            config,
+            calibrator,
+            true_cultivar_data,
+            output_cultivar_data,
+            fpath,
+            arrays,
+            run_i,
+            with_uq=True,
+        )
+        run_i += 1
 
-        for r in range(calibrator.num_regions):
-            for s in range(calibrator.num_stations):
-                for si in range(calibrator.num_sites):
-                    for k in range(calibrator.num_cultivars):
-                        if (
-                            len(true_cultivar_data[r][s][si][k][0]) == 0
-                            and len(true_cultivar_data[r][s][si][k][2]) == 0
-                            and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
-                        ):
-                            continue
-                        if "phenology" in config.DataConfig.dtype:
-                            cultivar_train_avg_pheno, _ = compute_rmse_plot(
-                                config,
-                                true_cultivar_data[r][s][si][k][0],
-                                output_cultivar_data[r][s][si][k][0],
-                                fpath,
-                                save=False,
-                            )
-                            cultivar_val_avg_pheno, _ = compute_rmse_plot(
-                                config,
-                                true_cultivar_data[r][s][si][k][1],
-                                output_cultivar_data[r][s][si][k][1],
-                                fpath,
-                                name="val",
-                                save=False,
-                            )
-                            cultivar_test_avg_pheno, _ = compute_rmse_plot(
-                                config,
-                                true_cultivar_data[r][s][si][k][2],
-                                output_cultivar_data[r][s][si][k][2],
-                                fpath,
-                                name="test",
-                                save=False,
-                            )
-                            all_cultivar_avg_pheno[r, s, si, k, :, i] = np.concatenate(
-                                (
-                                    cultivar_train_avg_pheno[1:-1],
-                                    [np.sum(cultivar_train_avg_pheno[1:-1])],
-                                    cultivar_val_avg_pheno[1:-1],
-                                    [np.sum(cultivar_val_avg_pheno[1:-1])],
-                                    cultivar_test_avg_pheno[1:-1],
-                                    [np.sum(cultivar_test_avg_pheno[1:-1])],
-                                )
-                            )
-                        elif "coldhardiness" in config.DataConfig.dtype:
-                            cultivar_train_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][0],
-                                output_cultivar_data[r][s][si][k][0],
-                            )
-                            cultivar_val_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][1],
-                                output_cultivar_data[r][s][si][k][1],
-                            )
-                            cultivar_test_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][2],
-                                output_cultivar_data[r][s][si][k][2],
-                            )
-                            cultivar_uq, _ = compute_total_uq(
-                                true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
-                            )
-                            val_cultivar_uq, _ = compute_total_uq(
-                                true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
-                            )
-                            test_cultivar_uq, _ = compute_total_uq(
-                                true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
-                            )
-
-                            all_cultivar_avg_ch[r, s, si, k, :, i] = np.array(
-                                [
-                                    cultivar_train_rmse,
-                                    cultivar_val_rmse,
-                                    cultivar_test_rmse,
-                                ]
-                            )
-                            all_cultivar_uq_ch[r, s, si, k, :, i] = np.array(
-                                [cultivar_uq, val_cultivar_uq, test_cultivar_uq]
-                            )
-                        elif "wofost" in config.DataConfig.dtype:
-                            cultivar_train_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][0],
-                                output_cultivar_data[r][s][si][k][0],
-                            )
-                            cultivar_val_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][1],
-                                output_cultivar_data[r][s][si][k][1],
-                            )
-                            cultivar_test_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][2],
-                                output_cultivar_data[r][s][si][k][2],
-                            )
-                            all_cultivar_avg_wf[r, s, si, k, :, i] = np.array(
-                                [
-                                    cultivar_train_rmse,
-                                    cultivar_val_rmse,
-                                    cultivar_test_rmse,
-                                ]
-                            )
-    # Save Data
-    prefix = args.synth_test + "_" if args.synth_test is not None else ""
-    if "phenology" in config.DataConfig.dtype:
-        with open(f"{args.start_dir}/{prefix}results_agg_cultivars_{args.transfer_type}.pkl", "wb") as f:
-            pkl.dump(all_avg_pheno, f)
-        f.close()
-        with open(f"{args.start_dir}/{prefix}results_per_cultivars_{args.transfer_type}.pkl", "wb") as f:
-            pkl.dump(all_cultivar_avg_pheno, f)
-        f.close()
-    elif "coldhardiness" in config.DataConfig.dtype:
-        with open(
-            f"{args.start_dir}/{prefix}results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
-        ) as f:
-            pkl.dump(all_avg_ch, f)
-        f.close()
-        with open(
-            f"{args.start_dir}/{prefix}results_per_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
-        ) as f:
-            pkl.dump(all_cultivar_avg_ch, f)
-        f.close()
-        with open(
-            f"{args.start_dir}/{prefix}uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
-        ) as f:
-            pkl.dump(all_uq_ch, f)
-        f.close()
-        with open(
-            f"{args.start_dir}/{prefix}uq_per_cultivars_{args.transfer_type}_{args.verbose_level}.pkl", "wb"
-        ) as f:
-            pkl.dump(all_cultivar_uq_ch, f)
-        f.close()
-    elif "wofost" in config.DataConfig.dtype:
-        with open(f"{args.start_dir}/{prefix}results_agg_cultivars_{args.transfer_type}.pkl", "wb") as f:
-            pkl.dump(all_avg_wf, f)
-        f.close()
-        with open(f"{args.start_dir}/{prefix}results_per_cultivars_{args.transfer_type}.pkl", "wb") as f:
-            pkl.dump(all_cultivar_avg_wf, f)
-        f.close()
+    file_prefix = args.synth_test + "_" if args.synth_test is not None else ""
+    save_result_pickles(
+        args.start_dir,
+        arrays,
+        last_dtype,
+        file_prefix=file_prefix,
+        transfer_type=args.transfer_type,
+        verbose_level=args.verbose_level,
+        with_uq=True,
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,35 @@
+---
+description: Evaluation and plotting stack — compile_runs, plot_results, pickles, transfer strategies
+alwaysApply: true
+---
+
+# Eval / plotting architecture
+
+## Pipelines
+
+1. **Metrics (multi-run):** `results.compile_runs` walks `_runs/**/config.yaml`, loads checkpoints, runs `plot_utils.gen_all_data_and_plot`, scores RMSE/UQ, writes pickles under `--start_dir`.
+2. **Viz (single-run):** `plotters.plot_results --config <run_dir>` loads one run, optional TB loss/stats, same generators (`--mode` default|error|transfer), writes PNGs into the run dir.
+3. **Transfer baselines:** `results.transfer.compile_runs_transfer --strategy …` (wrappers keep old `-m results.transfer.compile_runs_*` names). Only source selection/scoring differs; shell is shared.
+4. **Consumers:** `results.load_results` prints tables; paper plotters (`window`, `lim_data`, …) read pickles.
+
+Shared helpers live in `results/eval_common.py`. Inference/plot loops stay in `plotters/plot_utils.py` + `plotting_functions.py`.
+
+## Artifacts
+
+Under `{start_dir}/` (optional `{synth}_` prefix):
+
+- `results_agg_cultivars_{transfer_type}[_{verbose}].pkl`
+- `results_per_cultivars_...`
+- CH: `uq_agg_*`, `uq_per_*`
+- Transfer strategies: `{prefix}results_{agg|per}_cultivars.pkl` (e.g. `all_mean_`, `tal_site_`)
+
+## CLI notes
+
+- `compile_runs`: `--break_early` / `--save` are `store_true` (default off).
+- `plot_results`: `--save` defaults on (`--no-save` to disable); `--break_early` defaults off (`store_true`).
+- Prefer `eval_common` for buffers, scoring, pickle I/O, run iteration. Do not fork another copy of the evaluate shell.
+
+## Preserve
+
+- Public module paths (`python -m results.compile_runs`, transfer wrappers, pickle name conventions).
+- `DConfig.type` × arch factory via `utils.load_model_from_config`.

@@ -20,7 +20,7 @@ from train_algs.base.rnn import BaseRNN
 
 class DeepTransferRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(DeepTransferRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
     def forward(
         self,
@@ -82,7 +82,7 @@ class DeepTransferRNN(BaseRNN):
 
 class DeepAdaptRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(DeepAdaptRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
     def forward(
         self,
@@ -168,7 +168,7 @@ class DeepAdaptRNN(BaseRNN):
 
 class ParamTransferRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(ParamTransferRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
         self.model = get_engine(self.config)(
             num_models=self.batch_size,
@@ -240,7 +240,7 @@ class ParamTransferRNN(BaseRNN):
 
 class DeepFoundationRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(DeepFoundationRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
         from sentence_transformers import SentenceTransformer
 
@@ -335,7 +335,7 @@ class DeepFoundationRNN(BaseRNN):
 
 class ParamFoundationRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(ParamFoundationRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
         from sentence_transformers import SentenceTransformer
 
@@ -483,7 +483,7 @@ class ParamFoundationRNN(BaseRNN):
 
 class DeepFoundationEmbedRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(DeepFoundationEmbedRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
         from sentence_transformers import SentenceTransformer
 
@@ -623,7 +623,7 @@ class DeepFoundationEmbedRNN(BaseRNN):
 
 class ParamFoundationEmbedRNN(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
-        super(ParamFoundationEmbedRNN, self).__init__(config, data)
+        super().__init__(config, data)
 
         from sentence_transformers import SentenceTransformer
 
@@ -767,7 +767,7 @@ class ParamFoundationEmbedRNN(BaseRNN):
 class FoundationModel(BaseRNN):
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
 
-        super(FoundationModel, self).__init__(config, data)
+        super().__init__(config, data)
         from sentence_transformers import SentenceTransformer
 
         self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)

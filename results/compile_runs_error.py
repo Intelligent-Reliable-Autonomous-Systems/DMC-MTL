@@ -16,6 +16,7 @@ import numpy as np
 import utils
 from assets import CROP_NAMES, REGIONS, SITES, STATIONS
 from plotters.plot_utils import compute_day_RMSE, compute_total_RMSE, gen_all_data_and_plot
+from results.eval_common import empty_prediction_buffers, iter_run_dirs
 
 
 def main():
@@ -68,15 +69,12 @@ def main():
 
     all_cultivar_avg_wf = np.zeros((len(CROP_NAMES["wofost_"]), 3, args.num_runs))
 
-    config_dirs = utils.find_config_yaml_dirs(args.start_dir)
+    config_dirs = iter_run_dirs(args.start_dir, args.prefix)
 
     for i, config in enumerate(config_dirs):
         if i > args.num_runs:
             break
         print(config)
-        if args.prefix is not None:
-            if args.prefix not in config:
-                continue
 
         args.config = f"{args.start_dir}/{config}"
         fpath = f"{os.getcwd()}/{args.config}"
@@ -92,24 +90,8 @@ def main():
         for j in range(num_days):
             days = (j) * days_step
             print(days)
-            # Setup per run storage
-            true_data = [[], [], []]
-            output_data = [[], [], []]
+            true_data, output_data, true_cultivar_data, output_cultivar_data = empty_prediction_buffers(calibrator)
             all_inds = [[], [], []]
-            true_cultivar_data = [
-                [
-                    [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                    for _ in range(calibrator.num_stations)
-                ]
-                for _ in range(calibrator.num_regions)
-            ]
-            output_cultivar_data = [
-                [
-                    [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]
-                    for _ in range(calibrator.num_stations)
-                ]
-                for _ in range(calibrator.num_regions)
-            ]
             cult_inds = [
                 [
                     [[[[], [], []] for _ in range(calibrator.num_cultivars)] for _ in range(calibrator.num_sites)]

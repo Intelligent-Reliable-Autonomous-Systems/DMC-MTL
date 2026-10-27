@@ -1058,6 +1058,29 @@ class FoundationEmbeddingGRU(BaseModule):
 
         self.weather_output_dim = 128
 
+        self.cult_embedding_layer = nn.Embedding(
+            len(CROP_NAMES[c.DataConfig.dtype]),
+            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
+        )
+        self.reg_embedding_layer = nn.Embedding(
+            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.stat_embedding_layer = nn.Embedding(
+            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+        self.site_embedding_layer = nn.Embedding(
+            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
+        )
+
+        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
+        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
+        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
+        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
+        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+
+        print(f"Total parameters: {sum(p.numel() for p in self.parameters())}")
+
         self.cult_embedder = nn.Sequential(
             nn.Linear(1024, 512),
             nn.ReLU(),
@@ -1087,25 +1110,7 @@ class FoundationEmbeddingGRU(BaseModule):
             nn.Linear(128, self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size),
         )
 
-        self.cult_embedding_layer = nn.Embedding(
-            len(CROP_NAMES[c.DataConfig.dtype]),
-            self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size,
-        )
-        self.reg_embedding_layer = nn.Embedding(
-            len(REGIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.stat_embedding_layer = nn.Embedding(
-            len(STATIONS), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-        self.site_embedding_layer = nn.Embedding(
-            len(SITES), self.input_dim if c.DConfig.embed_size is None else c.DConfig.embed_size
-        )
-
-        self.fc1 = nn.Linear(self.embed_dim, self.dim2)
-        self.fc2 = nn.Linear(self.dim2, self.hidden_dim)
-        self.rnn = nn.GRU(self.hidden_dim, self.hidden_dim, batch_first=True)
-        self.fc3 = nn.Linear(self.hidden_dim, self.dim2)
-        self.hidden_to_output = nn.Linear(self.dim2, self.output_dim)
+        print(f"Total parameters: {sum(p.numel() for p in self.parameters())}")
 
         self.transfer_weather_rnn = nn.GRU(
             self.input_dim if "Deep" in c.DConfig.type else (self.input_dim - len(c.PConfig.output_vars)),
@@ -1120,7 +1125,7 @@ class FoundationEmbeddingGRU(BaseModule):
         self.transfer_pool_attn = nn.Linear(self.weather_output_dim, 1)
         self.transfer_embed_attn = nn.Linear(self.weather_output_dim, self.embed_dim - self.input_dim)
 
-        self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
+        print(f"Total parameters: {sum(p.numel() for p in self.parameters())}")
 
     def get_embeds(
         self,
@@ -1497,4 +1502,3 @@ class FoundationParamEmbeddingGRU(FoundationEmbeddingGRU):
     """Param-coupled foundation GRU; shares embed paths, uses param-style trunk."""
 
     param_style = True
-

@@ -12,6 +12,7 @@ import os
 import pickle
 
 import _data.process_data_real as ld
+from _data.data_utils import count_lte50
 
 
 def main():
@@ -56,10 +57,7 @@ def main():
             "wb",
         ) as f:
             pickle.dump(data, f)
-        ch = 0
-        for d in data:
-            ch += d.loc[:, "LTE50"].count().sum()
-        p_str = f"{args.cultivar}, {len(data)}, {ch}"
+        p_str = f"{args.cultivar}, {len(data)}, {count_lte50(data)}"
     else:
         raise Exception(f"Unrecognized data name `{args.name}`")
 

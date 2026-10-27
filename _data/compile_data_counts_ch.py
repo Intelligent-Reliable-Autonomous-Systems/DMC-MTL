@@ -1,8 +1,7 @@
 """
-compile_data_counts.py
+compile_data_counts_ch.py
 
-Compiles the data for phenology and cold hardiness and
-nicely prints to string
+Multi-site cold-hardiness LTE50 inventory (regional / station / site / cultivar).
 
 Written by Will Solow, 2025
 """
@@ -10,6 +9,7 @@ Written by Will Solow, 2025
 import argparse
 
 import _data.process_data_real as ld
+from _data.data_utils import count_lte50
 
 
 def main():
@@ -106,10 +106,8 @@ def main():
                         # data, _ = ld.load_and_process_mi_data_coldhardiness(r, si, c, s)
                     except FileNotFoundError:
                         continue
-                    lte_cultivar = 0
                     max_len = len(data) if len(data) > max_len else max_len
-                    for d in data:
-                        lte_cultivar += d.loc[:, "LTE50"].notna().sum()
+                    lte_cultivar = count_lte50(data)
                     print_str += f"\t\t\tLTE {c}: {len(data)}, {lte_cultivar}\n"
                     lte_site += lte_cultivar
                 print_str += f"\t\tLTE {si}: {lte_site}\n"

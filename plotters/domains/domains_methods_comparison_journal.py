@@ -9,7 +9,7 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotters.domains_common import gen_results, load_models
+from plotters.domains.domains_common import gen_results, load_models
 from plotters.plotting_functions import C_AGG, C_PER, C_SHAPES
 
 

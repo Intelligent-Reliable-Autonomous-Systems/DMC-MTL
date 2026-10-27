@@ -7,7 +7,7 @@ Phenology + cold-hardiness overlay (no wofost panel).
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotters.domains_common import PANEL_CONFIGS, gen_results, load_models, plot_overlay
+from plotters.domains.domains_common import PANEL_CONFIGS, gen_results, load_models, plot_overlay
 
 
 def main():
@@ -41,8 +41,12 @@ def main():
     ax[1].set_ylim(bottom=-40)
 
     plt.subplots_adjust(hspace=0.2)
-    ax[0].text(0.05, 0.2, "(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1, fontweight="bold")
-    ax[1].text(0.05, 0.2, "(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1, fontweight="bold")
+    ax[0].text(
+        0.05, 0.2, "(a)", ha="left", va="top", transform=ax[0].transAxes, fontsize=fontsize + 1, fontweight="bold"
+    )
+    ax[1].text(
+        0.05, 0.2, "(b)", ha="left", va="top", transform=ax[1].transAxes, fontsize=fontsize + 1, fontweight="bold"
+    )
 
     plt.savefig(cfg["outfile"], bbox_inches="tight")
     plt.close()

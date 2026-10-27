@@ -1,14 +1,15 @@
 """
-load_wofost_pickles.py
+load_wofost.py
 
-This file loads all wofost data and masks the observations, resaving files
+Load all wofost pickles, sparsify WSO observations, and re-save.
 
 Written by Will Solow, 2025
 """
 
 import os
 import pickle
-import pandas as pd
+
+from _data.data_utils import sparsify_column
 
 
 def load_wofost_pickles(folder="_data/processed_data", prefix="wofost"):
@@ -24,14 +25,7 @@ def load_wofost_pickles(folder="_data/processed_data", prefix="wofost"):
 
 def sparsify_wso_column(dataframes):
     """Set all values in the 'WSO' column to NaN except every 7th."""
-    sparse_dfs = []
-    for df in dataframes:
-        df_sparse = df.copy()
-        if "WSO" in df_sparse.columns:
-            mask = (df_sparse.index % 7) != 0
-            df_sparse.loc[mask, "WSO"] = pd.NA
-        sparse_dfs.append(df_sparse)
-    return sparse_dfs
+    return sparsify_column(dataframes, "WSO", every_n=7)
 
 
 def process_and_save_sparse_wofost(data_dict, folder="_data/processed_data"):
@@ -46,5 +40,4 @@ def process_and_save_sparse_wofost(data_dict, folder="_data/processed_data"):
 
 if __name__ == "__main__":
     loaded_data = load_wofost_pickles()
-
     process_and_save_sparse_wofost(loaded_data)

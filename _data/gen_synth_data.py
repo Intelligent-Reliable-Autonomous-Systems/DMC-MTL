@@ -17,6 +17,8 @@ import datetime
 from model_engine.engine import BatchModelEngine
 from model_engine.inputs.weather_util import daylength
 
+from _data.data_utils import sparsify_inplace
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -66,11 +68,10 @@ def main():
         df[df.columns.difference(["DAY"])] = df[df.columns.difference(["DAY"])].astype(np.float32)
         df["LAT"] = LAT
         df["LON"] = config.PConfig.longitude
-        mask = ~(np.arange(len(df)) % 7 == 0)
         if args.model == "ch":
-            df.loc[mask, "LTE50"] = np.nan  # Uncomment for cold-hardiness
+            sparsify_inplace(df, "LTE50", every_n=7)
         if args.model == "pheno" and "DVS" in config.PConfig.output_vars:
-            df.loc[mask, "DVS"] = np.nan
+            sparsify_inplace(df, "DVS", every_n=7)
         print(df)
 
     with open(path, "wb") as f:

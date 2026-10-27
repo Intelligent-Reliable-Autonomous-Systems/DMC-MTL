@@ -15,8 +15,31 @@ import numpy as np
 
 import utils
 from assets import CROP_NAMES, REGIONS, SITES, STATIONS
-from plotters.plot_utils import compute_total_RMSE, compute_total_uq
+from plotters.plot_utils import (
+    compute_error_percentile,
+    compute_seasonal_max_error,
+    compute_total_MAE,
+    compute_total_RMSE,
+    compute_total_uq,
+)
 from plotters.plotting_functions import compute_rmse_plot
+
+EXTRA_METRICS = ("mae", "p90", "p95", "smax")
+
+
+def _point_extra_metrics(true, model) -> dict[str, float]:
+    """MAE / P90 / P95 / seasonal-max for one true/pred list pair."""
+    mae, _ = compute_total_MAE(true, model)
+    p90, _ = compute_error_percentile(true, model, q=90.0)
+    p95, _ = compute_error_percentile(true, model, q=95.0)
+    smax, _ = compute_seasonal_max_error(true, model)
+    return {"mae": mae, "p90": p90, "p95": p95, "smax": smax}
+
+
+def _split_extra_metrics(true_data, output_data) -> dict[str, np.ndarray]:
+    """Train/val/test arrays for each extra metric."""
+    per_split = [_point_extra_metrics(true_data[i], output_data[i]) for i in range(3)]
+    return {key: np.array([per_split[i][key] for i in range(3)]) for key in EXTRA_METRICS}
 
 
 def add_compile_args(parser: argparse.ArgumentParser, *, transfer: bool = False) -> argparse.ArgumentParser:
@@ -88,16 +111,22 @@ def load_run_calibrator(
 def alloc_result_arrays(dtype: str, num_runs: int, *, use_config_dtype: bool = True) -> dict[str, np.ndarray]:
     """Allocate aggregate and per-cultivar metric arrays for a dtype."""
     n_crops = len(CROP_NAMES[dtype])
+    hier = (len(REGIONS), len(STATIONS), len(SITES), n_crops, 3, num_runs)
     arrays = {
         "all_avg_pheno": np.zeros((12, num_runs)),
         "all_avg_ch": np.zeros((3, num_runs)),
         "all_uq_ch": np.zeros((3, num_runs)),
         "all_avg_wf": np.zeros((3, num_runs)),
         "all_cultivar_avg_pheno": np.zeros((len(REGIONS), len(STATIONS), len(SITES), n_crops, 12, num_runs)),
-        "all_cultivar_avg_ch": np.zeros((len(REGIONS), len(STATIONS), len(SITES), n_crops, 3, num_runs)),
-        "all_cultivar_uq_ch": np.zeros((len(REGIONS), len(STATIONS), len(SITES), n_crops, 3, num_runs)),
-        "all_cultivar_avg_wf": np.zeros((len(REGIONS), len(STATIONS), len(SITES), n_crops, 3, num_runs)),
+        "all_cultivar_avg_ch": np.zeros(hier),
+        "all_cultivar_uq_ch": np.zeros(hier),
+        "all_cultivar_avg_wf": np.zeros(hier),
     }
+    for m in EXTRA_METRICS:
+        arrays[f"all_avg_{m}_ch"] = np.zeros((3, num_runs))
+        arrays[f"all_cultivar_{m}_ch"] = np.zeros(hier)
+        arrays[f"all_avg_{m}_wf"] = np.zeros((3, num_runs))
+        arrays[f"all_cultivar_{m}_wf"] = np.zeros(hier)
     return arrays
 
 
@@ -130,6 +159,7 @@ def score_splits(config, true_data, output_data, fpath: str) -> dict[str, Any]:
         test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
         out["agg"] = np.array([total_rmse, val_total_rmse, test_total_rmse])
         out["kind"] = "coldhardiness"
+        out.update(_split_extra_metrics(true_data, output_data))
         try:
             total_uq, _ = compute_total_uq(true_data[0], output_data[0])
             val_total_uq, _ = compute_total_uq(true_data[1], output_data[1])
@@ -143,6 +173,7 @@ def score_splits(config, true_data, output_data, fpath: str) -> dict[str, Any]:
         test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
         out["agg"] = np.array([total_rmse, val_total_rmse, test_total_rmse])
         out["kind"] = "wofost"
+        out.update(_split_extra_metrics(true_data, output_data))
     else:
         raise ValueError(f"Unrecognized dtype `{dtype}`")
     return out
@@ -197,41 +228,41 @@ def score_per_cultivar(
                         )
                         arrays["all_cultivar_avg_pheno"][r, s, si, k, :, run_i] = _pheno_row(tr, va, te)
                     elif "coldhardiness" in dtype:
-                        tr, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
-                        )
-                        va, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
-                        )
-                        te, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
-                        )
+                        t0 = true_cultivar_data[r][s][si][k][0]
+                        t1 = true_cultivar_data[r][s][si][k][1]
+                        t2 = true_cultivar_data[r][s][si][k][2]
+                        o0 = output_cultivar_data[r][s][si][k][0]
+                        o1 = output_cultivar_data[r][s][si][k][1]
+                        o2 = output_cultivar_data[r][s][si][k][2]
+                        tr, _ = compute_total_RMSE(t0, o0)
+                        va, _ = compute_total_RMSE(t1, o1)
+                        te, _ = compute_total_RMSE(t2, o2)
                         arrays["all_cultivar_avg_ch"][r, s, si, k, :, run_i] = np.array([tr, va, te])
+                        extras = _split_extra_metrics([t0, t1, t2], [o0, o1, o2])
+                        for m in EXTRA_METRICS:
+                            arrays[f"all_cultivar_{m}_ch"][r, s, si, k, :, run_i] = extras[m]
                         if with_uq:
                             try:
-                                uq_tr, _ = compute_total_uq(
-                                    true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
-                                )
-                                uq_va, _ = compute_total_uq(
-                                    true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
-                                )
-                                uq_te, _ = compute_total_uq(
-                                    true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
-                                )
+                                uq_tr, _ = compute_total_uq(t0, o0)
+                                uq_va, _ = compute_total_uq(t1, o1)
+                                uq_te, _ = compute_total_uq(t2, o2)
                                 arrays["all_cultivar_uq_ch"][r, s, si, k, :, run_i] = np.array([uq_tr, uq_va, uq_te])
                             except Exception:
                                 pass
                     elif "wofost" in dtype:
-                        tr, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][0], output_cultivar_data[r][s][si][k][0]
-                        )
-                        va, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][1], output_cultivar_data[r][s][si][k][1]
-                        )
-                        te, _ = compute_total_RMSE(
-                            true_cultivar_data[r][s][si][k][2], output_cultivar_data[r][s][si][k][2]
-                        )
+                        t0 = true_cultivar_data[r][s][si][k][0]
+                        t1 = true_cultivar_data[r][s][si][k][1]
+                        t2 = true_cultivar_data[r][s][si][k][2]
+                        o0 = output_cultivar_data[r][s][si][k][0]
+                        o1 = output_cultivar_data[r][s][si][k][1]
+                        o2 = output_cultivar_data[r][s][si][k][2]
+                        tr, _ = compute_total_RMSE(t0, o0)
+                        va, _ = compute_total_RMSE(t1, o1)
+                        te, _ = compute_total_RMSE(t2, o2)
                         arrays["all_cultivar_avg_wf"][r, s, si, k, :, run_i] = np.array([tr, va, te])
+                        extras = _split_extra_metrics([t0, t1, t2], [o0, o1, o2])
+                        for m in EXTRA_METRICS:
+                            arrays[f"all_cultivar_{m}_wf"][r, s, si, k, :, run_i] = extras[m]
 
 
 def apply_split_scores(arrays: dict[str, np.ndarray], scores: dict[str, Any], run_i: int) -> None:
@@ -242,8 +273,14 @@ def apply_split_scores(arrays: dict[str, np.ndarray], scores: dict[str, Any], ru
         arrays["all_avg_ch"][:, run_i] = scores["agg"]
         if "uq" in scores:
             arrays["all_uq_ch"][:, run_i] = scores["uq"]
+        for m in EXTRA_METRICS:
+            if m in scores:
+                arrays[f"all_avg_{m}_ch"][:, run_i] = scores[m]
     elif kind == "wofost":
         arrays["all_avg_wf"][:, run_i] = scores["agg"]
+        for m in EXTRA_METRICS:
+            if m in scores:
+                arrays[f"all_avg_{m}_wf"][:, run_i] = scores[m]
 
 
 def save_result_pickles(
@@ -260,6 +297,7 @@ def save_result_pickles(
     Write agg/per pickles. Naming:
     - If transfer_type is set: results_*_{transfer_type}[_{verbose}].pkl (compile_runs style)
     - Else: {file_prefix}results_*.pkl (transfer strategy style)
+    Also writes mae_/p90_/p95_/smax_ parallel files for CH and WOFOST.
     """
     os.makedirs(start_dir, exist_ok=True)
 
@@ -267,20 +305,30 @@ def save_result_pickles(
         with open(f"{start_dir}/{name}", "wb") as f:
             pkl.dump(obj, f)
 
+    def _dump_extras(suffix: str, domain: str) -> None:
+        """suffix e.g. '_direct_verb' or '_direct' or ''."""
+        for m in EXTRA_METRICS:
+            _dump(f"{file_prefix}{m}_agg_cultivars{suffix}.pkl", arrays[f"all_avg_{m}_{domain}"])
+            _dump(f"{file_prefix}{m}_per_cultivars{suffix}.pkl", arrays[f"all_cultivar_{m}_{domain}"])
+
     if transfer_type is not None:
         if "phenology" in dtype:
             _dump(f"{file_prefix}results_agg_cultivars_{transfer_type}.pkl", arrays["all_avg_pheno"])
             _dump(f"{file_prefix}results_per_cultivars_{transfer_type}.pkl", arrays["all_cultivar_avg_pheno"])
         elif "coldhardiness" in dtype:
             verb = verbose_level or "verb"
-            _dump(f"{file_prefix}results_agg_cultivars_{transfer_type}_{verb}.pkl", arrays["all_avg_ch"])
-            _dump(f"{file_prefix}results_per_cultivars_{transfer_type}_{verb}.pkl", arrays["all_cultivar_avg_ch"])
+            suffix = f"_{transfer_type}_{verb}"
+            _dump(f"{file_prefix}results_agg_cultivars{suffix}.pkl", arrays["all_avg_ch"])
+            _dump(f"{file_prefix}results_per_cultivars{suffix}.pkl", arrays["all_cultivar_avg_ch"])
+            _dump_extras(suffix, "ch")
             if with_uq:
-                _dump(f"{file_prefix}uq_agg_cultivars_{transfer_type}_{verb}.pkl", arrays["all_uq_ch"])
-                _dump(f"{file_prefix}uq_per_cultivars_{transfer_type}_{verb}.pkl", arrays["all_cultivar_uq_ch"])
+                _dump(f"{file_prefix}uq_agg_cultivars{suffix}.pkl", arrays["all_uq_ch"])
+                _dump(f"{file_prefix}uq_per_cultivars{suffix}.pkl", arrays["all_cultivar_uq_ch"])
         elif "wofost" in dtype:
-            _dump(f"{file_prefix}results_agg_cultivars_{transfer_type}.pkl", arrays["all_avg_wf"])
-            _dump(f"{file_prefix}results_per_cultivars_{transfer_type}.pkl", arrays["all_cultivar_avg_wf"])
+            suffix = f"_{transfer_type}"
+            _dump(f"{file_prefix}results_agg_cultivars{suffix}.pkl", arrays["all_avg_wf"])
+            _dump(f"{file_prefix}results_per_cultivars{suffix}.pkl", arrays["all_cultivar_avg_wf"])
+            _dump_extras(suffix, "wf")
     else:
         if "phenology" in dtype:
             _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_pheno"])
@@ -288,9 +336,11 @@ def save_result_pickles(
         elif "coldhardiness" in dtype:
             _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_ch"])
             _dump(f"{file_prefix}results_per_cultivars.pkl", arrays["all_cultivar_avg_ch"])
+            _dump_extras("", "ch")
         elif "wofost" in dtype:
             _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_wf"])
             _dump(f"{file_prefix}results_per_cultivars.pkl", arrays["all_cultivar_avg_wf"])
+            _dump_extras("", "wf")
 
 
 def append_masked_predictions(

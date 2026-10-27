@@ -239,17 +239,28 @@ def main():
         action="store_true",
         help="Load transfer-style pickles (results_*_cultivars.pkl without transfer_type)",
     )
+    parser.add_argument(
+        "--metric",
+        type=str,
+        default="rmse",
+        choices=["rmse", "mae", "p90", "p95", "smax"],
+        help="Which metric pickle to load (default: rmse / results_*)",
+    )
 
     args = parser.parse_args()
 
-    if args.transfer_pickles:
-        fname = "results_agg_cultivars.pkl"
+    # Stem: results (rmse), uq (coverage), or mae/p90/p95/smax
+    if args.uq and args.metric == "rmse":
+        stem = "uq"
+    elif args.metric == "rmse":
+        stem = "results"
     else:
-        fname = (
-            f"results_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
-            if not args.uq
-            else f"uq_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
-        )
+        stem = args.metric
+
+    if args.transfer_pickles:
+        fname = f"{stem}_agg_cultivars.pkl"
+    else:
+        fname = f"{stem}_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
     fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
     mtl_models = load_named_pickles([args.start_dir], fpath, args)

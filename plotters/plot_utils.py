@@ -98,6 +98,65 @@ def compute_total_RMSE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple
         return np.sqrt(avgs / samples), None
 
 
+def _pred_vector(model_i: np.ndarray) -> np.ndarray:
+    """Use mean channel when model series has UQ dim (mean, std)."""
+    if getattr(model_i, "shape", None) is not None and model_i.ndim >= 1 and model_i.shape[-1] == 2:
+        try:
+            return model_i[:, 0]
+        except Exception:
+            return model_i[0]
+    return model_i
+
+
+def _abs_error_series(true: list[np.ndarray], model: list[np.ndarray]) -> list[np.ndarray]:
+    """Absolute residuals per season series (same UQ mean-channel convention as RMSE)."""
+    if isinstance(true, np.ndarray):
+        true = [true]
+        model = [model]
+    out = []
+    for i in range(len(true)):
+        if len(true[i]) == 0:
+            continue
+        pred = _pred_vector(model[i])
+        out.append(np.abs(np.asarray(true[i], dtype=float) - np.asarray(pred, dtype=float)).ravel())
+    return out
+
+
+def compute_total_MAE(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """Pooled mean absolute error across all seasons/observations."""
+    series = _abs_error_series(true, model)
+    if not series:
+        return 0, None
+    errs = np.concatenate(series)
+    if errs.size == 0:
+        return 0, None
+    return float(np.mean(errs)), None
+
+
+def compute_error_percentile(
+    true: list[np.ndarray], model: list[np.ndarray], q: float = 90.0
+) -> tuple[np.ndarray, np.ndarray]:
+    """Percentile of absolute error over pooled observations (``q`` in 0–100)."""
+    series = _abs_error_series(true, model)
+    if not series:
+        return 0, None
+    errs = np.concatenate(series)
+    if errs.size == 0:
+        return 0, None
+    return float(np.nanpercentile(errs, q)), None
+
+
+def compute_seasonal_max_error(true: list[np.ndarray], model: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """Mean of per-season max absolute errors."""
+    series = _abs_error_series(true, model)
+    if not series:
+        return 0, None
+    seasonal_maxes = [float(np.max(e)) for e in series if e.size > 0]
+    if not seasonal_maxes:
+        return 0, None
+    return float(np.mean(seasonal_maxes)), None
+
+
 def compute_day_RMSE(
     true: list[np.ndarray], model: list[np.ndarray], inds: list[np.ndarray], days: int = None
 ) -> tuple[np.ndarray, np.ndarray]:

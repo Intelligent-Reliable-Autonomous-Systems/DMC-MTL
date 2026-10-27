@@ -13,3 +13,4 @@ data.txt
 *nyus/
 *.csv
 *.pkl
+*.cursor/

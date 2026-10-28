@@ -304,8 +304,12 @@ def load_data_from_config(config: DictConfig, args: Namespace, includes: str = N
                     )
     data = []
     for p in paths:
-        # if includes is not None and includes not in p:
-        if "nyus" in p:
+        # NYUS-only: when includes="nyus", keep *_nyus.pkl; otherwise skip them
+        # so default DMC/compile paths stay unchanged.
+        if includes is not None:
+            if includes not in p:
+                continue
+        elif "nyus" in p:
             continue
         cultivar = p.split(f"{dtype}_")[-1].replace(".pkl", "").removesuffix("_nyus")
         if cultivar not in CROP_NAMES[config.DataConfig.dtype]:

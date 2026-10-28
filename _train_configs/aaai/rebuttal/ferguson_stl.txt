@@ -1090,32 +1090,3 @@ python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --st
 python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
 python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Chardonnay
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Chardonnay
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Chardonnay
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Chardonnay
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Chardonnay
-
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Gewurztraminer
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Gewurztraminer
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Gewurztraminer
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Gewurztraminer
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Gewurztraminer
-
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Merlot
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Merlot
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Merlot
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Merlot
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Merlot
-
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Riesling
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Riesling
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Riesling
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Riesling
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Riesling
-
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Syrah
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Syrah
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Syrah
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Syrah
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Syrah

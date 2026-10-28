@@ -102,6 +102,9 @@ def main():
         transfer_type=args.transfer_type,
         verbose_level=args.verbose_level,
         with_uq=True,
+        noise=args.noise,
+        forecast_noise=args.forecast_noise,
+        forecast_k=args.forecast_k,
     )
 
 

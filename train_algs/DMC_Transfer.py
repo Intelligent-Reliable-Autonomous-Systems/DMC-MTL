@@ -357,9 +357,7 @@ class DeepFoundationRNN(BaseRNN):
         map_idx = []
         for i, ind in enumerate(b_all_inds):
             ids = torch.argwhere((ind == all_inds).all(axis=1)).flatten()
-            idx = ids[
-                torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]
-            ]
+            idx = ids[torch.randperm(ids.shape[0])[: min(ids.shape[0] + 1, self.config.DConfig.num_transfer_years + 1)]]
             adapt_inds.append(idx)
             map_idx.append(torch.ones_like(idx, device=idx.device) * i)
         adapt_inds = torch.cat(adapt_inds)
@@ -372,14 +370,35 @@ class DeepFoundationRNN(BaseRNN):
                 map_idx=map_idx,
                 bsize=n_transfer,
             )
-        return self.nn.compute_embed(
+
+        adapt_embed = self.nn.compute_embed(
             self.data["train"][adapt_inds],
             ch=self.val["train"][adapt_inds],
             map_idx=map_idx,
             bsize=n_transfer,
         )
+        if ttype != "adapt_text":
+            return adapt_embed
 
-    def forward_with_noise(
+        # Hybrid: direct cult | adapt (site+stat) | text reg  (== concat_reg layout)
+        reg_e, _, _, _ = self.nn.forward_embed_text(
+            cultivars=cultivars[transfer_inds],
+            regions=regions[transfer_inds],
+            stations=stations[transfer_inds],
+            sites=sites[transfer_inds],
+            text_embedder=self.text_model,
+        )
+        _, _, _, cult_e = self.nn.forward_embed_direct(
+            cultivars=cultivars[transfer_inds],
+            regions=regions[transfer_inds],
+            stations=stations[transfer_inds],
+            sites=sites[transfer_inds],
+        )
+        q = adapt_embed.shape[-1] // 4
+        middle = adapt_embed[..., q : 3 * q]
+        return torch.cat((cult_e, middle, reg_e), dim=-1)
+
+    def _noise_prepare_ctx(
         self,
         data: torch.Tensor,
         dates: np.ndarray = None,
@@ -387,33 +406,17 @@ class DeepFoundationRNN(BaseRNN):
         regions: torch.Tensor = None,
         stations: torch.Tensor = None,
         sites: torch.Tensor = None,
-        transfer_rate: float = 1.0,
-        ch: torch.Tensor = None,
-        name: str = None,
         b_size: int = None,
         dlen: int = None,
+        transfer_rate: float = 1.0,
         **kwargs,
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """K-day forecast eval under Gaussian noise on the last-3 weather features."""
-        assert self.config.DConfig.forecast_noise is not None, "DConfig.forecast_noise must be set when noise=True"
-        assert self.config.DConfig.forecast_k is not None, "DConfig.forecast_k must be set when noise=True"
-
-        K = int(self.config.DConfig.forecast_k)
-        noise_scale = float(self.config.DConfig.forecast_noise)
-        attn_map = None
-        orig_pred = None
-        output_tens, _, _ = self.setup_storage(b_size, dlen)
-
-        self.nn.zero_grad()
-        # Resolve a full-batch embed (noise eval typically uses transfer_rate=1)
+    ):
+        """Resolve a full-batch embed for noisy K-day rollouts via forward_embed."""
         transfer_inds = torch.rand(data.shape[0], device=data.device) < transfer_rate
         if transfer_inds.sum() == 0:
             transfer_inds = torch.ones(data.shape[0], dtype=torch.bool, device=data.device)
 
-        embed = self._resolve_transfer_embed(
-            data, cultivars, regions, stations, sites, transfer_inds
-        )
-        # Fill any non-transfer rows with direct/text ID embeds so rollout covers the batch
+        embed = self._resolve_transfer_embed(data, cultivars, regions, stations, sites, transfer_inds)
         if embed is None or (~transfer_inds).any():
             full_embed = torch.zeros(
                 data.shape[0],
@@ -441,26 +444,22 @@ class DeepFoundationRNN(BaseRNN):
             )
             full_embed[transfer_inds] = embed
             embed = full_embed
+        return embed
 
-        noisy = data.clone()
-        noisy[..., -3:] = noisy[..., -3:] + noise_scale * torch.randn_like(noisy[..., -3:])
-
-        hn_true = self.nn.get_init_state(batch_size=b_size)
-        L = dlen
-        for T in range(K, L):
-            start = T - K
-            hn = hn_true
-            pred = None
-            for s in range(K):
-                pred, hn = self.nn.forward_embed(
-                    noisy[:, start + s : start + s + 1], embed=embed, hn=hn
-                )
-            output_tens[:, T : T + 1] = pred
-            _, hn_true = self.nn.forward_embed(
-                data[:, start : start + 1], embed=embed, hn=hn_true
-            )
-
-        return output_tens, attn_map, orig_pred
+    def _noise_step(
+        self,
+        weather_t: torch.Tensor,
+        state,
+        ctx,
+        *,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        dates_t: np.ndarray = None,
+        **kwargs,
+    ):
+        return self.nn.forward_embed(weather_t, embed=ctx, hn=state)
 
     def forward(
         self,
@@ -504,7 +503,7 @@ class DeepFoundationRNN(BaseRNN):
             map_idx = torch.zeros_like(cultivars, device=self.device)
         elif self.config.DConfig.transfer_type == "text":
             map_idx = torch.ones_like(cultivars, device=self.device)
-        elif self.config.DConfig.transfer_type in ("adapt", "mean", "fit_direct"):
+        elif self.config.DConfig.transfer_type in ("adapt", "mean", "fit_direct", "adapt_text"):
             map_idx = torch.ones_like(cultivars, device=self.device) + 1
 
         transfer_inds = torch.rand(data.shape[0]) < transfer_rate
@@ -522,16 +521,11 @@ class DeepFoundationRNN(BaseRNN):
             output_tens[~transfer_inds, :] = output_predict
 
         if transfer_inds.sum() != 0:
-            embed = self._resolve_transfer_embed(
-                data, cultivars, regions, stations, sites, transfer_inds
-            )
-            transfer_predict, hn = self.nn.forward_embed(
-                data[transfer_inds], embed=embed, hn=hn[:, transfer_inds]
-            )
+            embed = self._resolve_transfer_embed(data, cultivars, regions, stations, sites, transfer_inds)
+            transfer_predict, hn = self.nn.forward_embed(data[transfer_inds], embed=embed, hn=hn[:, transfer_inds])
             output_tens[transfer_inds, :] = transfer_predict
 
         return output_tens, attn_map, orig_pred
-
 
     def make_optimizer(self, model):
         super().make_optimizer(model)

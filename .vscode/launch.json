@@ -6,17 +6,13 @@
     "configurations": [
 
         {
-            "name": "found_param",
+            "name": "runs",
             "type": "debugpy",
             "request": "launch",
-            "module": "trainers.train_model",
+            "module": "results.compile_runs",
             "console": "integratedTerminal",
-            "args": "--config journal/deep_foundation ",
+            "args": "--start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type adapt_text",
             "justMyCode": false,
-            "env": {
-        "CUDA_LAUNCH_BLOCKING": "1",
-        "TORCH_USE_CUDA_DSA": "1"
-      }
         },
 
         {
@@ -48,35 +44,6 @@
             "module": "results.compile_runs_nyus",
             "console": "integratedTerminal",
             "args": ["--start_dir", "_runs/MTHL/GrapeColdhardiness/NYUS2"],
-            "justMyCode": false
-        },
-        {
-            "name": "foundation_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "trainers.train_model",
-            "console": "integratedTerminal",
-            "args": "--config mthl/foundation/ch_foundation_transfer_reg --seed 0 --withold '{Region: [NY, MI, NS]}'",
-            "justMyCode": false
-        },
-
-        {
-            "name": "attn_adapt",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "trainers.train_model",
-            "console": "integratedTerminal",
-            "args": "--config mthl/foundation/ch_foundation_transfer_reg --seed 0",
-            "justMyCode": false
-        },
-
-        {
-            "name": "attn_plot_debug",
-            "type": "debugpy",
-            "request": "launch",
-            "module": "plotters.plot_results",
-            "console": "integratedTerminal",
-            "args": "--config _runs/MTHLTransfer/GrapeColdHardiness/Foundation/FoundationAdaptTransfer_1/All/All/All/All/Region_NYMINS-/deep_mtl__1773860943 --rnn_name rnn_model_current.pt --transfer_rate 1.0",
             "justMyCode": false
         },
         

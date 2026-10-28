@@ -232,6 +232,24 @@ def main():
     parser.add_argument("--uq", action="store_true", help="If to print calibration data")
     parser.add_argument("--transfer_type", type=str, default="direct", help="Type of transfer to compute for")
     parser.add_argument("--verbose_level", type=str, default="verb")
+    parser.add_argument(
+        "--noise",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Match pickles saved with --noise / --no-noise",
+    )
+    parser.add_argument(
+        "--forecast_noise",
+        type=float,
+        default=None,
+        help="Match pickles saved with this forecast_noise scale",
+    )
+    parser.add_argument(
+        "--forecast_k",
+        type=int,
+        default=None,
+        help="Match pickles saved with this forecast_k horizon",
+    )
     parser.add_argument("--include", default=None, type=str, help="Substring filter to include (e.g. Cultivar)")
     parser.add_argument("--exclude", default=None, type=str, help="Substring filter to exclude")
     parser.add_argument(
@@ -249,6 +267,8 @@ def main():
 
     args = parser.parse_args()
 
+    from results.eval_common import forecast_noise_pickle_suffix
+
     # Stem: results (rmse), uq (coverage), or mae/p90/p95/smax
     if args.uq and args.metric == "rmse":
         stem = "uq"
@@ -257,10 +277,11 @@ def main():
     else:
         stem = args.metric
 
+    noise_sfx = forecast_noise_pickle_suffix(args.noise, args.forecast_noise, args.forecast_k)
     if args.transfer_pickles:
-        fname = f"{stem}_agg_cultivars.pkl"
+        fname = f"{stem}_agg_cultivars{noise_sfx}.pkl"
     else:
-        fname = f"{stem}_agg_cultivars_{args.transfer_type}_{args.verbose_level}.pkl"
+        fname = f"{stem}_agg_cultivars_{args.transfer_type}_{args.verbose_level}{noise_sfx}.pkl"
     fpath = args.prefix + fname
     fpath = fpath.replace("agg", "per") if args.per else fpath
     mtl_models = load_named_pickles([args.start_dir], fpath, args)

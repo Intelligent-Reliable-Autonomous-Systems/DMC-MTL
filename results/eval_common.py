@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import os
 import pickle as pkl
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -52,15 +52,62 @@ def add_compile_args(parser: argparse.ArgumentParser, *, transfer: bool = False)
     parser.add_argument("--num_runs", type=int, default=5)
     parser.add_argument("--synth_test", type=str, default=None, help="Prefix of synthetic testing data")
     parser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
+    parser.add_argument(
+        "--all", action=argparse.BooleanOptionalAction, default=False, help="If to compute over all region data"
+    )
     if not transfer:
         parser.add_argument("--transfer_rate", type=float, default=0.0)
         parser.add_argument("--num_transfer_years", type=int, default=5)
         parser.add_argument("--transfer_type", type=str, default="direct")
         parser.add_argument("--verbose_level", type=str, default="verb")
+        parser.add_argument(
+            "--noise",
+            action=argparse.BooleanOptionalAction,
+            default=None,
+            help="Enable K-day noisy forecast eval (DConfig.noise)",
+        )
+        parser.add_argument(
+            "--forecast_noise",
+            type=float,
+            default=None,
+            help="Gaussian scale on last-3 weather features (DConfig.forecast_noise)",
+        )
+        parser.add_argument(
+            "--forecast_k",
+            type=int,
+            default=None,
+            help="Horizon K (days) for noisy forecast rollouts (DConfig.forecast_k)",
+        )
     return parser
 
 
-def iter_run_dirs(start_dir: str, prefix: Optional[str] = None) -> list[str]:
+def forecast_noise_pickle_suffix(
+    noise=None,
+    forecast_noise: float | None = None,
+    forecast_k: int | None = None,
+) -> str:
+    """Filename fragment when noisy-forecast eval params are set, else ''."""
+    parts: list[str] = []
+    if noise is not None:
+        parts.append(f"noise{int(bool(noise))}")
+    if forecast_noise is not None:
+        parts.append(f"fn{forecast_noise}")
+    if forecast_k is not None:
+        parts.append(f"k{forecast_k}")
+    return ("_" + "_".join(parts)) if parts else ""
+
+
+def apply_forecast_noise_config(config, args: argparse.Namespace) -> None:
+    """Inject CLI forecast-noise flags into DConfig when provided."""
+    if getattr(args, "noise", None) is not None:
+        config.DConfig.noise = args.noise
+    if getattr(args, "forecast_noise", None) is not None:
+        config.DConfig.forecast_noise = args.forecast_noise
+    if getattr(args, "forecast_k", None) is not None:
+        config.DConfig.forecast_k = args.forecast_k
+
+
+def iter_run_dirs(start_dir: str, prefix: str | None = None) -> list[str]:
     """Return relative run dirs under start_dir that contain config.yaml, optionally filtered."""
     dirs = utils.find_config_yaml_dirs(start_dir=start_dir)
     if prefix is None:
@@ -93,8 +140,8 @@ def load_run_calibrator(
     args: argparse.Namespace,
     *,
     batch_size: int = 72,
-    num_transfer_years: Optional[int] = None,
-    rnn_name: Optional[str] = None,
+    num_transfer_years: int | None = None,
+    rnn_name: str | None = None,
 ):
     """Load config/data/model for args.config and load checkpoint."""
     config, data, fpath = utils.load_config_data_fpath(args)
@@ -102,6 +149,7 @@ def load_run_calibrator(
     config.DConfig.batch_size = batch_size
     if num_transfer_years is not None:
         config.DConfig.num_transfer_years = num_transfer_years
+    apply_forecast_noise_config(config, args)
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(fpath, name=rnn_name or args.rnn_name)
     calibrator.eval()
@@ -289,17 +337,21 @@ def save_result_pickles(
     dtype: str,
     *,
     file_prefix: str = "",
-    transfer_type: Optional[str] = None,
-    verbose_level: Optional[str] = None,
+    transfer_type: str | None = None,
+    verbose_level: str | None = None,
     with_uq: bool = True,
+    noise=None,
+    forecast_noise: float | None = None,
+    forecast_k: int | None = None,
 ) -> None:
     """
     Write agg/per pickles. Naming:
-    - If transfer_type is set: results_*_{transfer_type}[_{verbose}].pkl (compile_runs style)
-    - Else: {file_prefix}results_*.pkl (transfer strategy style)
+    - If transfer_type is set: results_*_{transfer_type}[_{verbose}][_noise…].pkl (compile_runs style)
+    - Else: {file_prefix}results_*[_noise…].pkl (transfer strategy style)
     Also writes mae_/p90_/p95_/smax_ parallel files for CH and WOFOST.
     """
     os.makedirs(start_dir, exist_ok=True)
+    noise_sfx = forecast_noise_pickle_suffix(noise, forecast_noise, forecast_k)
 
     def _dump(name: str, obj) -> None:
         with open(f"{start_dir}/{name}", "wb") as f:
@@ -313,11 +365,12 @@ def save_result_pickles(
 
     if transfer_type is not None:
         if "phenology" in dtype:
-            _dump(f"{file_prefix}results_agg_cultivars_{transfer_type}.pkl", arrays["all_avg_pheno"])
-            _dump(f"{file_prefix}results_per_cultivars_{transfer_type}.pkl", arrays["all_cultivar_avg_pheno"])
+            suffix = f"_{transfer_type}{noise_sfx}"
+            _dump(f"{file_prefix}results_agg_cultivars{suffix}.pkl", arrays["all_avg_pheno"])
+            _dump(f"{file_prefix}results_per_cultivars{suffix}.pkl", arrays["all_cultivar_avg_pheno"])
         elif "coldhardiness" in dtype:
             verb = verbose_level or "verb"
-            suffix = f"_{transfer_type}_{verb}"
+            suffix = f"_{transfer_type}_{verb}{noise_sfx}"
             _dump(f"{file_prefix}results_agg_cultivars{suffix}.pkl", arrays["all_avg_ch"])
             _dump(f"{file_prefix}results_per_cultivars{suffix}.pkl", arrays["all_cultivar_avg_ch"])
             _dump_extras(suffix, "ch")
@@ -325,22 +378,22 @@ def save_result_pickles(
                 _dump(f"{file_prefix}uq_agg_cultivars{suffix}.pkl", arrays["all_uq_ch"])
                 _dump(f"{file_prefix}uq_per_cultivars{suffix}.pkl", arrays["all_cultivar_uq_ch"])
         elif "wofost" in dtype:
-            suffix = f"_{transfer_type}"
+            suffix = f"_{transfer_type}{noise_sfx}"
             _dump(f"{file_prefix}results_agg_cultivars{suffix}.pkl", arrays["all_avg_wf"])
             _dump(f"{file_prefix}results_per_cultivars{suffix}.pkl", arrays["all_cultivar_avg_wf"])
             _dump_extras(suffix, "wf")
     else:
         if "phenology" in dtype:
-            _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_pheno"])
-            _dump(f"{file_prefix}results_per_cultivars.pkl", arrays["all_cultivar_avg_pheno"])
+            _dump(f"{file_prefix}results_agg_cultivars{noise_sfx}.pkl", arrays["all_avg_pheno"])
+            _dump(f"{file_prefix}results_per_cultivars{noise_sfx}.pkl", arrays["all_cultivar_avg_pheno"])
         elif "coldhardiness" in dtype:
-            _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_ch"])
-            _dump(f"{file_prefix}results_per_cultivars.pkl", arrays["all_cultivar_avg_ch"])
-            _dump_extras("", "ch")
+            _dump(f"{file_prefix}results_agg_cultivars{noise_sfx}.pkl", arrays["all_avg_ch"])
+            _dump(f"{file_prefix}results_per_cultivars{noise_sfx}.pkl", arrays["all_cultivar_avg_ch"])
+            _dump_extras(noise_sfx, "ch")
         elif "wofost" in dtype:
-            _dump(f"{file_prefix}results_agg_cultivars.pkl", arrays["all_avg_wf"])
-            _dump(f"{file_prefix}results_per_cultivars.pkl", arrays["all_cultivar_avg_wf"])
-            _dump_extras("", "wf")
+            _dump(f"{file_prefix}results_agg_cultivars{noise_sfx}.pkl", arrays["all_avg_wf"])
+            _dump(f"{file_prefix}results_per_cultivars{noise_sfx}.pkl", arrays["all_cultivar_avg_wf"])
+            _dump_extras(noise_sfx, "wf")
 
 
 def append_masked_predictions(
@@ -363,6 +416,7 @@ def append_masked_predictions(
     ``plotters.plot_utils.append_masked_batch``.
     """
     import torch
+
     from plotters.plot_utils import append_masked_batch
 
     idx = a_inds.to(torch.int32)

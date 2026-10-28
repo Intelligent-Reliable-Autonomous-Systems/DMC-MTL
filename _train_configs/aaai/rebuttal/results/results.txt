@@ -1,0 +1,55 @@
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/All/All/All/All
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Kelowna_UBC/OKFallsEast
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Kelowna_UBC/OKFallsWest
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Kelowna_UBC/OliverEast
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Kelowna_UBC/OliverWest
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Kelowna_UBC/OliverSouth
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Osoyoos_CS/BlackSage
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Osoyoos_CS/OsoyoosNortheast
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Osoyoos_CS/OsoyoosSoutheast
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Osoyoos_CS/OsoyoosWest
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/BCOV/Summerland/NaramataBench
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/NS/Beaver/Beaver
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/NY/Bejo/Bejo
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/NY/Geneva/Geneva
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/NY/Portland/Portland
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/WA/Roza2/Prosser
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Grimbsy_Mtn/BeamsvilleBench
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Grimbsy_Mtn/LincolnLakeshore
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Grimbsy_Mtn/TwentyMileBench
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Grimbsy_Mtn/VinemountRidge
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/CreekShores
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/FourMileCreek
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/NiagaraLakeshores
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/NiagaraRiver
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/ShortHillsBench
+python3 -m results.compile_runs --start_dir _runs/AAAI/GrapeHardiNet/ONNP/Vineland_Station/StDavidsBench
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_BCOVONNPNYMINSWIQCPATX-
+python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_BCOVONNPWAMINSWIQCPATX-
+python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_BCOVWANYMINSWIQCPATX-
+python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_ONNPWANYMINSWIQCPATX-
+python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_WANYMINSWIQCPATX-
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/All/All
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPNYMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPWAMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVWANYMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_MINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_ONNPWANYMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type text 
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type adapt_text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type fit_direct
+
+

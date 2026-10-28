@@ -1,26 +1,32 @@
 """
-compile_runs.py
+compile_runs_nyus.py
 
-Compiles RNN data across multiple runs and takes the average RMSE,
-saving data to file
+Compiles NYUS metrics across multiple runs and saves pickles
+(same RMSE / MAE / P90 / P95 / smax layout as compile_runs.py).
 
 Written by Will Solow, 2025
 """
 
 import argparse
 import os
-import pickle as pkl
 from argparse import Namespace
 
 import numpy as np
 import pandas as pd
-import torch.nn as nn
 from omegaconf import DictConfig
+from torch import nn
 
 import utils
-from assets import CROP_NAMES, REGIONS, SITES, STATIONS
-from plotters.plot_utils import compute_total_RMSE
-from results.eval_common import empty_prediction_buffers, iter_run_dirs
+from results.eval_common import (
+    add_compile_args,
+    alloc_result_arrays,
+    apply_split_scores,
+    empty_prediction_buffers,
+    iter_run_dirs,
+    save_result_pickles,
+    score_per_cultivar,
+    score_splits,
+)
 from train_algs.NYUS_2 import NYUS2
 
 
@@ -29,13 +35,10 @@ def gen_batch_data(
     input_data: list[pd.DataFrame],
     val_data: list[np.ndarray],
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Generates model output from a single batch
-    """
+    """Generates model output from a single batch."""
     output = calibrator.forward(input_data)
 
     true_data = [v.squeeze() for v in val_data]
-
     output_data = [o.squeeze() for o in output]
 
     return true_data, output_data, None
@@ -54,9 +57,7 @@ def gen_all_data_and_plot_nyus(
     all_inds: list[np.ndarray] = None,
     cult_inds: list[np.ndarray] = None,
 ) -> None:
-    """
-    Generates data for train and testing data and plots accordingly for RNNs
-    """
+    """Generates data for train/val/test splits for NYUS models."""
     if name == "train":
         n = 0
     elif name == "val":
@@ -118,52 +119,37 @@ def gen_all_data_and_plot_nyus(
 
 
 def main():
-
-    argparser = argparse.ArgumentParser(description="Plotting script for model")
-    argparser.add_argument("--start_dir", type=str, default="_runs/")
-    argparser.add_argument("--break_early", action="store_true", help="If to break early when making data")
-    argparser.add_argument("--save", action="store_true", help="If to save the plots")
-    argparser.add_argument("--config", type=str, default="", help="To be filled in at runtime")
-    argparser.add_argument("--prefix", type=str, default=None, help="Prefix of files to search for")
-    argparser.add_argument("--num_runs", type=int, default=5)
-    argparser.add_argument("--data_fname", type=str, default="rmse.txt")
-    argparser.add_argument("--rnn_name", type=str, default="rnn_model_best.pt")
-    argparser.add_argument("--all", action="store_true", help="If to compute over all region data")
+    parser = argparse.ArgumentParser(description="Compile NYUS RMSE/MAE/P90/P95 across runs")
+    add_compile_args(parser)
+    parser.add_argument("--all", action="store_true", help="If to compute over all region data")
+    parser.add_argument("--data_fname", type=str, default="rmse.txt")
     np.set_printoptions(precision=2)
-    args = argparser.parse_args()
+    args = parser.parse_args()
 
     config_dirs = iter_run_dirs(args.start_dir, args.prefix)
+    if not config_dirs:
+        raise SystemExit(f"No run dirs found under {args.start_dir}")
 
-    # Setup total storage
-    all_avg_ch = np.zeros((3, args.num_runs))
     args.config = f"{args.start_dir}/{config_dirs[0]}"
     config0, _, _ = utils.load_config_data_fpath(args, includes="nyus")
+    arrays = alloc_result_arrays(config0.DataConfig.dtype, args.num_runs)
+    last_dtype = config0.DataConfig.dtype
 
-    all_cultivar_avg_ch = np.zeros(
-        (
-            len(REGIONS),
-            len(STATIONS),
-            len(SITES),
-            len(CROP_NAMES[config0.DataConfig.dtype]),
-            3,
-            args.num_runs,
-        )
-    )
-
-    for i, config in enumerate(config_dirs):
-        print(config)
-
-        args.config = f"{args.start_dir}/{config}"
+    run_i = 0
+    for config_rel in config_dirs:
+        print(config_rel)
+        args.config = f"{args.start_dir}/{config_rel}"
         fpath = f"{os.getcwd()}/{args.config}"
 
         config, data, fpath = utils.load_config_data_fpath(args, includes="nyus")
         args.cultivar = config.DataConfig.cultivar
         config.DConfig.batch_size = 72
         calibrator = NYUS2(config, data)
+        last_dtype = config.DataConfig.dtype
 
         true_data, output_data, true_cultivar_data, output_cultivar_data = empty_prediction_buffers(calibrator)
-        # Generate all data
-        [
+
+        for n in ["train", "test"]:
             gen_all_data_and_plot_nyus(
                 config,
                 fpath,
@@ -175,9 +161,6 @@ def main():
                 output_cultivar_data,
                 name=n,
             )
-            for n in ["train", "test"]
-        ]
-
         if config.DataConfig.val_set:
             gen_all_data_and_plot_nyus(
                 config,
@@ -191,57 +174,33 @@ def main():
                 name="val",
             )
 
-        # Store data for averaging
+        scores = score_splits(config, true_data, output_data, fpath)
+        apply_split_scores(arrays, scores, run_i)
+        score_per_cultivar(
+            config,
+            calibrator,
+            true_cultivar_data,
+            output_cultivar_data,
+            fpath,
+            arrays,
+            run_i,
+            with_uq=True,
+        )
+        run_i += 1
 
-        if "coldhardiness" in config.DataConfig.dtype:
-            total_rmse, _ = compute_total_RMSE(true_data[0], output_data[0])
-            val_total_rmse, _ = compute_total_RMSE(true_data[1], output_data[1])
-            test_total_rmse, _ = compute_total_RMSE(true_data[2], output_data[2])
-            all_avg_ch[:, i] = np.array([total_rmse, val_total_rmse, test_total_rmse])
-
-        for r in range(calibrator.num_regions):
-            for s in range(calibrator.num_stations):
-                for si in range(calibrator.num_sites):
-                    for k in range(calibrator.num_cultivars):
-                        if (
-                            len(true_cultivar_data[r][s][si][k][0]) == 0
-                            and len(true_cultivar_data[r][s][si][k][2]) == 0
-                            and (len(true_cultivar_data[r][s][si][k][1]) == 0 and config.DataConfig.val_set)
-                        ):
-                            continue
-
-                        if "coldhardiness" in config.DataConfig.dtype:
-                            cultivar_train_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][0],
-                                output_cultivar_data[r][s][si][k][0],
-                            )
-                            cultivar_val_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][1],
-                                output_cultivar_data[r][s][si][k][1],
-                            )
-                            cultivar_test_rmse, _ = compute_total_RMSE(
-                                true_cultivar_data[r][s][si][k][2],
-                                output_cultivar_data[r][s][si][k][2],
-                            )
-
-                            all_cultivar_avg_ch[r, s, si, k, :, i] = np.array(
-                                [
-                                    cultivar_train_rmse,
-                                    cultivar_val_rmse,
-                                    cultivar_test_rmse,
-                                ]
-                            )
-
-    # Save Data
-    prefix = ""
-
-    if "coldhardiness" in config.DataConfig.dtype:
-        with open(f"{args.start_dir}/{prefix}results_agg_cultivars.pkl", "wb") as f:
-            pkl.dump(all_avg_ch, f)
-        f.close()
-        with open(f"{args.start_dir}/{prefix}results_per_cultivars.pkl", "wb") as f:
-            pkl.dump(all_cultivar_avg_ch, f)
-        f.close()
+    file_prefix = args.synth_test + "_" if args.synth_test is not None else ""
+    save_result_pickles(
+        args.start_dir,
+        arrays,
+        last_dtype,
+        file_prefix=file_prefix,
+        transfer_type=args.transfer_type,
+        verbose_level=args.verbose_level,
+        with_uq=True,
+        noise=getattr(args, "noise", None),
+        forecast_noise=getattr(args, "forecast_noise", None),
+        forecast_k=getattr(args, "forecast_k", None),
+    )
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@
 
 Written by Will Solow, 2025"""
 
+import os
+
 import numpy as np
 import pandas as pd
 import torch
@@ -10,11 +12,20 @@ from omegaconf import DictConfig
 
 from train_algs.base.process_data import assign_id_tensors, split_train_test_indices
 
+_NYUS_MODEL_DIR = "NYUS_2/NYUS2_2"
+
 
 class NYUS2:
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]):
 
-        self.nn = TabularPredictor.load("NYUS_2/NYUS2_2", require_version_match=False)
+        predictor_path = os.path.join(_NYUS_MODEL_DIR, "predictor.pkl")
+        if not os.path.isfile(predictor_path):
+            raise FileNotFoundError(
+                f"NYUS AutoGluon artifact missing: `{predictor_path}`. "
+                f"Restore the full TabularPredictor save dir under `{_NYUS_MODEL_DIR}` "
+                "(predictor.pkl + learner/model pickles); only partial weights are present."
+            )
+        self.nn = TabularPredictor.load(_NYUS_MODEL_DIR, require_version_match=False)
         self.data = data
         self.config = config
         self.device = "cpu"

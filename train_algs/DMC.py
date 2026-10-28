@@ -244,6 +244,19 @@ class DeepRNN(BaseRNN):
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
 
+        if self.config.DConfig.noise:
+            return self.forward_with_noise(
+                data,
+                dates,
+                cultivars,
+                regions,
+                stations,
+                sites,
+                b_size=b_size,
+                dlen=dlen,
+                **kwargs,
+            )
+
         output_tens, _, _ = self.setup_storage(b_size, dlen)
 
         self.nn.zero_grad()
@@ -374,6 +387,64 @@ class StationaryModel(BaseRNN):
 
         self.task_params = per_task_param_loader(CROP_NAMES, config, self.params).to(self.device)
 
+    def _noise_weather_attrs(self) -> list[str]:
+        provider = self.model.inputdataprovider
+        return [a for a in ("TEMP", "TMIN", "TMAX") if a in getattr(provider, "attrs", [])]
+
+    def forward_with_noise(
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        b_size: int = None,
+        dlen: int = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """K-day physical-model forecast under Gaussian noise on TEMP/TMIN/TMAX."""
+        assert self.config.DConfig.forecast_noise is not None, "DConfig.forecast_noise must be set when noise=True"
+        assert self.config.DConfig.forecast_k is not None, "DConfig.forecast_k must be set when noise=True"
+
+        K = int(self.config.DConfig.forecast_k)
+        noise_scale = float(self.config.DConfig.forecast_noise)
+        if b_size is None or dlen is None:
+            data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        batch_params = (
+            self.task_params[cultivars.to(torch.long).squeeze()] if cultivars is not None else self.task_params[0]
+        )
+        self.model.set_model_params(batch_params, self.params)
+        self.model.set_model_params(self.param_cast(self.nn.model_params), self.params)
+
+        provider = self.model.inputdataprovider
+        clean_values = provider.values.clone()
+        noisy_values = clean_values.clone()
+        for attr in self._noise_weather_attrs():
+            idx = provider.attrs.index(attr)
+            noisy_values[:, idx] = noisy_values[:, idx] + noise_scale * torch.randn_like(noisy_values[:, idx])
+
+        try:
+            for T in range(K, dlen):
+                start = T - K
+                self.model.set_model_params(batch_params, self.params)
+                self.model.set_model_params(self.param_cast(self.nn.model_params), self.params)
+                self.model.reset(b_size)
+                provider.values = clean_values
+                for i in range(start):
+                    self.model.run(dates=dates[:, i], cultivars=cultivars)
+                provider.values = noisy_values
+                pred = None
+                for s in range(K):
+                    pred = self.model.run(dates=dates[:, start + s], cultivars=cultivars)
+                output_tens[:, T] = pred
+        finally:
+            provider.values = clean_values
+
+        return output_tens, None, None
+
     def forward(
         self,
         data: torch.Tensor,
@@ -383,6 +454,16 @@ class StationaryModel(BaseRNN):
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+
+        if self.config.DConfig.noise:
+            return self.forward_with_noise(
+                data,
+                dates,
+                cultivars,
+                b_size=b_size,
+                dlen=dlen,
+                **kwargs,
+            )
 
         output_tens, _, _ = self.setup_storage(b_size, dlen)
         batch_params = (

@@ -93,6 +93,119 @@ class BaseRNN(BaseModel):
 
         return nn
 
+    def _noise_prepare_ctx(
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        b_size: int = None,
+        dlen: int = None,
+        **kwargs,
+    ):
+        """Optional per-subclass context for noisy K-day rollouts (e.g. resolved embeds)."""
+        return None
+
+    def _noise_init_state(self, b_size: int, ctx=None, **kwargs):
+        """Initial recurrent / simulator state for noisy rollouts."""
+        return self.nn.get_init_state(batch_size=b_size)
+
+    def _noise_step(
+        self,
+        weather_t: torch.Tensor,
+        state,
+        ctx,
+        *,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        dates_t: np.ndarray = None,
+        **kwargs,
+    ):
+        """One day step under noise eval. Default: RNN forward on a weather slice."""
+        return self.nn(
+            weather_t,
+            hn=state,
+            cultivars=cultivars,
+            regions=regions,
+            stations=stations,
+            sites=sites,
+        )
+
+    def forward_with_noise(
+        self,
+        data: torch.Tensor,
+        dates: np.ndarray = None,
+        cultivars: torch.Tensor = None,
+        regions: torch.Tensor = None,
+        stations: torch.Tensor = None,
+        sites: torch.Tensor = None,
+        b_size: int = None,
+        dlen: int = None,
+        **kwargs,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """K-day forecast eval under Gaussian noise on the last-3 weather features."""
+        assert self.config.DConfig.forecast_noise is not None, "DConfig.forecast_noise must be set when noise=True"
+        assert self.config.DConfig.forecast_k is not None, "DConfig.forecast_k must be set when noise=True"
+
+        K = int(self.config.DConfig.forecast_k)
+        noise_scale = float(self.config.DConfig.forecast_noise)
+        if b_size is None or dlen is None:
+            data, dates, cultivars, b_size, dlen = self.handle_data(data, dates, cultivars)
+        output_tens, _, _ = self.setup_storage(b_size, dlen)
+
+        self.nn.zero_grad()
+        ctx = self._noise_prepare_ctx(
+            data,
+            dates,
+            cultivars,
+            regions,
+            stations,
+            sites,
+            b_size=b_size,
+            dlen=dlen,
+            **kwargs,
+        )
+
+        noisy = data.clone()
+        noisy[..., -3:] = noisy[..., -3:] + noise_scale * torch.randn_like(noisy[..., -3:])
+
+        state_true = self._noise_init_state(b_size, ctx=ctx, **kwargs)
+        for T in range(K, dlen):
+            start = T - K
+            state = state_true
+            pred = None
+            for s in range(K):
+                t = start + s
+                pred, state = self._noise_step(
+                    noisy[:, t : t + 1],
+                    state,
+                    ctx,
+                    cultivars=cultivars,
+                    regions=regions,
+                    stations=stations,
+                    sites=sites,
+                    dates_t=dates[:, t] if dates is not None else None,
+                    **kwargs,
+                )
+            output_tens[:, T : T + 1] = pred
+            _, state_true = self._noise_step(
+                data[:, start : start + 1],
+                state_true,
+                ctx,
+                cultivars=cultivars,
+                regions=regions,
+                stations=stations,
+                sites=sites,
+                dates_t=dates[:, start] if dates is not None else None,
+                **kwargs,
+            )
+
+        return output_tens, None, None
+
     def optimize(self) -> None:
 
         writer, run_name, log_path = setup_logging(self.config)

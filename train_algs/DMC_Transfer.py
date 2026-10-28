@@ -241,13 +241,21 @@ class ParamTransferRNN(BaseRNN):
 class DeepFoundationRNN(BaseRNN):
     _FIT_DIRECT_LR = 1e-2
     _FIT_DIRECT_STEPS = 50
+    # Cap activation memory during embed GD (eval batches can be large × num_transfer_years).
+    _FIT_DIRECT_MICROBATCH = 16
 
     def __init__(self, config: DictConfig, data: list[pd.DataFrame]) -> None:
         super().__init__(config, data)
+        # Lazy: e5-large is unused for fit_direct/mean/adapt/direct and is a large VRAM cost.
+        self._text_model = None
 
-        from sentence_transformers import SentenceTransformer
+    @property
+    def text_model(self):
+        if self._text_model is None:
+            from sentence_transformers import SentenceTransformer
 
-        self.text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+            self._text_model = SentenceTransformer("intfloat/e5-large-v2", device=self.device)
+        return self._text_model
 
     def _ensure_fit_direct(self, n_batch: int) -> None:
         """Lazily create/reset per-batch fit_direct embed Parameter + Adam optimizer."""
@@ -263,28 +271,52 @@ class DeepFoundationRNN(BaseRNN):
         bsize: int,
         hn: torch.Tensor = None,
     ) -> torch.Tensor:
-        """Freeze self.nn and fit a per-batch embed via short Adam/MSE GD; return detached embed."""
+        """Freeze self.nn and fit a per-batch embed via short Adam/MSE GD; return detached embed.
+
+        cuDNN RNN backward requires training mode even when weights are frozen, so we
+        temporarily flip self.nn.train() around the GD loop. Micro-batching keeps peak
+        activation memory bounded for large adapt sets.
+        """
         self._ensure_fit_direct(bsize)
         grad_flags = [p.requires_grad for p in self.nn.parameters()]
         for p in self.nn.parameters():
             p.requires_grad_(False)
 
+        was_training = self.nn.training
+        # Eval/compile paths call calibrator.eval(); cuDNN refuses RNN backward in eval.
+        self.nn.train()
+
+        n_seq = weather.shape[0]
         if hn is None:
-            hn = self.nn.get_init_state(batch_size=weather.shape[0])
+            hn = self.nn.get_init_state(batch_size=n_seq)
+        hn = hn.detach()
 
         mask = ~torch.isnan(target)
         target_clean = target.nan_to_num(nan=0.0)
+        denom = mask.sum().clamp_min(1)
+        micro = max(1, min(self._FIT_DIRECT_MICROBATCH, n_seq))
 
-        with torch.enable_grad():
-            for _ in range(self._FIT_DIRECT_STEPS):
-                self._fit_optimizer.zero_grad()
-                pred, _ = self.nn.forward_embed(weather, embed=self._fit_embed[map_idx], hn=hn)
-                loss = ((pred - target_clean) ** 2 * mask).sum() / mask.sum().clamp_min(1)
-                loss.backward()
-                self._fit_optimizer.step()
-
-        for p, flag in zip(self.nn.parameters(), grad_flags):
-            p.requires_grad_(flag)
+        try:
+            with torch.enable_grad():
+                for _ in range(self._FIT_DIRECT_STEPS):
+                    self._fit_optimizer.zero_grad(set_to_none=True)
+                    for start in range(0, n_seq, micro):
+                        sl = slice(start, start + micro)
+                        # hn is (num_layers, batch, hidden) for nn.GRU
+                        hn_sl = hn[:, sl]
+                        pred, _ = self.nn.forward_embed(
+                            weather[sl], embed=self._fit_embed[map_idx[sl]], hn=hn_sl
+                        )
+                        # Same mean as full-batch: accumulate ∂(Σ err² / denom).
+                        loss = ((pred - target_clean[sl]) ** 2 * mask[sl]).sum() / denom
+                        loss.backward()
+                    self._fit_optimizer.step()
+        finally:
+            self.nn.train(was_training)
+            for p, flag in zip(self.nn.parameters(), grad_flags):
+                p.requires_grad_(flag)
+            if weather.is_cuda:
+                torch.cuda.empty_cache()
 
         return self._fit_embed.detach()
 

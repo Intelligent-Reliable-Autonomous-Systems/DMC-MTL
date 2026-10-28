@@ -11,7 +11,7 @@
             "request": "launch",
             "module": "results.compile_runs",
             "console": "integratedTerminal",
-            "args": "--start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type adapt_text",
+            "args": "--start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type fit_direct --transfer_rate 1.0",
             "justMyCode": false,
         },
 

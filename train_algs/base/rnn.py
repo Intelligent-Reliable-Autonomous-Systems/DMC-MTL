@@ -32,13 +32,6 @@ from train_algs.base.DMC_Base import (
     OneHotEmbeddingFCGRU,
     ParamModel,
 )
-from train_algs.base.DMC_Transfer_Base import (
-    DeepAdaptTransferGRU,
-    DeepEmbeddingTransferGRU,
-    DeepTransferAttnGRU,
-    DeepTransferGRU,
-    EmbeddingTransferGRU,
-)
 from train_algs.base.util import (
     cumulative_error,
     get_grad_norm,
@@ -87,22 +80,14 @@ class BaseRNN(BaseModel):
             nn = EmbeddingTextGRU(config, model)
         elif config.DConfig.arch == "EmbedTextVerbGRU":
             nn = EmbeddingVerboseTextGRU(config, model)
-        elif config.DConfig.arch == "EmbedTransferGRU":
-            nn = EmbeddingTransferGRU(config, model)
-        elif config.DConfig.arch == "DeepEmbedTransferGRU":
-            nn = DeepEmbeddingTransferGRU(config, model)
-        elif config.DConfig.arch == "DeepAdaptGRU":
-            nn = DeepAdaptTransferGRU(config, model)
-        elif config.DConfig.arch == "DeepTransferGRU":
-            nn = DeepTransferGRU(config, model)
-        elif config.DConfig.arch == "DeepTransferAttnGRU":
-            nn = DeepTransferAttnGRU(config, model)
         elif config.DConfig.arch == "FoundationGRU":
             nn = FoundationEmbeddingGRU(config, model)
         elif config.DConfig.arch == "FoundationParamGRU":
             nn = FoundationParamEmbeddingGRU(config, model)
         elif config.DConfig.arch == "FoundationParamModel":
             nn = FoundationParamModel(config, model)
+        elif config.DConfig.arch == "StationaryModel":
+            nn = ParamModel(config, model)
         else:
             raise Exception(f"Unrecognized Model Architecture `{config.DConfig.arch}`")
 

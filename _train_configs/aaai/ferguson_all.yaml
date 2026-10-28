@@ -1,0 +1,36 @@
+# Model Configuration
+PConfig:
+    config_fpath: _configs_models/
+    model: Ferguson_ColdHardiness_TensorBatch 
+    model_parameters: grape_coldhardiness:Chardonnay 
+    latitude: 46
+    longitude: -120
+    start_date: 2023-01-01
+    input_vars: [DAY, TEMP]
+    output_vars: [LTE50]
+# Log configuration
+log_path: /_runs/AAAI/Ferguson/
+run_name: ferg_model
+seed: 0
+# Data use
+DataConfig:
+    cultivar: All
+    data_fpath: _data/processed_data/
+    dtype: grape_coldhardiness_reg
+    region: All
+    station: All
+    site: All
+# Parameters to predict at each time step
+params: ["HCINIT", "HCMIN", "HCMAX", "TENDO", "TECO", "ENACCLIM", "ECACCLIM", "ENDEACCLIM", "ECDEACCLIM", "ECOBOUND"]
+# Range of prediction for each parameter
+params_range: [[-15,-5], [-5, 0], [-40,-20], [10,20], [0,10], [0,0.2], [0,0.2], [0,0.2], [0,0.2], [-800,-200]] 
+# DConfig Parameters
+DConfig: 
+    type: Stationary
+    arch: StationaryModel
+    loss_func: MSELoss
+    hidden_dim: 128
+    learning_rate: 0.1
+    lr_factor: 0.95
+    batch_size: 72
+    epochs: 200

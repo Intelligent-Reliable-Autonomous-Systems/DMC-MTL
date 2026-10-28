@@ -4,68 +4,1292 @@ python3 -m trainers.train_model --config aaai/rebuttal/deep_weather --seed 2
 python3 -m trainers.train_model --config aaai/rebuttal/deep_weather --seed 3
 python3 -m trainers.train_model --config aaai/rebuttal/deep_weather --seed 4
 
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 0 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 1 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 2 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 3 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 4 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region WA --station Roza2 --site Prosser
 
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 0 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 1 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 2 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 3 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 4 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Bejo --site Bejo
 
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 0 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 1 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 2 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 3 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 4 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Geneva --site Geneva
 
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 0 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 1 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 2 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 3 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 4 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Portland --site Portland
 
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 0 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 1 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 2 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 3 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/deep_foundation --seed 4 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Hudson --site Hudson
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [WA, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region MI --station SWMREC --site Mich1
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [ONNP, WA, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NS --station Beaver --site Beaver
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [BCOV, WA, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna --site WestKelowna
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [BCOV, ONNP, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsEast
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [BCOV, ONNP, WA, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsWest
 
-python3 -m trainers.train_model --config aaai/ferguson --seed 0 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 1 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 2 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 3 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
-python3 -m trainers.train_model --config aaai/ferguson --seed 4 --withold "{Region: [BCOV, ONNP, NY, MI, NS, WI, QC, PA, TX]}"
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverSouth
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverWest
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Summerland --site NaramataBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site CreekShores
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna --site WestKelowna --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna --site WestKelowna --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna --site WestKelowna --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna --site WestKelowna --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna --site WestKelowna --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsEast --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsWest --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsWest --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsWest --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsWest --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsWest --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverSouth --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverSouth --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverSouth --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverSouth --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverSouth --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Kelowna_UBC --site OliverWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Kelowna_UBC --site OliverWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Kelowna_UBC --site OliverWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Kelowna_UBC --site OliverWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Kelowna_UBC --site OliverWest --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage --cultivar Zinfandel
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNorth --cultivar Malbec
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Grenache
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Grenache
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Grenache
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Grenache
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Grenache
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Mourvedre
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Mourvedre
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Mourvedre
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Mourvedre
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Mourvedre
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast --cultivar Zinfandel
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Malbec
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast --cultivar Viognier
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Malbec
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Malbec
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Viognier
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest --cultivar Viognier
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region BCOV --station Summerland --site NaramataBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region BCOV --station Summerland --site NaramataBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region BCOV --station Summerland --site NaramataBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region BCOV --station Summerland --site NaramataBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region BCOV --station Summerland --site NaramataBench --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Concord
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region MI --station SWMREC --site Mich1 --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region MI --station SWMREC --site Mich1 --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region MI --station SWMREC --site Mich1 --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region MI --station SWMREC --site Mich1 --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region MI --station SWMREC --site Mich1 --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NS --station Beaver --site Beaver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NS --station Beaver --site Beaver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NS --station Beaver --site Beaver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NS --station Beaver --site Beaver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NS --station Beaver --site Beaver --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NS --station Beaver --site Beaver --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NS --station Beaver --site Beaver --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NS --station Beaver --site Beaver --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NS --station Beaver --site Beaver --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NS --station Beaver --site Beaver --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NS --station Beaver --site Beaver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NS --station Beaver --site Beaver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NS --station Beaver --site Beaver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NS --station Beaver --site Beaver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NS --station Beaver --site Beaver --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Chenin_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Chenin_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Chenin_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Chenin_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Chenin_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Concord
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Lemberger
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Sangiovese
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Sangiovese
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Sangiovese
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Sangiovese
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Sangiovese
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Bejo --site Bejo --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Bejo --site Bejo --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Bejo --site Bejo --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Bejo --site Bejo --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Bejo --site Bejo --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Concord
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Lemberger
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Geneva --site Geneva --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Geneva --site Geneva --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Geneva --site Geneva --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Geneva --site Geneva --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Geneva --site Geneva --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Hudson --site Hudson --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Hudson --site Hudson --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Hudson --site Hudson --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Hudson --site Hudson --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Hudson --site Hudson --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Hudson --site Hudson --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Hudson --site Hudson --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Hudson --site Hudson --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Hudson --site Hudson --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Hudson --site Hudson --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Hudson --site Hudson --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Hudson --site Hudson --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Hudson --site Hudson --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Hudson --site Hudson --cultivar Lemberger
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Hudson --site Hudson --cultivar Lemberger
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Hudson --site Hudson --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Hudson --site Hudson --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Hudson --site Hudson --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Hudson --site Hudson --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Hudson --site Hudson --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Hudson --site Hudson --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Hudson --site Hudson --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Hudson --site Hudson --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Hudson --site Hudson --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Hudson --site Hudson --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Concord
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Concord
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region NY --station Portland --site Portland --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region NY --station Portland --site Portland --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region NY --station Portland --site Portland --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region NY --station Portland --site Portland --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region NY --station Portland --site Portland --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site CreekShores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site CreekShores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site CreekShores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site CreekShores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site CreekShores --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Franc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Franc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Sauvignon
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Cabernet_Sauvignon
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Pinot_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Pinot_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Pinot_Gris
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Pinot_Gris
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Pinot_Noir
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Pinot_Noir
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Sauvignon_Blanc
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Sauvignon_Blanc
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Syrah
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WA --station Roza2 --site Prosser --cultivar Zinfandel
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Chardonnay
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Chardonnay
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Gewurztraminer
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Gewurztraminer
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Merlot
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Merlot
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Riesling
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Riesling
+
+python3 -m trainers.train_model --config aaai/ferguson --seed 0 --region WI --station Madison --site Madison --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 1 --region WI --station Madison --site Madison --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 2 --region WI --station Madison --site Madison --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 3 --region WI --station Madison --site Madison --cultivar Syrah
+python3 -m trainers.train_model --config aaai/ferguson --seed 4 --region WI --station Madison --site Madison --cultivar Syrah

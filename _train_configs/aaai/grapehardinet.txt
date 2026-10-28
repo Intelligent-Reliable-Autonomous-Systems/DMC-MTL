@@ -1,5 +1,167 @@
-python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region WA
-python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region WA
-python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region WA
-python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region WA
-python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region WA
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region WA --station Roza2 --site Prosser
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region WA --station Roza2 --site Prosser
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Bejo --site Bejo
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Bejo --site Bejo
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Geneva --site Geneva
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Geneva --site Geneva
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Portland --site Portland
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Portland --site Portland
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NY --station Hudson --site Hudson
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NY --station Hudson --site Hudson
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region MI --station SWMREC --site Mich1
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region MI --station SWMREC --site Mich1
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region NS --station Beaver --site Beaver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region NS --station Beaver --site Beaver
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna --site WestKelowna
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna --site WestKelowna
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsEast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OKFallsWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OKFallsWest
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverEast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverEast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverSouth
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverSouth
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Kelowna_UBC --site OliverWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Kelowna_UBC --site OliverWest
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site BlackSage
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site BlackSage
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosNortheast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosSoutheast
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Osoyoos_CS --site OsoyoosWest
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region BCOV --station Summerland --site NaramataBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region BCOV --station Summerland --site NaramataBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site BeamsvilleBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site LincolnLakeshore
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site TwentyMileBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Grimbsy_Mtn --site VinemountRidge
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site CreekShores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site CreekShores
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site FourMileCreek
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site FourMileCreek
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site NiagaraLakeshores
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site NiagaraRiver
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site NiagaraRiver
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site ShortHillsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site ShortHillsBench
+
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 0 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 1 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 2 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 3 --region ONNP --station Vineland_Station --site StDavidsBench
+python3 -m trainers.train_model --config aaai/grapehardinet.yaml --seed 4 --region ONNP --station Vineland_Station --site StDavidsBench

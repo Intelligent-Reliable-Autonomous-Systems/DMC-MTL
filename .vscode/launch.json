@@ -20,6 +20,19 @@
         },
 
         {
+            "name": "ferguson",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "trainers.train_model",
+            "console": "integratedTerminal",
+            "args": "--config aaai/ferguson --seed 0 --region NS --station Beaver --site Beaver --cultivar Chardonnay",
+            "justMyCode": false,
+
+        },
+
+
+
+        {
             "name": "nyus_data",
             "type": "debugpy",
             "request": "launch",

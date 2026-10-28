@@ -374,13 +374,24 @@ class DeepFoundationRNN(BaseRNN):
                 self._mean_embed = self.nn.apply_embed_op(cult_e, site_e, stat_e, reg_e, ids_only=True).mean(dim=0)
             return self._mean_embed.unsqueeze(0).expand(n_transfer, -1)
 
-        if ttype in ("direct", "text"):
+        if ttype in ("direct", "text", "nearest_text"):
+            r = regions[transfer_inds]
+            if ttype == "nearest_text":
+                # BCOV(0)<->WA(2), ONNP(1)<->MI(5), NS(4)<->NY(3)
+                src = r
+                r = src.clone()
+                r = torch.where(src == 0, torch.full_like(r, 2), r)
+                r = torch.where(src == 2, torch.full_like(r, 0), r)
+                r = torch.where(src == 1, torch.full_like(r, 5), r)
+                r = torch.where(src == 5, torch.full_like(r, 1), r)
+                r = torch.where(src == 4, torch.full_like(r, 3), r)
+                r = torch.where(src == 3, torch.full_like(r, 4), r)
             return self._id_text_embed(
                 cultivars[transfer_inds],
-                regions[transfer_inds],
+                r,
                 stations[transfer_inds],
                 sites[transfer_inds],
-                use_text=(ttype == "text"),
+                use_text=(ttype in ("text", "nearest_text")),
             )
 
         b_all_inds = torch.cat((regions, stations, sites, cultivars), dim=1)[transfer_inds]

@@ -79,6 +79,12 @@ class DConfig:
     transfer_type: str | None = None
     """How verbose of a string to use. Literal["base", "verb", "bare", "mini", "test"]]"""
     verbose_level: str | None = "verb"
+    """If truthy, run K-day noisy forecast eval via forward_with_noise"""
+    noise: bool | None = None
+    """Gaussian scale applied to last-3 weather features during noisy rollouts"""
+    forecast_noise: float | None = None
+    """Horizon K (days) for noisy forecast rollouts"""
+    forecast_k: int | None = None
 
 
 @dataclass
@@ -384,12 +390,8 @@ def load_model_from_config(config: DictConfig, data: list[pd.DataFrame], rnn_fpa
         calibrator = DMC_Transfer.DeepAdaptRNN(config, data)
     elif config.DConfig.type == "FoundationDeep":
         calibrator = DMC_Transfer.DeepFoundationRNN(config, data)
-    elif config.DConfig.type == "FoundationEmbedDeep":
-        calibrator = DMC_Transfer.DeepFoundationEmbedRNN(config, data)
     elif config.DConfig.type == "FoundationParam":
         calibrator = DMC_Transfer.ParamFoundationRNN(config, data)
-    elif config.DConfig.type == "FoundationEmbedParam":
-        calibrator = DMC_Transfer.ParamFoundationEmbedRNN(config, data)
     else:
         raise NotImplementedError(f"Unrecognized RNN model type `{config.DConfig.type}`")
 

@@ -32,4 +32,4 @@ DConfig:
     learning_rate: .0001
     lr_factor: 0.9
     batch_size: 12
-    epochs: 100
+    epochs: 200

@@ -39,17 +39,25 @@ python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Regi
 python3 -m results.compile_runs --start_dir _runs/AAAI/Ferguson/All/All/All/Region_WANYMINSWIQCPATX-
 
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/All/All
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPMINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPNYMINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPWAMINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVWANYMINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_MINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_ONNPWANYMINSWIQCPATX- --all
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPMINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPNYMINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPWAMINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVWANYMINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_MINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_ONNPWANYMINSWIQCPATX- --all --transfer_type text
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type text
+
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPMINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPNYMINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVONNPWAMINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_BCOVWANYMINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_MINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_ONNPWANYMINSWIQCPATX- --all --transfer_type adapt
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type adapt
 
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type text 
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type adapt
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type adapt_text
-python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_rate 1.0 --transfer_type fit_direct
-
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --num_transfer_years 5 --transfer_rate 1.0 --transfer_type fit_direct
+python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --num_transfer_years 1 --transfer_rate 1.0 --transfer_type fit_direct
 

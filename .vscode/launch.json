@@ -6,12 +6,12 @@
     "configurations": [
 
         {
-            "name": "runs",
+            "name": "noise",
             "type": "debugpy",
             "request": "launch",
             "module": "results.compile_runs",
             "console": "integratedTerminal",
-            "args": "--start_dir _runs/AAAI/FoundationDeep/All/All/Region_WANYMINSWIQCPATX- --all --transfer_type fit_direct --transfer_rate 1.0",
+            "args": "--start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 7 --forecast_noise 0.5",
             "justMyCode": false,
         },
 

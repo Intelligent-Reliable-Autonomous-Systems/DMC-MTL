@@ -13,3 +13,15 @@ python3 -m results.compile_runs --start_dir _runs/Rebuttal/FoundationDeep/All/Al
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDMC/All/All/All/All --all 
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDMC/All/All/All/All --all --transfer_type text
 python3 -m results.compile_runs --start_dir _runs/AAAI/FoundationDMC/All/All/All/All --all --transfer_rate 1.0 --transfer_type adapt
+
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 7 --forecast_noise 0.1
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 7 --forecast_noise 0.2
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 7 --forecast_noise 0.5
+
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 14 --forecast_noise 0.1
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 14 --forecast_noise 0.2
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 14 --forecast_noise 0.5
+
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 21 --forecast_noise 0.1
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 21 --forecast_noise 0.2
+python3 -m results.load_results --region --start_dir _runs/Rebuttal/FoundationDeep/All/All/All/All --noise --forecast_k 21 --forecast_noise 0.5

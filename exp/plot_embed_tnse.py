@@ -1,4 +1,5 @@
 """Thin wrapper — prefer `python -m plotters.embeddings --mode hybrid`."""
+
 from plotters.embeddings import main
 
 if __name__ == "__main__":

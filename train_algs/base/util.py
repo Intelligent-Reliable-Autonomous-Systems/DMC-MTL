@@ -161,21 +161,23 @@ def cumulative_error(
     return avgs
 
 
-def setup_logging(config: Namespace) -> tuple[SummaryWriter, str]:
+def setup_logging(config: Namespace, log_path: str = None) -> tuple[SummaryWriter, str]:
     """Setup Tensorboard Logging and W&B"""
 
-    run_name = f"{config.run_name}__{int(time.time())}"
-    if config.DataConfig.withold is not None:
-        add_str = ""
-        for k in config.DataConfig.withold.keys():
-            add_str += f"{k}_"
-            for v in config.DataConfig.withold[k]:
-                add_str += v
-            add_str += "-"
-        log_path = f"{os.getcwd()}{config.log_path}/{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/{config.DataConfig.cultivar}/{add_str}/{run_name}"
-
+    if log_path is None:
+        run_name = f"{config.run_name}__{int(time.time())}"
+        if config.DataConfig.withold is not None:
+            add_str = ""
+            for k in config.DataConfig.withold.keys():
+                add_str += f"{k}_"
+                for v in config.DataConfig.withold[k]:
+                    add_str += v
+                add_str += "-"
+            log_path = f"{os.getcwd()}{config.log_path}/{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/{config.DataConfig.cultivar}/{add_str}/{run_name}"
+        else:
+            log_path = f"{os.getcwd()}{config.log_path}/{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/{config.DataConfig.cultivar}/{run_name}"
     else:
-        log_path = f"{os.getcwd()}{config.log_path}/{config.DataConfig.region}/{config.DataConfig.station}/{config.DataConfig.site}/{config.DataConfig.cultivar}/{run_name}"
+        run_name = os.path.basename(os.path.normpath(log_path))
 
     writer = SummaryWriter(log_path)
     writer.add_text(

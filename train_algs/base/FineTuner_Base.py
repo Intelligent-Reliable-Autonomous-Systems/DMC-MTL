@@ -32,7 +32,6 @@ class BaseFTModule(nn.Module):
         grow_embedding_weight(nn, ckpt, name)
 
 
-
 class EmbedErrorFCTuner(BaseFTModule):
     """
     GRU error encoder using single error signal

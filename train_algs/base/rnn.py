@@ -208,7 +208,10 @@ class BaseRNN(BaseModel):
 
     def optimize(self) -> None:
 
-        writer, run_name, log_path = setup_logging(self.config)
+        writer, run_name, log_path = setup_logging(
+            self.config,
+            log_path=getattr(self, "_reuse_log_path", None),
+        )
         os.makedirs(log_path, exist_ok=True)
 
         with open(f"{log_path}/config.yaml", "w", encoding="utf-8") as fp:

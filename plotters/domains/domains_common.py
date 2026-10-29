@@ -36,9 +36,7 @@ def load_models(
     return calibrators
 
 
-def gen_results(
-    calibrators: list[torch.nn.Module], yr: int = -1, split: str = "train", *, with_weather: bool = False
-):
+def gen_results(calibrators: list[torch.nn.Module], yr: int = -1, split: str = "train", *, with_weather: bool = False):
     model_true = []
     model_pred = []
     weather_arr = []

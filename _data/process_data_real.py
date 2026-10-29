@@ -327,9 +327,7 @@ def filter_ch_year(
     reject_zero_irrad: bool = False,
 ) -> pd.DataFrame | None:
     """Interpolate and apply CH year QC filters. Returns year_df or None if rejected."""
-    year_df, percent_missing = interpolate_data(
-        year_df, full_df, cols=weather_cols, max_days=float("inf")
-    )
+    year_df, percent_missing = interpolate_data(year_df, full_df, cols=weather_cols, max_days=float("inf"))
 
     def _reject_lte() -> bool:
         if year_df.loc[:, lte_cols].isnull().all().all():
@@ -357,10 +355,14 @@ def filter_ch_year(
             return True
         return False
 
-    checks = (_reject_lte, _reject_missing, _reject_weather_nan) if lte_first else (
-        _reject_missing,
-        _reject_weather_nan,
-        _reject_lte,
+    checks = (
+        (_reject_lte, _reject_missing, _reject_weather_nan)
+        if lte_first
+        else (
+            _reject_missing,
+            _reject_weather_nan,
+            _reject_lte,
+        )
     )
     for check in checks:
         if check():

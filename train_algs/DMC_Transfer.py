@@ -304,9 +304,7 @@ class DeepFoundationRNN(BaseRNN):
                         sl = slice(start, start + micro)
                         # hn is (num_layers, batch, hidden) for nn.GRU
                         hn_sl = hn[:, sl]
-                        pred, _ = self.nn.forward_embed(
-                            weather[sl], embed=self._fit_embed[map_idx[sl]], hn=hn_sl
-                        )
+                        pred, _ = self.nn.forward_embed(weather[sl], embed=self._fit_embed[map_idx[sl]], hn=hn_sl)
                         # Same mean as full-batch: accumulate ∂(Σ err² / denom).
                         loss = ((pred - target_clean[sl]) ** 2 * mask[sl]).sum() / denom
                         loss.backward()

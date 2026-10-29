@@ -203,7 +203,7 @@ def load_config_data_fpath(args: Namespace, includes: str = None) -> tuple[DictC
     filepath to load model
     """
 
-    fpath = f"{os.getcwd()}/{args.config}"
+    fpath = os.path.abspath(args.config)
 
     config = OmegaConf.load(f"{fpath}/config.yaml")
     config = OmegaConf.merge(Args, config)

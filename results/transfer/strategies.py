@@ -20,6 +20,7 @@ STRATEGY_PREFIX = {
     "cossim_true_cult": "cossim_true_cult_",
 }
 
+
 def predict_mean_all(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
     """Transfer predictions for strategy `mean_all` (prefix all_mean_)."""
     from assets import CROP_NAMES, SITES
@@ -47,9 +48,7 @@ def predict_mean_all(config, fpath, args, calibrator, true_data, output_data, tr
                 si_inds_test = torch.argwhere(calibrator.sites["test"].flatten() == si[0]) if len(si) != 0 else si
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
 
                     a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
 
@@ -103,7 +102,9 @@ def predict_mean_all(config, fpath, args, calibrator, true_data, output_data, tr
                     )
 
 
-def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def predict_mean_cult(
+    config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     """Transfer predictions for strategy `mean_cult` (prefix cult_mean_)."""
     from assets import CROP_NAMES, SITES
     from plotters.plot_utils import gen_batch_data
@@ -120,9 +121,7 @@ def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, t
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
 
                     test_regions = calibrator.regions["train"].flatten()[c_inds]
                     test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -130,9 +129,7 @@ def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, t
                     test_cults = calibrator.cultivars["train"].flatten()[c_inds]
                     a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
                     b_inds = torch.unique(
-                        torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(
-                            torch.int64
-                        ),
+                        torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(torch.int64),
                         dim=0,
                     )
 
@@ -186,7 +183,9 @@ def predict_mean_cult(config, fpath, args, calibrator, true_data, output_data, t
                     )
 
 
-def predict_mean_site(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def predict_mean_site(
+    config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     """Transfer predictions for strategy `mean_site` (prefix site_mean_)."""
     from assets import CROP_NAMES, SITES
     from plotters.plot_utils import gen_batch_data
@@ -209,15 +208,11 @@ def predict_mean_site(config, fpath, args, calibrator, true_data, output_data, t
 
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     a_inds = si_inds_test[torch.isin(si_inds_test, c_inds_test)]
 
                     b_inds = torch.unique(
-                        torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(
-                            torch.int64
-                        ),
+                        torch.concatenate((test_regions, test_stations, test_sites, test_cults), dim=1).to(torch.int64),
                         dim=0,
                     )
 
@@ -272,7 +267,9 @@ def predict_mean_site(config, fpath, args, calibrator, true_data, output_data, t
                     )
 
 
-def predict_best_source(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def predict_best_source(
+    config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     """Transfer predictions for strategy `best_source` (prefix best_source_)."""
     from assets import CROP_NAMES, SITES
     from plotters.plot_utils import gen_batch_data
@@ -301,9 +298,7 @@ def predict_best_source(config, fpath, args, calibrator, true_data, output_data,
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     # Get all the sites that have the target cultivar
                     c_test_regions = calibrator.regions["train"].flatten()[c_inds]
                     c_test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -325,9 +320,9 @@ def predict_best_source(config, fpath, args, calibrator, true_data, output_data,
                     st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                     st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                     st_test_all = torch.unique(
-                        torch.concatenate(
-                            (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
-                        ).to(torch.int64),
+                        torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
+                            torch.int64
+                        ),
                         dim=0,
                     )
                     st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
@@ -340,9 +335,7 @@ def predict_best_source(config, fpath, args, calibrator, true_data, output_data,
                     )
                     test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
 
-                    c_repeat = (
-                        all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
-                    )
+                    c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
                     a_repeat = test_inds.repeat_interleave(st_test.size(0))
                     b_repeat = st_test.repeat(test_inds.size(0), 1)
                     c_mask = c_repeat[:, -1] == b_repeat[:, -1]
@@ -450,9 +443,7 @@ def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, tr
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     # Get all the sites that have the target cultivar
                     c_test_regions = calibrator.regions["train"].flatten()[c_inds]
                     c_test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -474,9 +465,9 @@ def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, tr
                     st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                     st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                     st_test_all = torch.unique(
-                        torch.concatenate(
-                            (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
-                        ).to(torch.int64),
+                        torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
+                            torch.int64
+                        ),
                         dim=0,
                     )
                     st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
@@ -489,9 +480,7 @@ def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, tr
                     )
                     test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
 
-                    c_repeat = (
-                        all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
-                    )
+                    c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
                     a_repeat = test_inds.repeat_interleave(st_test.size(0))
                     b_repeat = st_test.repeat(test_inds.size(0), 1)
                     c_mask = c_repeat[:, -1] == b_repeat[:, -1]
@@ -544,9 +533,7 @@ def predict_tal_site(config, fpath, args, calibrator, true_data, output_data, tr
                     true = true[np.arange(0, len(true), s_test.shape[0])]
                     output = np.stack(
                         [
-                            np.average(
-                                output[i * s_test.shape[0] : (i + 1) * s_test.shape[0]], axis=0, weights=weights
-                            )
+                            np.average(output[i * s_test.shape[0] : (i + 1) * s_test.shape[0]], axis=0, weights=weights)
                             for i in range(int(output.shape[0] / s_test.shape[0]))
                         ]
                     )
@@ -608,9 +595,7 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     # Get all the sites that have the target cultivar
                     c_test_regions = calibrator.regions["train"].flatten()[c_inds]
                     c_test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -632,9 +617,9 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                     st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                     st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                     st_test_all = torch.unique(
-                        torch.concatenate(
-                            (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
-                        ).to(torch.int64),
+                        torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
+                            torch.int64
+                        ),
                         dim=0,
                     )
                     st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
@@ -647,9 +632,7 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                     )
                     test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
 
-                    c_repeat = (
-                        all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
-                    )
+                    c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
                     a_repeat = test_inds.repeat_interleave(st_test.size(0))
                     b_repeat = st_test.repeat(test_inds.size(0), 1)
                     c_mask = c_repeat[:, -1] == b_repeat[:, -1]
@@ -703,9 +686,7 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                     true = true[np.arange(0, len(true), c_test.shape[0])]
                     output = np.stack(
                         [
-                            np.average(
-                                output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights
-                            )
+                            np.average(output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights)
                             for i in range(int(output.shape[0] / c_test.shape[0]))
                         ]
                     )
@@ -738,7 +719,9 @@ def predict_tal_cult(config, fpath, args, calibrator, true_data, output_data, tr
                     )
 
 
-def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def predict_cossim_true_site(
+    config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     """Transfer predictions for strategy `cossim_true_site` (prefix cossim_true_site_)."""
     from assets import CROP_NAMES, SITES
     from plotters.plot_utils import gen_batch_data
@@ -767,9 +750,7 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     # Get all the sites that have the target cultivar
                     c_test_regions = calibrator.regions["train"].flatten()[c_inds]
                     c_test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -791,9 +772,9 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                     st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                     st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                     st_test_all = torch.unique(
-                        torch.concatenate(
-                            (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
-                        ).to(torch.int64),
+                        torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
+                            torch.int64
+                        ),
                         dim=0,
                     )
                     st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
@@ -806,9 +787,7 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                     )
                     test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
 
-                    c_repeat = (
-                        all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
-                    )
+                    c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
                     a_repeat = test_inds.repeat_interleave(st_test.size(0))
                     b_repeat = st_test.repeat(test_inds.size(0), 1)
                     c_mask = c_repeat[:, -1] == b_repeat[:, -1]
@@ -874,9 +853,7 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                     true = true[np.arange(0, len(true), s_test.shape[0])]
                     output = np.stack(
                         [
-                            np.average(
-                                output[i * s_test.shape[0] : (i + 1) * s_test.shape[0]], axis=0, weights=weights
-                            )
+                            np.average(output[i * s_test.shape[0] : (i + 1) * s_test.shape[0]], axis=0, weights=weights)
                             for i in range(int(output.shape[0] / s_test.shape[0]))
                         ]
                     )
@@ -909,7 +886,9 @@ def predict_cossim_true_site(config, fpath, args, calibrator, true_data, output_
                     )
 
 
-def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def predict_cossim_true_cult(
+    config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     """Transfer predictions for strategy `cossim_true_cult` (prefix cossim_true_cult_)."""
     from assets import CROP_NAMES, SITES
     from plotters.plot_utils import gen_batch_data
@@ -938,9 +917,7 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                 for c in cultivars:
                     c = np.argwhere(CROP_NAMES[calibrator.config.DataConfig.dtype] == c).flatten()
                     c_inds = torch.argwhere(calibrator.cultivars["train"].flatten() == c[0]) if len(c) != 0 else c
-                    c_inds_test = (
-                        torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
-                    )
+                    c_inds_test = torch.argwhere(calibrator.cultivars["test"].flatten() == c[0]) if len(c) != 0 else c
                     # Get all the sites that have the target cultivar
                     c_test_regions = calibrator.regions["train"].flatten()[c_inds]
                     c_test_stations = calibrator.stations["train"].flatten()[c_inds]
@@ -962,9 +939,9 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                     st_test_sites = calibrator.sites["train"].flatten()[s_transfer_inds]
                     st_test_cults = calibrator.cultivars["train"].flatten()[s_transfer_inds]
                     st_test_all = torch.unique(
-                        torch.concatenate(
-                            (st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1
-                        ).to(torch.int64),
+                        torch.concatenate((st_test_regions, st_test_stations, st_test_sites, st_test_cults), dim=1).to(
+                            torch.int64
+                        ),
                         dim=0,
                     )
                     st_test = st_test_all[torch.isin(st_test_all[:, -1], torch.unique(s_test[:, -1]))]
@@ -977,9 +954,7 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                     )
                     test_inds = torch.argwhere(torch.isin(all_info, s_test).all(dim=1))
 
-                    c_repeat = (
-                        all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
-                    )
+                    c_repeat = all_info[test_inds].repeat_interleave(st_test.size(0), dim=1).squeeze().reshape(-1, 4)
                     a_repeat = test_inds.repeat_interleave(st_test.size(0))
                     b_repeat = st_test.repeat(test_inds.size(0), 1)
                     c_mask = c_repeat[:, -1] == b_repeat[:, -1]
@@ -1046,9 +1021,7 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                     true = true[np.arange(0, len(true), c_test.shape[0])]
                     output = np.stack(
                         [
-                            np.average(
-                                output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights
-                            )
+                            np.average(output[i * c_test.shape[0] : (i + 1) * c_test.shape[0]], axis=0, weights=weights)
                             for i in range(int(output.shape[0] / c_test.shape[0]))
                         ]
                     )
@@ -1080,6 +1053,7 @@ def predict_cossim_true_cult(config, fpath, args, calibrator, true_data, output_
                         name=n,
                     )
 
+
 STRATEGIES = {
     "mean_all": predict_mean_all,
     "mean_cult": predict_mean_cult,
@@ -1092,7 +1066,9 @@ STRATEGIES = {
 }
 
 
-def run_strategy(name, config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data):
+def run_strategy(
+    name, config, fpath, args, calibrator, true_data, output_data, true_cultivar_data, output_cultivar_data
+):
     if name not in STRATEGIES:
         raise KeyError(f"Unknown transfer strategy `{name}`. Choose from {list(STRATEGIES)}")
     return STRATEGIES[name](

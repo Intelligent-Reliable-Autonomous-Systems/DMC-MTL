@@ -570,7 +570,9 @@ class DeepGRU(BaseModule):
         self.h0 = nn.Parameter(torch.zeros(1, self.hidden_dim))
         self.init_state = self.h0
 
-    def _build_hierarchy_embeddings(self, c: DictConfig, *, embed_size_aware: bool = True, synth_optional: bool = False):
+    def _build_hierarchy_embeddings(
+        self, c: DictConfig, *, embed_size_aware: bool = True, synth_optional: bool = False
+    ):
         """No-op: DeepGRU does not use cultivar/region/station/site embeddings."""
         return
 

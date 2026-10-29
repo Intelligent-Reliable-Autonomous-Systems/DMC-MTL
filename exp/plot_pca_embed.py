@@ -1,4 +1,5 @@
 """Thin wrapper — prefer `python -m plotters.embeddings --method pca`."""
+
 from plotters.embeddings import main
 
 if __name__ == "__main__":

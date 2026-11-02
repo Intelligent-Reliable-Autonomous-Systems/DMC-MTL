@@ -39,8 +39,7 @@ def main():
     config, data, _ = utils.load_config_data_fpath(args)
     config.DConfig.transfer_start = 0
     config.DConfig.transfer_type = "adapt_text"
-    if args.epochs is not None:
-        config.DConfig.epochs = args.epochs
+    config.DConfig.epochs = 200
 
     calibrator = utils.load_model_from_config(config, data)
     calibrator.load_model(str(log_dir), name=args.checkpoint_name)

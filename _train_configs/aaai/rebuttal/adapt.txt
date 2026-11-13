@@ -1,5 +1,0 @@
-python3 -m trainers.train_model_checkpoint --epochs 200 --config _runs/Rebuttal/FoundationDeep/All/All/All/Region_WANYMINSWIQCPATX-/deep_mtl__1781710627
-python3 -m trainers.train_model_checkpoint --epochs 200 --config _runs/Rebuttal/FoundationDeep/All/All/All/Region_WANYMINSWIQCPATX-/deep_mtl__1781714355
-python3 -m trainers.train_model_checkpoint --epochs 200 --config _runs/Rebuttal/FoundationDeep/All/All/All/Region_WANYMINSWIQCPATX-/deep_mtl__1781718089
-python3 -m trainers.train_model_checkpoint --epochs 200 --config _runs/Rebuttal/FoundationDeep/All/All/All/Region_WANYMINSWIQCPATX-/deep_mtl__1781721822
-python3 -m trainers.train_model_checkpoint --epochs 200 --config _runs/Rebuttal/FoundationDeep/All/All/All/Region_WANYMINSWIQCPATX-/deep_mtl__1781725560
